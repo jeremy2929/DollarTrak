@@ -17,6 +17,9 @@ DollarTrak App
  attained when user is able to enter a monthly budget for every expense, enter daily transactions in the Light    Menu, and store the data in secure fashion to be recalled at anytime.
 
 ## Post MVP ##
-        - progress bar representing the month in Light Menu (green when under budget, red when over)
-        - projecting when all debt will be paid based on monthly amounts allocated towards them
-        - investment calculator/schedule to show how money saved can grow over time
+<ol>
+<li>progress bar representing the month in Light Menu (green when under budget, red when over)</li>
+<li>projecting when all debt will be paid based on monthly amounts allocated towards them</li>
+<li>investment calculator/schedule to show how money saved can grow over time</li>
+</ol>
+      
