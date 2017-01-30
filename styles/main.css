@@ -1,0 +1,237 @@
+*{
+  box-sizing: border-box;
+}
+
+.wholePage{
+  background-color: skyblue;
+}
+
+.hiddenButton{
+  visibility: hidden;
+}
+
+.itemBox{
+  height: auto;
+  margin: 0;
+  margin-left: 10%;
+  width: 50%;
+}
+
+.pageSection{
+  height: auto;
+  padding: 3px;
+  margin: 0;
+}
+
+.authenticationHeader{
+    font-size: 30px;
+    height: 50px;
+    width: 45%;
+
+}
+
+.userVisible{
+  background-color: grey;
+  border: solid 2px;
+  border-radius: 6px;
+  color: white;
+  display: inline-block;
+  float: right;
+  font-size: 15px;
+  height: 40px;
+  line-height: 12px;
+  margin-top: 5px;
+  margin-right: 5px;
+  padding: 5px;
+  vertical-align: bottom;
+  width: auto;
+}
+
+.visibleSignOut{
+  background-color: grey;
+  border: solid 2px;
+  border-radius: 6px;
+  color: white;
+  display: inline-block;
+  float: right;
+  font-size: 15px;
+  height: 40px;
+  margin-top: 5px;
+  margin-right: 5px;
+  width: 100px;
+}
+
+.recentView{
+  background-color: DarkSeaGreen;
+  border: solid 2px;
+  border-radius: 6px;
+  color: purple;
+  display: block;
+  font-size: 20px;
+  height: 30px;
+  margin-left: 20%;
+  text-align: center;
+  transform: translateY(4px);
+  width: 320px;
+}
+
+.amountBox{
+  background: lightgrey;
+  border: solid black 1px;
+  display: inline-block;
+  font-size: 15px;
+  height: auto;
+  margin: 0px;
+  overflow: auto;
+  padding-left: 2px;
+  width: 10%;
+}
+
+.descriptionBox{
+  background: lightgrey;
+  border: solid black 1px;
+  display: inline-block;
+  font-size: 15px;
+  height: auto;
+  margin: 0px;
+  overflow: auto;
+  padding-left: 2px;
+  width: 30%;
+}
+
+.descriptionItem{
+  background: lightgrey;
+  border: solid black 1px;
+  display: inline-block;
+  font-size: 18px;
+  height: auto;
+  margin: 0px;
+  overflow: auto;
+  padding-left: 2px;
+  width: 240px;
+}
+
+.amountItem{
+  background: lightgrey;
+  border: solid black 1px;
+  display: inline-block;
+  font-size: 18px;
+  height: auto;
+  margin: 0px;
+  margin-left: 20%;
+  overflow: auto;
+  padding-left: 2px;
+  width: 80px;
+}
+
+
+
+.transDate{
+  display: inline-block;
+  font-size: 10px;
+  height: auto;
+  margin: 0;
+  margin-left: 15%;
+  margin-top: 5px;
+  vertical-align: top;
+  width: 70px;
+}
+
+.listChat {
+  background-color: lightgrey;
+  border: 8px solid black;
+  border-radius: 10px;
+  height: 300px;
+  list-style: none;
+  margin-left: 320px;
+  overflow: scroll;
+  overflow-x: inherit;
+  padding-left: 10px;
+  width: 50%;
+}
+
+.createChat {
+  background-color: DarkSeaGreen;
+  border: solid 2px;
+  border-radius: 6px;
+  color: purple;
+  display: block;
+  font-size: 20px;
+  height: 30px;
+  margin-left: 20%;
+  text-align: center;
+  transform: translateY(4px);
+  width: 320px;
+}
+
+.textChat {
+  border: solid 2px;
+  border-radius: 6px;
+  display: inline-block;
+  font-size: 20px;
+  height: 40px;
+  margin-left: 20%;
+  margin-bottom: 10px
+  transform: translateY(4px);
+  width: 47%;
+}
+
+.liteTitle {
+  background-color: DarkSeaGreen;
+  border: solid 2px;
+  color: purple;
+  font-size: 30px;
+  font-weight: bolder;
+  opacity: 0.8;
+  margin-left: 20%;
+  margin-bottom: 0px;
+  margin-top: 0px;
+  padding: 4px;
+  text-align: center;
+  width: 320px;
+}
+
+.hidden{
+  height: 10px;
+  margin-left: 20%;
+  visibility: hidden;
+}
+
+.html, body {
+  font-family: 'Roboto', 'Helvetica', sans-serif;
+}
+a {
+  text-decoration: none;
+}
+li a {
+  text-decoration: underline;
+  color: #0288d1;
+}
+.mdl-grid {
+  max-width: 1024px;
+  margin: auto;
+}
+.mdl-layout__header-row {
+  padding: 0;
+}
+.quickstart-user-details-container {
+  margin-top: 20px;
+  line-height: 25px;
+}
+#quickstart-sign-in-status {
+  font-weight: bold;
+}
+pre {
+  overflow-x: scroll;
+  line-height: 18px;
+}
+code {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+h3 {
+  background: url('firebase-logo.png') no-repeat;
+  background-size: 40px;
+  padding-left: 50px;
+  color: white;
+}
