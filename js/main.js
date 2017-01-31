@@ -21,36 +21,58 @@ return firebase.database().ref('/users/' + userId).once('value').then(function(s
 */
 var userId = "jeremy2929"
 //var userId = firebase.auth().currentUser.uid;
-console.log("user=",userId);
 var database = firebase.database();
+
+
+//var playersRef = firebase.database().ref("players/");
+
+var ref = firebase.database().ref(userId+"/"+"transactions");
+ref.on("value", function(allData) {
+   //console.log(allData.val());
+   var test = allData.val()
+   console.log(test[0]);
+}, function (error) {
+   console.log("Error: " + error.code);
+});
+
+
 
 export default React.createClass({
   componentDidMount(){
+
+  //  final FirebaseDatabase database = FirebaseDatabase.getInstance()
+
+/*
       ajax({
       url: "https://tiny-tiny.herokuapp.com/collections/jeremy2929-test",
       dataType: "json",
       success: this.onInitialAjaxLoadSuccess,
       error: this.onAjaxLoadError
     })
-
+*/
 
 },
 writeNewPost(userId) {
   // A post entry.
-  var dataLength=this.state.data.length
+
+/*
   var newData
   this.state.newData = []
-  for (var i = dataLength-8; i <this.state.data.length; i++){
-    this.state.newData[i] = this.state.data[i]
-  }
+  this.state.newData[0] = this.state.data[245]
+  this.state.newData[1] = this.state.data[246]
+  this.state.newData[2] = this.state.data[246]
+  this.state.newData[3] = this.state.data[247]
+  this.state.newData[4] = this.state.data[248]
+  this.state.newData[5] = this.state.data[249]
+  this.state.newData[6] = this.state.data[250]
+  this.state.newData[7] = this.state.data[251]
+
   this.state.data = this.state.newData
-
-  for (var i = 0;i<7;i++){
-  }
-  console.log("data=",this.state.data);
+*/
 
 
-  var postData = {
+/*
+    var postData = {
     author: "clown",
     body: "body",
     title: "title",
@@ -58,12 +80,9 @@ writeNewPost(userId) {
     authorPic: "picture"
   };
   // Get a key for a new Post.
+
+*/
   var newPostKey = firebase.database().ref().child('posts').push().key;
-
-
-
-
-
 
 
 
@@ -72,7 +91,7 @@ writeNewPost(userId) {
   var tempUser = firebase.auth().currentUser.email.split("@")
   var currentUser = tempUser[0]
   //updates['/posts/' + newPostKey] = this.state.data;
-  updates['/user-posts/' + currentUser + '/' + newPostKey] = this.state.data;
+  updates[currentUser + '/' + "transactions"] = this.state.data;
   //updates['/posts/' + newPostKey] = postData;
   //updates['/user-posts/' + "3333" + '/' + newPostKey] = postData;
 
@@ -83,13 +102,22 @@ writeNewPost(userId) {
 
 //****************
 
-  getInitialState(){
-    return{
-      textValue: "",
-      textMsgs: ["text messages"],
-      data: [""]
-    }
-  },
+//  getInitialState(){
+//     return
+
+
+
+    //
+    // {
+    //   textValue: "",
+    //   textMsgs: ["text messages"],
+    //   data: [""]
+    // }
+
+
+//  },
+
+/*
   onInitialAjaxLoadSuccess(response){
     var holdResponse = response.reverse()
     this.setState({
@@ -108,6 +136,10 @@ writeNewPost(userId) {
   onAjaxLoadError(response){
     alert("Failure to connect to URL")
   },
+
+  */
+
+
   onClickSubmit(e){
     e.preventDefault()
     var currentDate = Date().substring(4,16)
@@ -116,6 +148,8 @@ writeNewPost(userId) {
     var currentUser = firebase.auth().currentUser.email
 
     if (textInputValue != ""){
+
+/*
       ajax({
         url: "https://tiny-tiny.herokuapp.com/collections/jeremy2929-test",
         dataType: "json",
@@ -130,6 +164,8 @@ writeNewPost(userId) {
         success: this.onPostAjaxLoadSuccess,
         error: this.AjaxLoadError
       })
+
+  */
       var showing = this.refs.Show8.className
       if (showing==="hiddenButton"){
         var dataLength = this.state.data.length-8
