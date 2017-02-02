@@ -3,7 +3,7 @@ DollarTrak App
 
 * The intent of this app is to give the user a tool to help manage their personal finances. It will allow user to configure monthly budget, as well as a light menu version for logging money spent while on the go throughout the day.  
 
-* The target of this app is people who ave trouble keeping track of their money, what they spend it on, paying off debt, saving money for emergencies, goals, and retirement.
+* The target of this app is people who have trouble keeping track of their money, what they spend it on, paying off debt, saving money for emergencies, goals, and retirement.
 
 * The app will give the user a simple light menu for entering all transactions of spending money during their daily activities, then allow user to see how these transactions affect their planned monthly budget.
 
@@ -22,4 +22,3 @@ DollarTrak App
 <li>projecting when all debt will be paid based on monthly amounts allocated towards them</li>
 <li>investment calculator/schedule to show how money saved can grow over time</li>
 </ol>
-      
