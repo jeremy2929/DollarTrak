@@ -164,7 +164,7 @@
 }
 
 .transDesc{
-  background: lightgrey;
+  background: lavender;
   border: solid black 1px;
   display: inline-block;
   font-size: 15px;
@@ -176,7 +176,7 @@
 }
 
 .transAmount{
-  background: lightgrey;
+  background: lavender;
   border: solid black 1px;
   display: inline-block;
   font-size: 15px;
@@ -189,15 +189,16 @@
 }
 
 .transDate{
-  background: lightgrey;
+  background: silver;
   border: solid black 1px;
   display: inline-block;
-  font-size: 10px;
+  font-size: 11px;
+  font-weight: bolder;
   height: 19px;
   margin: 0px;
   margin-left: 210px;
   overflow: auto;
-  padding-left: 10px;
+  padding-left: 5px;
   padding-top: 2px;
   width: 70px;
 }
@@ -213,20 +214,7 @@
   width: 100px;
 }
 
-.listChat {
-  background-color: lightgrey;
-  border: 8px solid black;
-  border-radius: 10px;
-  height: 300px;
-  list-style: none;
-  margin-left: 320px;
-  overflow: scroll;
-  overflow-x: inherit;
-  padding-left: 10px;
-  width: 50%;
-}
-
-.createChat {
+.createTrans {
   background-color: lightcyan;
   border: solid 2px;
   border-radius: 6px;
@@ -263,18 +251,6 @@
   margin-bottom: 10px
   transform: translateY(4px);
   width: 538px;
-}
-
-.textChat {
-  border: solid 2px;
-  border-radius: 6px;
-  display: inline-block;
-  font-size: 20px;
-  height: 40px;
-  margin-left: 20%;
-  margin-bottom: 10px
-  transform: translateY(4px);
-  width: 638px;
 }
 
 .transactionsTitle {

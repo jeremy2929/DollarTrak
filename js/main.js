@@ -185,7 +185,7 @@ export default React.createClass({
               </ul>
               <input className="amountItem" placeholder=" $ amount" ref="amountInput" type="text"/>
               <input className="descriptionItem" placeholder="  description of purchase" ref="descriptionInput" type="text"/>
-              <button className="createChat" type="submit" onClick={this.onClickSubmit}>Submit</button>
+              <button className="createTrans" type="submit" onClick={this.onClickSubmit}>Submit</button>
               <button className="hiddenButton" ref="Show5" onClick={this.onClickShow5}>Show Last 5 Transactions Only</button>
               <button className="visibleButton" ref="ShowAll" onClick={this.onClickShowAll}>    Show All Transactions    </button>
               <button className="signOut" onClick={this.onSignOut}>Log Out</button>
