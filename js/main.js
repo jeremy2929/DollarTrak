@@ -7,22 +7,23 @@ firebase.initializeApp(config);
 export default React.createClass({
   getDefaultProps() {
     return {
-      user: { authed: false }
-    }
+            user: { authed: false }
+           }
   },
   getInitialState() {
     return {
-      provider: () => {},
-      user: {
-        authed: false,
-        name: '',
-        email: '',
-        picture: '',
-        lastLogin: undefined
-      },
-      data: {
-
-      }
+            provider: () => {},
+            user: {
+                    authed: false,
+                    name: '',
+                    email: '',
+                    picture: '',
+                    lastLogin: undefined
+                  },
+            data: [
+                    {
+                    }
+                  ]
     }
   },
   signUserIn() {
@@ -41,52 +42,87 @@ export default React.createClass({
     var currentUser = firebase.auth().currentUser
     var authUser = firebase.auth().currentUser
     firebase.auth().onAuthStateChanged((authUser) => {
-        var currentUser = {};
-        var today = new Date();
-        currentUser["/users/" + authUser.uid] = {
-          name: authUser.displayName,
-          email: authUser.email,
-          lastLogin: "today"
+      var currentUser = {};
+      var today = new Date();
+      currentUser["/users/" + authUser.uid] = {
+        name: authUser.displayName,
+        email: authUser.email,
+        lastLogin: "today"
+      }
+      firebase.database().ref().update(currentUser)
+      // This sets up a callback once firebase reports that /users/{user.uid} has a value
+      firebase.database().ref("/users/" + authUser.uid).once("value").then((snapshot) => {
+        var snapshotReturn = snapshot.val()
+        this.setState({
+          user: {
+            authed: true,
+            name: authUser.email,
+            email: snapshotReturn.email,
+            lastLogin: snapshotReturn.lastLogin
+          }
+        })
+      });
+      var tempUser = firebase.auth().currentUser.email.split("@")
+      var currentUser = tempUser[0]
+      var userId = tempUser[0]
+      var ref = firebase.database().ref(userId+"/"+"transactions");
+      var comp = this
+      ref.on("value", function(allData) {
+         if (allData.val() != null) {
+             var entireData = allData.val()
+             var dataLength = entireData.length
+             var dataStart = dataLength-5
+             var data=[]
+             var j = 0
+             for (var i = dataStart; i<dataLength; i++){
+               data[j]=entireData[i]
+               j++
+             }
+             comp.setState({data})
+             comp.setState({entireData})
+          }
+       })
+    })
+  },
+  newUserSignUp(){
+      var email = this.refs.userInput.value
+      var password = this.refs.passwordInput.value
+      if (email.length < 4) {
+        alert('Please enter an email address.');
+        return;
+      }
+      if (password.length < 4) {
+        alert('Please enter a password.');
+        return;
+      }
+      // Sign in with email and pass.
+      // [START createwithemail]
+      firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        if (errorCode != null){this.setState({errorCode})}
+        var errorMessage = error.message;
+        // [START_EXCLUDE]
+        if (errorCode == 'auth/weak-password') {
+          alert('The password is too weak.');
+        } else {
+          alert(errorMessage);
         }
-        firebase.database().ref().update(currentUser)
-        // This sets up a callback once firebase reports that /users/{user.uid} has a value
-        firebase.database().ref("/users/" + authUser.uid).once("value").then((snapshot) => {
-          var snapshotReturn = snapshot.val()
-          this.setState({
-            user: {
-              authed: true,
-              name: authUser.email,
-              email: snapshotReturn.email,
-              lastLogin: snapshotReturn.lastLogin
-            }
-          })
-        });
-  })
-  var tempUser = firebase.auth().currentUser.email.split("@")
-  var currentUser = tempUser[0]
-  var userId = tempUser[0]
-  var ref = firebase.database().ref(userId+"/"+"transactions");
-  var comp = this
-  var data = {}
-  var database = {}
-  ref.on("value", function(allData) {
-     data = allData.val()
-     data.reverse()
-     var dataLength = data.length
-     data.splice(5,dataLength-5)
-     database = allData.val()
-     comp.setState({data})
-     comp.setState({database})
-      }, function (error) {
-  })
-  this.setState(this.state.data)
-},
-signUserOut() {
-  firebase.auth().signOut()
-  location.reload()
- },
+        console.log(error);
+        // [END_EXCLUDE]
+      });
+      if (this.state.errorCode === undefined)
+      {
+        alert("Account created! Now please login...")
+      }
+      // [END createwithemail]
+  },
+  signUserOut() {
+    firebase.auth().signOut()
+    location.reload()
+  },
   componentDidMount(){
-},
+  },
   onClickSubmit(e){
     var currentDate = Date().substring(4,16)
     e.preventDefault()
@@ -108,50 +144,56 @@ signUserOut() {
               date: currentDate,
               text: textInputValue,
           },
-      this.state.data = this.state.data.concat(newData),
-      this.setState(this.state.data)
-      updates[currentUser + '/' + "transactions"] = this.state.data;
+      this.state.entireData = this.state.entireData.concat(newData),
+      this.setState(this.state.entireData)
+      updates[currentUser + '/' + "transactions"] = this.state.entireData;
+      this.refs.ShowAll.className="visibleButton"
+      this.refs.Show5.className="hiddenButton"
       return firebase.database().ref().update(updates);
+
     }
   },
   onClickShowAll(){
     this.refs.Show5.className="visibleButton"
     this.refs.ShowAll.className="hiddenButton"
-    this.state.data = this.state.database
+    this.state.data = this.state.entireData
     this.setState(this.state.data)
   },
   onClickShow5(){
     this.refs.ShowAll.className="visibleButton"
     this.refs.Show5.className="hiddenButton"
-    var dataLength = this.state.data.length-5
-    this.state.data=[]
-    for (var j = dataLength;j<dataLength+5; j++){
-      this.state.data[j]=this.state.database[j]
+    var dataLength = this.state.entireData.length
+    var dataStart = dataLength-5
+    var data=[]
+    var j = 0
+    for (var i = dataStart; i<dataLength; i++){
+      data[j]=this.state.entireData[i]
+      j++
     }
-    this.setState(this.state.data)
+    this.setState({data})
   },
   render()
-
   {
     if (firebase.auth().currentUser != null){
       return (
         <main>
       <section className="pageSection">
-        <h1 className="transactionsTitle">DollarTrak - Daily Transactions</h1>
-        <h2 className="userName"
-            ref="userName">User:  {firebase.auth().currentUser.email}</h2>
+        <article className="transactionTitleArea">
+          <h1 className="transactionsTitle">DollarTrak - Daily Transactions</h1>
+          <h2 className="userName"
+              ref="userName">User:  {firebase.auth().currentUser.email}</h2>
+        </article>
         <ul id="list" className="newList">
           {
-            this.state.data.map((record, i)=>{
-              if (record.date != undefined
-               && record.text != "")
-               {
-                return <article className="eachRecordContainer" key={i}>
-                          <p className="transDate">{record.date}</p>
-                          <p className="transAmount">${record.amount}</p>
-                          <p className="transDesc">{record.text}</p>
-                          <p className="transID">{record.user}</p>
-                      </article>
+              this.state.data.map((record, i)=>{
+                if (record.date != undefined
+                    && record.text != "")
+                {
+                  return <article className="eachRecordContainer" key={i}>
+                            <p className="transDate">{record.date}</p>
+                            <p className="transAmount">${record.amount}</p>
+                            <p className="transDesc">{record.text}</p>
+                         </article>
               }
             })
           }
@@ -191,11 +233,13 @@ signUserOut() {
           <article className="loginButtonsSection">
             <h2 className="loginLabel">     </h2>
             <input className="userNameInput"
-                   placeholder="jeemy2929@twc.com"
+                   placeholder="  email address"
                    ref="userInput"></input>
             <input className="passwordInput"
-                   placeholder="master"
-                   ref="passwordInput"></input>
+                   placeholder="  password"
+                   ref="passwordInput"
+                   type="password"></input>
+            <button className="newUser" onClick={this.newUserSignUp}>NEW USER</button>
             <button className="submitUser" onClick={this.signUserIn}>LOGIN</button>
           </article>
         </section>

@@ -8,22 +8,9 @@
   width: 100px;
 }
 
-.userNameInput{
-  height: 30px;
-  width: 100px;
-}
-
-.passwordInput{
-  height: 30px;
-  width: 100px;
-}
-
 .submitUser{
     height: 30px;
     width: 30px;
-}
-
-.wholePage{
 }
 
 .hiddenButton{
@@ -89,31 +76,41 @@
 }
 
 .loginLabel{
-  font-size: 20px;
   margin-left: 43%;
   white-space: pre;
 }
 
 .userNameInput{
-  font-size: 30px;
+  font-size: 14px;
   height: 40px;
   margin-left: 12%;
   width: 200px;
 }
 
 .passwordInput{
-  font-size: 30px;
+  font-size: 14px;
   height: 40px;
   width: 200px;
 }
 
 .submitUser{
   background-color: lightgreen;
-  display: block;
+  display: inline-block;
   font-size: 20px;
   font-weight: bolder;
   height: 40px;
-  margin-left: 35%;
+  margin-left: 9%;
+  margin-top: 20px;
+  width: 150px;
+}
+
+.newUser{
+  background-color: lightblue;
+  display: inline-block;
+  font-size: 20px;
+  font-weight: bolder;
+  height: 40px;
+  margin-left: 17%;
   margin-top: 20px;
   width: 150px;
 }
@@ -125,12 +122,14 @@
   font-size: 28px;
   height: 35px;
   margin: 3px;
-  margin-left: 13em;
+  margin-left: auto;
+  margin-right: auto;
   padding-bottom:  10px;
   padding-left: 10px;
   padding-right: 10px;
   text-align: center;
-  width: auto;
+  vertical-align: middle;
+  width: 700px;
   white-space: pre;
 }
 
@@ -168,6 +167,11 @@
   width: 638px;
 }
 
+.transactionTitleArea{
+  height: 100px;
+  margin-left: 17%;
+  width: 701px;
+}
 .transDesc{
   background: lavender;
   border: solid black 1px;
@@ -265,7 +269,6 @@
   font-size: 45px;
   font-weight: bolder;
   opacity: 0.8;
-  margin-left: 18%;
   margin-bottom: 0px;
   margin-top: 20px;
   padding: 4px;
