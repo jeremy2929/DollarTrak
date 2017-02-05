@@ -210,9 +210,7 @@ export default React.createClass({
     location.reload()
   },
   onClickSubmit(e){
-    console.log(this.refs.amountInput.value);
     if (this.refs.amountInput.value != ""){
-    /// FIXME need to block empty amounts from being submitted.......
     var currentDate = Date().substring(4,15)
     e.preventDefault()
     var textInputValue = this.refs.descriptionInput.value
@@ -227,7 +225,6 @@ export default React.createClass({
     var currentUser = tempUser[0]
     var newData = ""
     var database = ""
-//    if (textInputValue != ""){
       newData=
           {
             amount: amountInputValue,
