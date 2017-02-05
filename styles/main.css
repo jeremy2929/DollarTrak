@@ -172,6 +172,19 @@
   margin-left: 17%;
   width: 701px;
 }
+
+.TransIndex{
+  display: inline-block;
+}
+
+.hiddenTrans{
+  display: inline-block;
+  margin: 0;
+  height: 0;
+  visibility: hidden;
+  width: 0;
+}
+
 .transDesc{
   background: lavender;
   border: solid black 1px;

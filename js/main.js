@@ -58,7 +58,6 @@ export default React.createClass({
     });
     var currentUser = firebase.auth().currentUser
     var authUser = firebase.auth().currentUser
-    console.log("auth=",firebase.auth().currentUser);
     firebase.auth().onAuthStateChanged((authUser) => {
       if (firebase.auth().currentUser != null){
         var currentUser = {};
@@ -211,9 +210,13 @@ export default React.createClass({
     location.reload()
   },
   onClickSubmit(e){
+    console.log(this.refs.amountInput.value);
+    if (this.refs.amountInput.value != ""){
+    /// FIXME need to block empty amounts from being submitted.......
     var currentDate = Date().substring(4,15)
     e.preventDefault()
     var textInputValue = this.refs.descriptionInput.value
+    // FIXME what can use instead of eval? need numeric testing here
     var amountInputValue = this.refs.amountInput.value
     this.refs.descriptionInput.value = ""
     this.refs.amountInput.value = ""
@@ -224,7 +227,7 @@ export default React.createClass({
     var currentUser = tempUser[0]
     var newData = ""
     var database = ""
-    if (textInputValue != ""){
+//    if (textInputValue != ""){
       newData=
           {
             amount: amountInputValue,
@@ -277,6 +280,42 @@ export default React.createClass({
     }
     this.setState({data})
   },
+  onClickTransAmount(e){
+    var transSelected = e.target.getAttribute('value')
+    var newAmount = prompt("Enter new amount or 000 to delete")
+    // FIXME: numeric testing here for input
+    if (newAmount != "000"){
+      this.state.data[transSelected].amount = newAmount
+    } else {
+      this.state.data.splice(transSelected,1)
+      var dataLength = this.state.entireData.length
+      if (dataLength>5){
+        var dataPos = dataLength - 5 + eval(transSelected)
+        this.state.entireData.splice(dataPos,1)
+      } else {
+        this.state.entireData.splice(transSelected,1)
+      }
+      this.setState(this.state.data)
+      this.setState(this.state.entireData)
+    }
+    var updates = {}
+    var tempUser = firebase.auth().currentUser.email.split("@")
+    var currentUser = tempUser[0]
+    updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData
+    firebase.database().ref().update(updates)
+    this.setState(this.state.data)
+  },
+  onClickTransDescription(e){
+    var transSelected = e.target.getAttribute('value')
+    var newDesc = prompt("Enter new description")
+    this.state.data[transSelected].text = newDesc
+    var updates = {}
+    var tempUser = firebase.auth().currentUser.email.split("@")
+    var currentUser = tempUser[0]
+    updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData
+    firebase.database().ref().update(updates)
+    this.setState(this.state.data)
+  },
   render()
   {
     if (firebase.auth().currentUser != null){
@@ -289,20 +328,25 @@ export default React.createClass({
               ref="userName">User:  {firebase.auth().currentUser.email}</h2>
         </article>
         <ul id="list" className="newList">
-          {
-              this.state.data.map((record, i)=>{
-                if (record.date != undefined
-                    && record.text != "")
-                {
-                  return <article className="eachRecordContainer" key={i}>
-                            <p className="transDate">{record.date}</p>
-                            <p className="transAmount">${record.amount}</p>
-                            <p className="transDesc">{record.text}</p>
-                         </article>
-              }
-            })
-          }
-        </ul>
+         {
+             this.state.data.map((record, i)=>{
+               if (record.date != undefined
+                   && record.text != "")
+               {
+                 return <article className="eachRecordContainer" key={i}>
+                          <p className="transDate">{record.date}</p>
+                          <a href="#">
+                            <p className="transAmount" value={i}                            onClick={this.onClickTransAmount}>${record.amount}</p>
+                          </a>
+                          <a href="#">
+                            <p className="transDesc" value={i}
+                              onClick={this.onClickTransDescription}>{record.text}</p>
+                          </a>
+                        </article>
+             }
+           })
+         }
+       </ul>
         <input className="amountItem"
                placeholder=" $ amount"
                ref="amountInput"
