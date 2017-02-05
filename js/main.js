@@ -301,6 +301,8 @@ export default React.createClass({
     updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData
     firebase.database().ref().update(updates)
     this.setState(this.state.data)
+    this.refs.ShowAll.className="visibleButton"
+    this.refs.Show5.className="hiddenButton"
   },
   onClickTransDescription(e){
     var transSelected = e.target.getAttribute('value')
@@ -312,6 +314,8 @@ export default React.createClass({
     updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData
     firebase.database().ref().update(updates)
     this.setState(this.state.data)
+    this.refs.ShowAll.className="visibleButton"
+    this.refs.Show5.className="hiddenButton"
   },
   render()
   {
