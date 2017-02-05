@@ -58,60 +58,50 @@ export default React.createClass({
     });
     var currentUser = firebase.auth().currentUser
     var authUser = firebase.auth().currentUser
-    console.log("auth=",firebase.auth().currentUser);
     firebase.auth().onAuthStateChanged((authUser) => {
-      if (firebase.auth().currentUser != null){
-        var currentUser = {};
-        var today = new Date();
-        var tempUser = firebase.auth().currentUser.email.split("@")
-        var userId = tempUser[0]
-        currentUser["/users/" + authUser.uid] = {
-          name: authUser.displayName,
-          email: authUser.email,
-          lastLogin: Date()
-        }
-        firebase.database().ref().update(currentUser)
-        // This sets up a callback once firebase reports that /users/{user.uid} has a value
-        firebase.database().ref("/users/" + authUser.uid).once("value").then((snapshot) => {
-          var snapshotReturn = snapshot.val()
-          this.setState({
-            user: {
-              authed: true,
-              name: authUser.email,
-              email: snapshotReturn.email,
-              lastLogin: snapshotReturn.lastLogin
-            }
-          })
-        });
+      var currentUser = {};
+      var today = new Date();
+      var tempUser = firebase.auth().currentUser.email.split("@")
+      var userId = tempUser[0]
+      currentUser["/users/" + authUser.uid] = {
+        name: authUser.displayName,
+        email: authUser.email,
+        lastLogin: Date()
       }
-      if (firebase.auth().currentUser != null){
+      firebase.database().ref().update(currentUser)
+      // This sets up a callback once firebase reports that /users/{user.uid} has a value
+      firebase.database().ref("/users/" + authUser.uid).once("value").then((snapshot) => {
+        var snapshotReturn = snapshot.val()
+        this.setState({
+          user: {
+            authed: true,
+            name: authUser.email,
+            email: snapshotReturn.email,
+            lastLogin: snapshotReturn.lastLogin
+          }
+        })
+      });
       var tempUser = firebase.auth().currentUser.email.split("@")
       var currentUser = tempUser[0]
       var userId = tempUser[0]
-      var ref = firebase.database().ref("/users/" + currentUser + "/" + "transactions");
+
+      var ref = firebase.database().ref("/users/" + authUser.uid + "/" + "transactions");
       var comp = this
       ref.on("value", function(allData) {
          if (allData.val() != null) {
              var entireData = allData.val()
              var dataLength = entireData.length
+             var dataStart = dataLength-5
              var data=[]
-             if (dataLength>5){
-               var dataStart = dataLength-5
-               var j = 0
-               for (var i = dataStart; i<dataLength; i++){
-                 data[j]=entireData[i]
-                 j++
-               }
-               comp.setState({data})
-               comp.setState({entireData})
-             } else {
-               data = entireData
-               comp.setState({data})
-               comp.setState({entireData})
+             var j = 0
+             for (var i = dataStart; i<dataLength; i++){
+               data[j]=entireData[i]
+               j++
              }
+             comp.setState({data})
+             comp.setState({entireData})
           }
        })
-     }
     })
   },
   newUserSignUp(){
@@ -174,7 +164,7 @@ export default React.createClass({
         var tempUser = firebase.auth().currentUser.email.split("@")
         var currentUser = tempUser[0]
         var userId = tempUser[0]
-        var ref = firebase.database().ref("/users/" + currentUser + "/" + "transactions");
+        var ref = firebase.database().ref("/users/" + authUser.uid + "/" + "transactions");
         var comp = this
         ref.on("value", function(allData) {
            if (allData.val() != null) {
@@ -247,7 +237,7 @@ export default React.createClass({
       }
       var tempUser = firebase.auth().currentUser.email.split("@")
       var currentUser = tempUser[0]
-      updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData
+      updates["/users/" + firebase.auth().currentUser.uid + "/" + "transactions"] = this.state.entireData
       this.refs.ShowAll.className="visibleButton"
       this.refs.Show5.className="hiddenButton"
       firebase.database().ref().update(updates)

@@ -1,21 +1,3 @@
-/*
-  in this script I am using a loop to grab last 5 objects of my data arrray because
-  I think when I use splice, it will chop BOTH data arrays!
-  ( i use two arrays- one is for mapping to render, either chopped down to 5 or show all, and a second array to retain all objects to restore the first one when needed)
-
-  example
-   data  - my small array of only 5 objects
-   entireData - my large array of all objects
-
-   if entireData array contains 20 objects and I do this:
-   var data = []
-   data = entireData
-   data.splice(entireData.length-5,5)  (or whatever is syntax is to get last 5 objects of entireData)
-
-   it chops my data array down to the last 5 objects, but ALSO seems to CHOP MY entireData array DOWN TO 5, TOO!
-
-*/
-
 import React from 'react'
 import { ajax } from 'jquery'
 import ReactFire from 'reactfire'
@@ -58,60 +40,51 @@ export default React.createClass({
     });
     var currentUser = firebase.auth().currentUser
     var authUser = firebase.auth().currentUser
-    console.log("auth=",firebase.auth().currentUser);
     firebase.auth().onAuthStateChanged((authUser) => {
-      if (firebase.auth().currentUser != null){
-        var currentUser = {};
-        var today = new Date();
-        var tempUser = firebase.auth().currentUser.email.split("@")
-        var userId = tempUser[0]
-        currentUser["/users/" + authUser.uid] = {
-          name: authUser.displayName,
-          email: authUser.email,
-          lastLogin: Date()
-        }
-        firebase.database().ref().update(currentUser)
-        // This sets up a callback once firebase reports that /users/{user.uid} has a value
-        firebase.database().ref("/users/" + authUser.uid).once("value").then((snapshot) => {
-          var snapshotReturn = snapshot.val()
-          this.setState({
-            user: {
-              authed: true,
-              name: authUser.email,
-              email: snapshotReturn.email,
-              lastLogin: snapshotReturn.lastLogin
-            }
-          })
-        });
+      var currentUser = {};
+      var today = new Date();
+      var tempUser = firebase.auth().currentUser.email.split("@")
+      var userId = tempUser[0]
+      currentUser["/users/" + authUser.uid + "_" + userId] = {
+        name: authUser.displayName,
+        email: authUser.email,
+        lastLogin: Date()
       }
-      if (firebase.auth().currentUser != null){
+      firebase.database().ref().update(currentUser)
+      // This sets up a callback once firebase reports that /users/{user.uid} has a value
+      firebase.database().ref("/users/" + authUser.uid).once("value").then((snapshot) => {
+        var snapshotReturn = snapshot.val()
+        this.setState({
+          user: {
+            authed: true,
+            name: authUser.email,
+            email: snapshotReturn.email,
+            lastLogin: snapshotReturn.lastLogin
+          }
+        })
+      });
       var tempUser = firebase.auth().currentUser.email.split("@")
       var currentUser = tempUser[0]
       var userId = tempUser[0]
-      var ref = firebase.database().ref("/users/" + currentUser + "/" + "transactions");
+
+      var ref = firebase.database().ref("/users/" + authUser.uid + "_" + userId + "/" + "transactions");
+    //  var ref = firebase.database().ref(userId+"/"+"transactions");
       var comp = this
       ref.on("value", function(allData) {
          if (allData.val() != null) {
              var entireData = allData.val()
              var dataLength = entireData.length
+             var dataStart = dataLength-5
              var data=[]
-             if (dataLength>5){
-               var dataStart = dataLength-5
-               var j = 0
-               for (var i = dataStart; i<dataLength; i++){
-                 data[j]=entireData[i]
-                 j++
-               }
-               comp.setState({data})
-               comp.setState({entireData})
-             } else {
-               data = entireData
-               comp.setState({data})
-               comp.setState({entireData})
+             var j = 0
+             for (var i = dataStart; i<dataLength; i++){
+               data[j]=entireData[i]
+               j++
              }
+             comp.setState({data})
+             comp.setState({entireData})
           }
        })
-     }
     })
   },
   newUserSignUp(){
@@ -146,6 +119,21 @@ export default React.createClass({
       {
         alert("Account created! Click OK to login...")
       }
+      // ***** repeating code of sign here *******************
+/*      var email = this.refs.userInput.value
+      var password = this.refs.passwordInput.value
+      firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        if (errorCode === 'auth/wrong-password') {
+          alert('Wrong password.');
+        } else {
+          alert(errorMessage);
+        }
+      });
+
+      */
+
       var currentUser = firebase.auth().currentUser
       var authUser = firebase.auth().currentUser
       firebase.auth().onAuthStateChanged((authUser) => {
@@ -153,14 +141,15 @@ export default React.createClass({
         var today = new Date();
         var tempUser = firebase.auth().currentUser.email.split("@")
         var userId = tempUser[0]
-        currentUser["/users/" + authUser.uid] = {
+        currentUser["/users/" + authUser.uid + "_" + userId] = {
           name: authUser.displayName,
           email: authUser.email,
           lastLogin: "today"
         }
+
         firebase.database().ref().update(currentUser)
         // This sets up a callback once firebase reports that /users/{user.uid} has a value
-        firebase.database().ref("/users/" + authUser.uid).once("value").then((snapshot) => {
+        firebase.database().ref("/users/" + authUser.uid + "_" + userId).once("value").then((snapshot) => {
           var snapshotReturn = snapshot.val()
           this.setState({
             user: {
@@ -174,7 +163,7 @@ export default React.createClass({
         var tempUser = firebase.auth().currentUser.email.split("@")
         var currentUser = tempUser[0]
         var userId = tempUser[0]
-        var ref = firebase.database().ref("/users/" + currentUser + "/" + "transactions");
+        var ref = firebase.database().ref("/users/" + authUser.uid + "_" + userId + "/" + "transactions");
         var comp = this
         ref.on("value", function(allData) {
            if (allData.val() != null) {
@@ -198,6 +187,7 @@ export default React.createClass({
               var data = []
               comp.setState({data})
               comp.setState({entireData})
+
             }
          })
          this.setState(this.state.data)
@@ -205,6 +195,8 @@ export default React.createClass({
       })
       this.setState(this.state.data)
       this.setState(this.state.entireData)
+
+      // [END createwithemail]
   },
   signUserOut() {
     firebase.auth().signOut()
@@ -237,22 +229,34 @@ export default React.createClass({
         var dataLength = this.state.entireData.length
         var dataStart = dataLength-5
         var data=[]
+        this.setState({data})
         var j = 0
         for (var i = dataStart; i<dataLength; i++){
-          data[j]=this.state.entireData[i]
+          this.state.data[j]=this.state.entireData[i]
           j++
         }
       } else {
-        data = this.state.entireData
+        this.state.data = this.state.entireData
       }
+
       var tempUser = firebase.auth().currentUser.email.split("@")
       var currentUser = tempUser[0]
-      updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData
+      updates["/users/" + firebase.auth().currentUser.uid + "_" + currentUser + "/" + "transactions"] = this.state.entireData
+
+
       this.refs.ShowAll.className="visibleButton"
       this.refs.Show5.className="hiddenButton"
+      this.setState(this.state.data)
       firebase.database().ref().update(updates)
+
+    //  return firebase.database().ref().update(updates)
     }
+    this.setState(this.state.data)
+    console.log("make it here data=?",this.state.data);
+    console.log("make it here? entireData=",this.state.entireData);
     this.setState({data})
+    console.log("data at end of submit",data);
+    console.log("this.state.data at end of submit",this.state.data);
   },
   onClickShowAll(){
     this.refs.Show5.className="visibleButton"
@@ -279,6 +283,9 @@ export default React.createClass({
   },
   render()
   {
+
+    console.log("in render=",this.state.data)
+
     if (firebase.auth().currentUser != null){
       return (
         <main>
