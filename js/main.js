@@ -17,7 +17,6 @@
 */
 
 import React from 'react'
-import { ajax } from 'jquery'
 import ReactFire from 'reactfire'
 var firebase = require('firebase');
 firebase.initializeApp(config);
@@ -178,17 +177,15 @@ export default React.createClass({
         ref.on("value", function(allData) {
            if (allData.val() != null) {
                var entireData = allData.val()
-
                if (entireData.length > 5){
-
-               var dataLength = entireData.length
-               var dataStart = dataLength-5
-               var data=[]
-               var j = 0
-               for (var i = dataStart; i<dataLength; i++){
-                 data[j]=entireData[i]
-                 j++
-               }
+                   var dataLength = entireData.length
+                   var dataStart = dataLength-5
+                   var data=[]
+                   var j = 0
+                   for (var i = dataStart; i<dataLength; i++){
+                     data[j]=entireData[i]
+                     j++
+                   }
                }
                comp.setState({data})
                comp.setState({entireData})
@@ -307,7 +304,8 @@ export default React.createClass({
   onClickTransDescription(e){
     var transSelected = e.target.getAttribute('value')
     var newDesc = prompt("Enter new description")
-    this.state.data[transSelected].text = newDesc
+    console.log(newDesc);
+    if (newDesc != null) {this.state.data[transSelected].text = newDesc}
     var updates = {}
     var tempUser = firebase.auth().currentUser.email.split("@")
     var currentUser = tempUser[0]
@@ -316,6 +314,10 @@ export default React.createClass({
     this.setState(this.state.data)
     this.refs.ShowAll.className="visibleButton"
     this.refs.Show5.className="hiddenButton"
+  },
+  onClickHelpButton()
+  {
+    alert("This will be info button how to use app. When we are unhurried and wise, we perceive that only great and worthy things have any permanent and absolute existence, that petty fears and petty pleasures are but the shadow of the reality. -Henry David Thoreau")
   },
   render()
   {
@@ -348,20 +350,19 @@ export default React.createClass({
            })
          }
        </ul>
-        <input className="amountItem"
-               placeholder=" $ amount"
-               ref="amountInput"
-               type="text"/>
-        <input className="descriptionItem"
-               placeholder="  description of purchase"
-               ref="descriptionInput"
-               type="text"/>
+        <input  className="amountItem"
+                placeholder=" $ amount"
+                ref="amountInput"
+                type="text"/>
+        <input  className="descriptionItem"
+                placeholder="  description of purchase"
+                ref="descriptionInput"
+                type="text"/>
         <button className="createTrans"
                 type="submit"
                 onClick={this.onClickSubmit}>Submit</button>
         <button className="hiddenButton"
-                ref="Show5"
-                onClick={this.onClickShow5}>Show Last 5 Transactions Only</button>
+                ref="Show5" onClick={this.onClickShow5}>Show Last 5 Transactions Only</button>
         <button className="visibleButton"
                 ref="ShowAll"
                 onClick={this.onClickShowAll}>    Show All Transactions    </button>
@@ -391,7 +392,10 @@ export default React.createClass({
                    type="password"></input>
             <button className="newUser" onClick={this.newUserSignUp}>NEW USER</button>
             <button className="submitUser" onClick={this.signUserIn}>LOGIN</button>
-          </article>
+            <div className="helpContainer">
+              <button className="helpButton" onClick={this.onClickHelpButton}>HELP</button>
+            </div>
+        </article>
         </section>
       </main>
      )
