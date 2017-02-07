@@ -458,11 +458,17 @@ export default React.createClass({
     e.preventDefault()
     if (this.refs.enterMonthlyAmount.value != "" || this.refs.enterMonthlyBill.value != ""){
     var currentDate = Date().substring(4,15)
+    var monthlyPlanInputValue = this.refs.enterMonthlyPlan.value
     var monthlyBillInputValue = this.refs.enterMonthlyBill.value
+
+
+
+
     // FIXME what can use instead of eval? need numeric testing here
     var monthlyAmountInputValue = this.refs.enterMonthlyAmount.value
     this.refs.enterMonthlyBill.value = ""
     this.refs.enterMonthlyAmount.value = ""
+    this.refs.enterMonthlyPlan.value = ""
     var userId = this.state.user
     var updates = {};
     var tempUser = firebase.auth().currentUser.email.split("@")
@@ -471,6 +477,7 @@ export default React.createClass({
       newData=
           {
             amount: monthlyAmountInputValue,
+              plan: monthlyPlanInputValue,
               date: currentDate,
               text: monthlyBillInputValue,
           }
@@ -618,8 +625,8 @@ export default React.createClass({
                   ref="enterMonthlyBill"
                   type="text"/>
           <input className="enterMonthlyPlannedAmount"
-                  placeholder="amount"
-                  ref="enterMonthlyAmount"
+                  placeholder="plan"
+                  ref="enterMonthlyPlan"
                   type="number"/>
           <input  className="enterMonthlyAmount"
                   placeholder="amount"
