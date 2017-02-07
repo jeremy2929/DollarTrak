@@ -22,7 +22,7 @@ import ReactFire from 'reactfire'
 var firebase = require('firebase');
 firebase.initializeApp(config);
 
-
+var monthlyIncome = "0"
 export default React.createClass({
   getDefaultProps() {
     return {
@@ -47,6 +47,7 @@ export default React.createClass({
                     {
                     }
                   ]
+
     }
   },
   signUserIn() {
@@ -136,8 +137,20 @@ export default React.createClass({
 // are these 2 lines redundant below?
         //   var entireMonthlyData = []
            comp.setState({entireMonthlyData})
-           console.log("entireM=",entireMonthlyData);
         })
+        var ref = firebase.database().ref("/users/" + currentUser + "/" + "monthlyincome");
+        var comp = this
+        ref.on("value", function(allData) {
+            if (allData.val() != null){
+              monthlyIncome = allData.val()
+              comp.setState({monthlyIncome})
+            } else {
+              var monthlyIncome = "0"
+              comp.setState({monthlyIncome})
+            }
+ // is this line redundant below?
+            comp.setState({monthlyIncome})
+         })
      }
     })
   },
@@ -419,6 +432,15 @@ export default React.createClass({
           this.setState(this.state.entireMonthlyData)
      }
   },
+  onMonthlyIncomeInput(){
+    var monthlyIncome = "$" + prompt("Enter Monthly Income")
+    var tempUser = firebase.auth().currentUser.email.split("@")
+    var currentUser = tempUser[0]
+    var updates= {}
+    updates["/users/" + currentUser + "/" + "monthlyincome"] = monthlyIncome
+    firebase.database().ref().update(updates)
+    this.setState({monthlyIncome})
+  },
   onClickMonthlyBudgetButton(){
     var monthlyFlag = true
     this.setState({monthlyFlag})
@@ -461,7 +483,6 @@ export default React.createClass({
       firebase.database().ref().update(updates)
       this.setState(this.state.entireMonthlyData)
     }
-    console.log("entireMonthlyData in function=",this.state.entireMonthlyData);
   },
   onClickHelpButton()
   {
@@ -469,9 +490,9 @@ export default React.createClass({
   },
   render()
   {
-    console.log("monthly=",this.state.monthlyFlag);
-    console.log("auth=",firebase.auth().currentUser);
-    console.log("entireMonthlyData at render=",this.state.entireMonthlyData);
+    // console.log("monthly=",this.state.monthlyFlag);
+    // console.log("auth=",firebase.auth().currentUser);
+    // console.log("entireMonthlyData at render=",this.state.entireMonthlyData);
     // have to set this.state.monthlyFlag when loggin out
     if (firebase.auth().currentUser != null && this.state.monthlyFlag === undefined){
       return (
@@ -562,6 +583,12 @@ export default React.createClass({
             <h2 className="userName"
                 ref="userName">User:  {firebase.auth().currentUser.email}</h2>
           </article>
+          <div className="monthlyIncomeArea">
+            <p className="monthlyIncomeLabel">Monthly Income</p>
+            <a className="monthlyIncomeLink" href="#">
+              <p className="monthlyIncomeInput" ref="monthlyInput" onClick={this.onMonthlyIncomeInput}>{this.state.monthlyIncome}</p>
+            </a>
+          </div>
           <ul id="list" className="monthyBillsRecordsArea">
            {
                this.state.entireMonthlyData.map((record, i)=>{
@@ -611,3 +638,9 @@ export default React.createClass({
     )
   }
 })
+
+/*
+<form className="monthlyIncomeForm" onSubmit={this.onMonthlyIncomeInput}>
+  <input  className="monthlyIncomeInput" ref="monthlyInput">{this.state.monthlyIncome}</input>
+</form>
+*/
