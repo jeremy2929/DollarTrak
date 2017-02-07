@@ -22,9 +22,16 @@
   margin: 0;
 }
 
-.pageSection{
+.dailyTransPageSection{
   background-color: peachpuff;
-  height: 700px;;
+  height: 700px;
+  padding: 3px;
+  margin: 0;
+}
+
+.monthlyPageSection{
+  background-color: powderblue;
+  height: 700px;
   padding: 3px;
   margin: 0;
 }
@@ -129,7 +136,7 @@
   padding-right: 10px;
   text-align: center;
   vertical-align: middle;
-  width: 700px;
+  width: auto;
   white-space: pre;
 }
 
@@ -146,8 +153,63 @@
   margin-top: 5px;
   padding-top: 0px;
   text-align: center;
-  transform: translateY(4px);
   width: 638px;
+}
+
+.monthlySignOut{
+  background-color: lightcyan;
+  border: solid 2px;
+  border-radius: 6px;
+  color: green;
+  display: inline-block;
+  float: left;
+  font-size: 30px;
+  height: 40px;
+  line-height: 40px;
+  margin-left: 2%;
+  margin-top: 5px;
+  padding-top: 0px;
+  text-align: center;
+  width: 300px;
+}
+
+.dailyTransButton{
+  background-color: lightcyan;
+  border: solid 2px;
+  border-radius: 6px;
+  color: green;
+  display: inline-block;
+  float: left;
+  font-size: 30px;
+  height: 40px;
+  line-height: 40px;
+  margin-left: 2%;
+  margin-top: 5px;
+  padding-top: 0px;
+  text-align: center;
+  width: 300px;
+}
+
+.monthlyOptionsArea{
+  height: 100px;
+  margin-top: 20px;
+  width: 400px;
+}
+
+.monthlyBudgetButton{
+    background-color: lightcyan;
+    border: solid 2px;
+    border-radius: 6px;
+    color: green;
+    display: inline-block;
+    font-size: 30px;
+    height: 40px;
+    line-height: 40px;
+    margin-left: 20%;
+    margin-top: 5px;
+    padding-top: 0px;
+    text-align: center;
+    width: 638px;
 }
 
 .visibleButton{
@@ -163,7 +225,6 @@
   margin-top: 5px;
   padding-top: 0px;
   text-align: center;
-  transform: translateY(4px);
   width: 638px;
 }
 
@@ -236,7 +297,7 @@
   width: 100px;
 }
 
-.createTrans {
+.createTrans{
   background-color: lightcyan;
   border: solid 2px;
   border-radius: 6px;
@@ -248,34 +309,31 @@
   margin-left: 20%;
   margin-top: 5px;
   text-align: center;
-  transform: translateY(4px);
   width: 638px;
 }
 
-.amountItem {
+.amountItem{
   border: solid 2px;
   border-radius: 6px;
   display: inline-block;
   font-size: 20px;
   height: 40px;
   margin-left: 20%;
-  margin-bottom: 10px
-  transform: translateY(4px);
+  margin-bottom: 10px;
   width: 100px;
 }
 
-.descriptionItem {
+.descriptionItem{
   border: solid 2px;
   border-radius: 6px;
   display: inline-block;
   font-size: 20px;
   height: 40px;
-  margin-bottom: 10px
-  transform: translateY(4px);
+  margin-bottom: 10px;
   width: 538px;
 }
 
-.transactionsTitle {
+.transactionsTitle{
   background-color: lightcyan;
   border: solid 2px;
   color: green;
@@ -287,6 +345,124 @@
   padding: 4px;
   text-align: center;
   width: 700px;
+}
+
+.monthlyTitleArea{
+  height: 100px;
+  width: 360px;
+}
+
+.monthlyTitle{
+  background-color: lightcyan;
+  border: solid 2px;
+  color: green;
+  font-size: 45px;
+  font-weight: bolder;
+  opacity: 0.8;
+  margin-bottom: 0px;
+  margin-top: 20px;
+  padding: 4px;
+  text-align: center;
+  width: 350px;
+}
+
+.monthyBillsRecordsArea{
+  display: inline-block;
+  height: auto;
+  padding-left: inherit;
+  margin-left: 0;
+  width: 500px;
+
+}
+
+.monthlyInputsArea{
+  display: inline-block;
+  height: 41px;
+  width: 770px;
+}
+
+.enterMonthlyBill{
+  border: solid 2px;
+  font-size: 15px;
+  height: 40px;
+  width: 200px;
+}
+
+.enterMonthlyPlannedAmount{
+  border: solid 2px;
+  font-size: 15px;
+  height: 40px;
+  width: 100px;
+}
+
+.enterMonthlyAmount{
+  border: solid 2px;
+  font-size: 15px;
+  height: 40px;
+  width: 100px;
+}
+
+.createMonthlyBill{
+  background-color: lightgrey;
+  border: solid 2px;
+  border-radius: 6px;
+  display: inline-block;
+  font-size: 18px;
+  height: 40px;
+  margin-left: 2%;
+  width: 300px;
+}
+
+.categoryBill{
+  background: tan;
+  border: solid black 1px;
+  display: inline-block;
+  font-size: 11px;
+  font-weight: bolder;
+  height: 19px;
+  margin: 0px;
+  margin-left: 0px;
+  overflow: auto;
+  padding-top: 2px;
+  width: 70px;
+}
+
+.monthlyBillDesc{
+  background: lavender;
+  border: solid black 1px;
+  display: inline-block;
+  font-size: 15px;
+  height: 19px;
+  margin: 0px;
+  overflow: auto;
+  padding-left: 2px;
+  width: 220px;
+}
+
+.monthlyBillPlan{
+  background: lavender;
+  border: solid black 1px;
+  display: inline-block;
+  font-size: 15px;
+  height: auto;
+  margin: 0px;
+  overflow: auto;
+  padding-left: 2px;
+  text-align: center;
+  width: 50px;
+}
+
+.monthlyBillActual{
+  background: lavender;
+  border: solid black 1px;
+  display: inline-block;
+  font-size: 15px;
+  height: auto;
+  margin: 0px;
+  overflow: auto;
+  padding-left: 2px;
+  text-align: center;
+  width: 50px;
 }
 
 .helpContainer{

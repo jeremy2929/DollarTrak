@@ -13,6 +13,7 @@
    data.splice(entireData.length-5,5)  (or whatever is syntax is to get last 5 objects of entireData)
 
    it chops my data array down to the last 5 objects, but ALSO seems to CHOP MY entireData array DOWN TO 5, TOO!
+    I am not 100%, going to test this again...
 
 */
 
@@ -20,6 +21,7 @@ import React from 'react'
 import ReactFire from 'reactfire'
 var firebase = require('firebase');
 firebase.initializeApp(config);
+
 
 export default React.createClass({
   getDefaultProps() {
@@ -38,6 +40,10 @@ export default React.createClass({
                     lastLogin: undefined
                   },
             data: [
+                    {
+                    }
+                  ],
+     entireMonthlyData: [
                     {
                     }
                   ]
@@ -89,6 +95,7 @@ export default React.createClass({
       var ref = firebase.database().ref("/users/" + currentUser + "/" + "transactions");
       var comp = this
       ref.on("value", function(allData) {
+// ************* still need an ELSE for this IF in case user insnt new but has no data
          if (allData.val() != null) {
              var entireData = allData.val()
              var dataLength = entireData.length
@@ -103,12 +110,34 @@ export default React.createClass({
                comp.setState({data})
                comp.setState({entireData})
              } else {
-               data = entireData
+               var data = entireData
                comp.setState({data})
                comp.setState({entireData})
              }
+  //********   need ELSE statement to assign empty object to entireData if user isnt new but has no data
+          } else {
+            var entireData = []
+            var data = []
+            comp.setState({data})
+            comp.setState({entireData})
           }
        })
+       var ref = firebase.database().ref("/users/" + currentUser + "/" + "monthly");
+       var comp = this
+       ref.on("value", function(allData) {
+        //   var entireMonthlyData = []
+           if (allData.val() != null){
+             entireMonthlyData = allData.val()
+             comp.setState({entireMonthlyData})
+           } else {
+             var entireMonthlyData = []
+             comp.setState({entireMonthlyData})
+           }
+// are these 2 lines redundant below?
+        //   var entireMonthlyData = []
+           comp.setState({entireMonthlyData})
+           console.log("entireM=",entireMonthlyData);
+        })
      }
     })
   },
@@ -172,9 +201,12 @@ export default React.createClass({
         var tempUser = firebase.auth().currentUser.email.split("@")
         var currentUser = tempUser[0]
         var userId = tempUser[0]
+// ************************** still need some code for monthly data for new user below this transactions section (cont)
+// ************************** if ever give user option to go to directly to Monthly page from login
         var ref = firebase.database().ref("/users/" + currentUser + "/" + "transactions");
         var comp = this
         ref.on("value", function(allData) {
+           // is this needed for new user? allData will always be null for new user
            if (allData.val() != null) {
                var entireData = allData.val()
                if (entireData.length > 5){
@@ -189,6 +221,7 @@ export default React.createClass({
                }
                comp.setState({data})
                comp.setState({entireData})
+            // above IF statement maybe not needed for new user
             } else {
               var entireData = []
               var data = []
@@ -196,14 +229,22 @@ export default React.createClass({
               comp.setState({entireData})
             }
          })
-         this.setState(this.state.data)
-         this.setState(this.state.entireData)
-      })
-      this.setState(this.state.data)
-      this.setState(this.state.entireData)
+        //  var ref = firebase.database().ref("/users/" + currentUser + "/" + "monthly");
+        //  var comp = this
+        //  ref.on("value", function(allData) {
+        //   //   var entireMonthlyData = []
+        //   var entireMonthlyData = []
+        //   comp.setState({entireMonthlyData})
+        //   })
+     this.setState(this.state.data)
+     this.setState(this.state.entireMonthlyData)
+    })
+   this.setState(this.state.data)
+   this.setState(this.state.entireData)
   },
   signUserOut() {
     firebase.auth().signOut()
+    this.state.monthlyFlag = undefined
     location.reload()
   },
   onClickSubmit(e){
@@ -279,7 +320,7 @@ export default React.createClass({
     var newAmount = prompt("Enter new amount or 000 to delete")
     // FIXME: numeric testing here for input
     if (newAmount != "000"){
-      this.state.data[transSelected].amount = newAmount
+      if (newAmount != null && newAmount != "") {this.state.data[transSelected].amount = newAmount}
     } else {
       this.state.data.splice(transSelected,1)
       var dataLength = this.state.entireData.length
@@ -301,11 +342,60 @@ export default React.createClass({
     this.refs.ShowAll.className="visibleButton"
     this.refs.Show5.className="hiddenButton"
   },
+  onClickMonthlyBillPlan(e){
+    var transSelected = e.target.getAttribute('value')
+    var newAmount = prompt("Enter new amount or 000 to delete")
+    // FIXME: numeric testing here for input
+    if (newAmount != "000"){
+      if (newAmount != null && newAmount != "") {this.state.entireMonthlyData[transSelected].amount = newAmount}
+    } else {
+      this.state.entireMonthlyData.splice(transSelected,1)
+      var dataLength = this.state.entireMonthlyData.length
+      if (dataLength>5){
+        var dataPos = dataLength - 5 + eval(transSelected)
+        this.state.entireMonthlyData.splice(dataPos,1)
+      } else {
+        this.state.entireMonthlyData.splice(transSelected,1)
+      }
+    //  this.setState(this.state.data)
+      this.setState(this.state.entireMonthlyData)
+    }
+    var updates = {}
+    var tempUser = firebase.auth().currentUser.email.split("@")
+    var currentUser = tempUser[0]
+    updates["/users/" + currentUser + "/" + "monthly"] = this.state.entireMonthlyData
+    firebase.database().ref().update(updates)
+    this.setState(this.state.entireMonthlyData)
+  },
+  onClickMonthlyBillActual(e){
+    var transSelected = e.target.getAttribute('value')
+    var newAmount = prompt("Enter new amount or 000 to delete")
+    // FIXME: numeric testing here for input
+    if (newAmount != "000"){
+      if (newDesc != null && newDesc != "") {this.state.entireMonthlyData[transSelected].amount = newAmount}
+    } else {
+      this.state.entireMonthlyData.splice(transSelected,1)
+      var dataLength = this.state.entireMonthlyData.length
+      if (dataLength>5){
+        var dataPos = dataLength - 5 + eval(transSelected)
+        this.state.entireMonthlyData.splice(dataPos,1)
+      } else {
+        this.state.entireMonthlyData.splice(transSelected,1)
+      }
+    //  this.setState(this.state.data)
+      this.setState(this.state.entireMonthlyData)
+    }
+    var updates = {}
+    var tempUser = firebase.auth().currentUser.email.split("@")
+    var currentUser = tempUser[0]
+    updates["/users/" + currentUser + "/" + "monthly"] = this.state.entireMonthlyData
+    firebase.database().ref().update(updates)
+    this.setState(this.state.entireMonthlyData)
+  },
   onClickTransDescription(e){
     var transSelected = e.target.getAttribute('value')
     var newDesc = prompt("Enter new description")
-    console.log(newDesc);
-    if (newDesc != null) {this.state.data[transSelected].text = newDesc}
+    if (newDesc != null && newDesc != "") {this.state.data[transSelected].text = newDesc}
     var updates = {}
     var tempUser = firebase.auth().currentUser.email.split("@")
     var currentUser = tempUser[0]
@@ -315,16 +405,78 @@ export default React.createClass({
     this.refs.ShowAll.className="visibleButton"
     this.refs.Show5.className="hiddenButton"
   },
+  onClickMonthlyDescription(e){
+    var transSelected = e.target.getAttribute('value')
+    if (transSelected != "0" && newDesc != ""){
+        var newDesc = prompt("Enter new description")
+        // may not need this in condition since blocked above:  && transSelected != 0
+        if (newDesc != null && transSelected != 0) {this.state.entireMonthlyData[transSelected].text = newDesc}
+          var updates = {}
+          var tempUser = firebase.auth().currentUser.email.split("@")
+          var currentUser = tempUser[0]
+          updates["/users/" + currentUser + "/" + "monthly"] = this.state.entireMonthlyData
+          firebase.database().ref().update(updates)
+          this.setState(this.state.entireMonthlyData)
+     }
+  },
+  onClickMonthlyBudgetButton(){
+    var monthlyFlag = true
+    this.setState({monthlyFlag})
+    this.refs.amountInput.value = ""
+    this.refs.descriptionInput.value  = ""
+  },
+  onClickDailyTransButton(){
+    var monthlyFlag = undefined
+    this.setState({monthlyFlag})
+    this.refs.enterMonthlyAmount.value = ""
+    this.refs.enterMonthlyBill.value  = ""
+  },
+  //*************************************Adding Monthly Items
+  onClickAddMonthlyBill(e){
+    e.preventDefault()
+    if (this.refs.enterMonthlyAmount.value != "" || this.refs.enterMonthlyBill.value != ""){
+    var currentDate = Date().substring(4,15)
+    var monthlyBillInputValue = this.refs.enterMonthlyBill.value
+    // FIXME what can use instead of eval? need numeric testing here
+    var monthlyAmountInputValue = this.refs.enterMonthlyAmount.value
+    this.refs.enterMonthlyBill.value = ""
+    this.refs.enterMonthlyAmount.value = ""
+    var userId = this.state.user
+    var updates = {};
+    var tempUser = firebase.auth().currentUser.email.split("@")
+    var currentUser = tempUser[0]
+    var newData = ""
+      newData=
+          {
+            amount: monthlyAmountInputValue,
+              date: currentDate,
+              text: monthlyBillInputValue,
+          }
+        this.state.entireMonthlyData = this.state.entireMonthlyData.concat(newData)
+      // rebuilding data last 5 since a new one was added
+      var monthlyData = this.state.entireMonthlyData
+      var tempUser = firebase.auth().currentUser.email.split("@")
+      var currentUser = tempUser[0]
+      updates["/users/" + currentUser + "/" + "monthly"] = this.state.entireMonthlyData
+      firebase.database().ref().update(updates)
+      this.setState(this.state.entireMonthlyData)
+    }
+    console.log("entireMonthlyData in function=",this.state.entireMonthlyData);
+  },
   onClickHelpButton()
   {
     alert("This will be info button how to use app. When we are unhurried and wise, we perceive that only great and worthy things have any permanent and absolute existence, that petty fears and petty pleasures are but the shadow of the reality. -Henry David Thoreau")
   },
   render()
   {
-    if (firebase.auth().currentUser != null){
+    console.log("monthly=",this.state.monthlyFlag);
+    console.log("auth=",firebase.auth().currentUser);
+    console.log("entireMonthlyData at render=",this.state.entireMonthlyData);
+    // have to set this.state.monthlyFlag when loggin out
+    if (firebase.auth().currentUser != null && this.state.monthlyFlag === undefined){
       return (
         <main>
-      <section className="pageSection">
+      <section className="dailyTransPageSection">
         <article className="transactionTitleArea">
           <h1 className="transactionsTitle">DollarTrak - Daily Transactions</h1>
           <h2 className="userName"
@@ -353,7 +505,7 @@ export default React.createClass({
         <input  className="amountItem"
                 placeholder=" $ amount"
                 ref="amountInput"
-                type="text"/>
+                type="number"/>
         <input  className="descriptionItem"
                 placeholder="  description of purchase"
                 ref="descriptionInput"
@@ -366,6 +518,7 @@ export default React.createClass({
         <button className="visibleButton"
                 ref="ShowAll"
                 onClick={this.onClickShowAll}>    Show All Transactions    </button>
+              <button className="monthlyBudgetButton" onClick={this.onClickMonthlyBudgetButton}>Go to Monthly Budget</button>
         <button className="signOut"
                 onClick={this.signUserOut}>Log Out</button>
       </section>
@@ -384,10 +537,10 @@ export default React.createClass({
           <article className="loginButtonsSection">
             <h2 className="loginLabel">     </h2>
             <input className="userNameInput"
-                   placeholder="  email address"
+                   placeholder="             email address"
                    ref="userInput"></input>
             <input className="passwordInput"
-                   placeholder="  password"
+                   placeholder="               password"
                    ref="passwordInput"
                    type="password"></input>
             <button className="newUser" onClick={this.newUserSignUp}>NEW USER</button>
@@ -400,5 +553,61 @@ export default React.createClass({
       </main>
      )
    }
+   if (firebase.auth().currentUser != null && this.state.monthlyFlag === true)
+    return (
+      <main className="monthlyPageSection">
+        <section>
+          <article className="monthlyTitleArea">
+            <h1 className="monthlyTitle">Monthly Budget</h1>
+            <h2 className="userName"
+                ref="userName">User:  {firebase.auth().currentUser.email}</h2>
+          </article>
+          <ul id="list" className="monthyBillsRecordsArea">
+           {
+               this.state.entireMonthlyData.map((record, i)=>{
+                 if (record.date != undefined
+                     && record.text != "")
+                 {
+                   return <article className="eachRecordContainer" key={i}>
+                              <p className="categoryBill">{record.date}</p>
+                              <a href="#">
+                                <p className="monthlyBillDesc" value={i}
+                                    onClick={this.onClickMonthlyDescription}>{record.text}</p>
+                              </a>
+                              <a href="#">
+                                <p className="monthlyBillPlan" value={i}                            onClick={this.onClickMonthlyBillPlan}>${record.amount}</p>
+                              </a>
+                              <a href="#">
+                                <p className="monthlyBillActual" value={i}                            onClick={this.onClickMonthlyBillActual}>${record.amount}</p>
+                              </a>
+                          </article>
+               }
+             })
+           }
+         </ul>
+         <article className="monthlyInputsArea">
+          <input  className="enterMonthlyBill"
+                  placeholder="description"
+                  ref="enterMonthlyBill"
+                  type="text"/>
+          <input className="enterMonthlyPlannedAmount"
+                  placeholder="amount"
+                  ref="enterMonthlyAmount"
+                  type="number"/>
+          <input  className="enterMonthlyAmount"
+                  placeholder="amount"
+                  ref="enterMonthlyAmount"
+                  type="number"/>
+        </article>
+        <article className="monthlyOptionsArea">
+            <button className="createMonthlyBill"
+                  type="submit"
+                  onClick={this.onClickAddMonthlyBill}>Add Item</button>
+            <button className="dailyTransButton" onClick={this.onClickDailyTransButton}>Go to Daily Transactions</button>
+            <button className="monthlySignOut" onClick={this.signUserOut}>Log Out</button>
+        </article>
+        </section>
+      </main>
+    )
   }
 })
