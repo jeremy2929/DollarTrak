@@ -1,7 +1,7 @@
 /*
   in this script I am using a loop to grab last 5 objects of my data arrray because
   I when I use splice, it will chop BOTH data arrays!
-  ( i use two arrays- one is for mapping to render, either chopped down to 5 or show all, and a second array to retain all objects to restore the first one when needed)
+  ( I use two arrays- one is for mapping to render, either chopped down to 5 or show all, and a second array to retain all objects to restore the first one when needed)
 */
 import React from 'react'
 import ReactFire from 'reactfire'
@@ -34,7 +34,6 @@ export default React.createClass({
                     {
                     }
                   ]
-
     }
   },
   //********************************* Exisiting user sign in ***********************************************
@@ -232,13 +231,6 @@ export default React.createClass({
               comp.setState({entireData})
             }
          })
-        //  var ref = firebase.database().ref("/users/" + currentUser + "/" + "monthly");
-        //  var comp = this
-        //  ref.on("value", function(allData) {
-        //   //   var entireMonthlyData = []
-        //   var entireMonthlyData = []
-        //   comp.setState({entireMonthlyData})
-        //   })
      this.setState(this.state.data)
      this.setState(this.state.entireMonthlyData)
     })
@@ -396,7 +388,7 @@ export default React.createClass({
     var newAmount = prompt("Enter new amount or 000 to delete")
     // FIXME: numeric testing here for input
     if (newAmount != "000"){
-      if (newDesc != null && newDesc != "") {this.state.entireMonthlyData[transSelected].amount = newAmount}
+      if (newAmount != null && newAmount != "") {this.state.entireMonthlyData[transSelected].amount = newAmount}
     } else {
       this.state.entireMonthlyData.splice(transSelected,1)
       // is this needed for Monthly Bills, or just extra from Daily Trans copy?
@@ -449,7 +441,7 @@ export default React.createClass({
     this.refs.amountInput.value = ""
     this.refs.descriptionInput.value  = ""
   },
-  //*************************************** Navigation button to Monthly Budget page ********************
+  //*************************************** Navigation button to Daily Transactions page ********************
   onClickDailyTransButton(){
     var monthlyFlag = undefined
     this.setState({monthlyFlag})
@@ -459,10 +451,11 @@ export default React.createClass({
   //************************************ Adding Monthly Budget items and amounts *************************
   onClickAddMonthlyBill(e){
     e.preventDefault()
-    if (this.refs.enterMonthlyAmount.value != "" || this.refs.enterMonthlyBill.value != ""){
+    if (this.refs.enterMonthlyPlan.value != "" || this.refs.enterMonthlyBill.value != ""){
     var currentDate = Date().substring(4,15)
     var monthlyPlanInputValue = this.refs.enterMonthlyPlan.value
     var monthlyBillInputValue = this.refs.enterMonthlyBill.value
+    var monthlyType = monthlyBillInputValue.substring(0,3)
     // FIXME what can use instead of eval? need numeric testing here
     var monthlyAmountInputValue = this.refs.enterMonthlyAmount.value
     this.refs.enterMonthlyBill.value = ""
@@ -477,7 +470,7 @@ export default React.createClass({
           {
             amount: monthlyAmountInputValue,
               plan: monthlyPlanInputValue,
-              date: currentDate,
+              type: monthlyType,
               text: monthlyBillInputValue,
           }
         this.state.entireMonthlyData = this.state.entireMonthlyData.concat(newData)
@@ -489,6 +482,18 @@ export default React.createClass({
       this.setState(this.state.entireMonthlyData)
     }
   },
+  //********************** Show Daily Transactions Page on Monthly Page ********************************
+  onShowDailyTransPage(){
+    this.refs.monthlyDailyTransBox.className="monthlyDailyTransBox"
+    this.refs.showDailyTransPage.className="showDailyTransPage_hidden"
+    this.refs.hideDailyTransPage.className="hideDailyTransPage"
+  },
+  //********************** Hide Daily Transactions Page on Monthly Page ********************************
+  onHideDailyTransPage(){
+    this.refs.monthlyDailyTransBox.className="monthlyDailyTransBox_hidden"
+    this.refs.hideDailyTransPage.className="hideDailyTransPage_hidden"
+    this.refs.showDailyTransPage.className="showDailyTransPage"
+  },
   //*********************************** Help Button Popup **********************************************
   onClickHelpButton()
   {
@@ -497,6 +502,11 @@ export default React.createClass({
   //*********************************** Rendering the HTML elements *************************************
   render()
   {
+
+    //FIXME- Should I ask user to enter an 'Actual' amount on Monthly Budget Items?
+    //        Or just Planned amount only? They can click to enter Actual later
+    //
+    //
     // console.log("monthly=",this.state.monthlyFlag);
     // console.log("auth=",firebase.auth().currentUser);
     // console.log("entireMonthlyData at render=",this.state.entireMonthlyData);
@@ -600,11 +610,11 @@ export default React.createClass({
           <ul id="list" className="monthyBillsRecordsArea">
            {
                this.state.entireMonthlyData.map((record, i)=>{
-                 if (record.date != undefined
+                 if (record.type != undefined
                      && record.text != "")
                  {
                    return <article className="eachRecordContainer" key={i}>
-                              <p className="categoryBill">{record.date}</p>
+                              <p className="monthlyType">{record.type}</p>
                               <a href="#">
                                 <p className="monthlyBillDesc" value={i}
                                     onClick={this.onClickMonthlyDescription}>{record.text}</p>
@@ -635,12 +645,64 @@ export default React.createClass({
                   type="number"/>
         </article>
         <article className="monthlyOptionsArea">
-            <button className="createMonthlyBill"
+            <button className="monthlyAddItemButton"
                   type="submit"
                   onClick={this.onClickAddMonthlyBill}>Add Item</button>
+                <button className="showDailyTransPage" ref="showDailyTransPage"
+                  type="submit"
+                  onClick={this.onShowDailyTransPage}>Show Daily Transactions</button>
+                <button className="hideDailyTransPage_hidden" ref="hideDailyTransPage"
+                  type="submit"
+                  onClick={this.onHideDailyTransPage}>Hide Daily Transactions</button>
             <button className="dailyTransButton" onClick={this.onClickDailyTransButton}>Go to Daily Transactions</button>
             <button className="monthlySignOut" onClick={this.signUserOut}>Log Out</button>
         </article>
+        </section>
+        <section className="monthlyDailyTransBox_hidden" ref="monthlyDailyTransBox">
+          <article className="transactionTitleArea">
+            <h1 className="transactionsTitle">DollarTrak - Daily Transactions</h1>
+            <h2 className="userTransName"
+                ref="userName">User:  {firebase.auth().currentUser.email}</h2>
+          </article>
+          <ul id="list" className="newList">
+           {
+               this.state.data.map((record, i)=>{
+                 if (record.date != undefined
+                     && record.text != "")
+                 {
+                   return <article className="eachRecordContainer" key={i}>
+                            <p className="transDate">{record.date}</p>
+                            <a href="#">
+                              <p className="transAmount" value={i}                            onClick={this.onClickTransAmount}>${record.amount}</p>
+                            </a>
+                            <a href="#">
+                              <p className="transDesc" value={i}
+                                onClick={this.onClickTransDescription}>{record.text}</p>
+                            </a>
+                          </article>
+               }
+             })
+           }
+         </ul>
+          <input  className="amountItem"
+                  placeholder=" $ amount"
+                  ref="amountInput"
+                  type="number"/>
+          <input  className="descriptionItem"
+                  placeholder="  description of purchase"
+                  ref="descriptionInput"
+                  type="text"/>
+          <button className="createTrans"
+                  type="submit"
+                  onClick={this.onClickSubmit}>Submit</button>
+          <button className="hiddenButton"
+                  ref="Show5" onClick={this.onClickShow5}>Show Last 5 Transactions Only</button>
+          <button className="visibleButton"
+                  ref="ShowAll"
+                  onClick={this.onClickShowAll}>    Show All Transactions    </button>
+                <button className="monthlyBudgetButton" onClick={this.onClickMonthlyBudgetButton}>Go to Monthly Budget</button>
+          <button className="signOut"
+                  onClick={this.signUserOut}>Log Out</button>
         </section>
       </main>
     )
@@ -648,6 +710,17 @@ export default React.createClass({
 })
 
 /*
+
+//  var ref = firebase.database().ref("/users/" + currentUser + "/" + "monthly");
+//  var comp = this
+//  ref.on("value", function(allData) {
+//   //   var entireMonthlyData = []
+//   var entireMonthlyData = []
+//   comp.setState({entireMonthlyData})
+//   })
+
+
+
 <form className="monthlyIncomeForm" onSubmit={this.onMonthlyIncomeInput}>
   <input  className="monthlyIncomeInput" ref="monthlyInput">{this.state.monthlyIncome}</input>
 </form>
