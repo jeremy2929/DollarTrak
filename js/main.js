@@ -283,7 +283,7 @@ export default React.createClass({
       var tempUser = firebase.auth().currentUser.email.split("@")
       var currentUser = tempUser[0]
       updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData
-      this.refs.ShowAll.className="visibleButton"
+      this.refs.ShowAll.className="showLast5Trans"
       this.refs.Show5.className="hiddenButton"
       firebase.database().ref().update(updates)
     }
@@ -291,14 +291,14 @@ export default React.createClass({
   },
   //***************************************** Show all Daily Transactions **********************************
   onClickShowAll(){
-    this.refs.Show5.className="visibleButton"
+    this.refs.Show5.className="showLast5Trans"
     this.refs.ShowAll.className="hiddenButton"
     this.state.data = this.state.entireData
     this.setState(this.state.data)
   },
   //***************************************** Show Only 5 Daily Transactions *********************************
   onClickShow5(){
-    this.refs.ShowAll.className="visibleButton"
+    this.refs.ShowAll.className="showLast5Trans"
     this.refs.Show5.className="hiddenButton"
     var dataLength = this.state.entireData.length
     if(dataLength > 5){
@@ -339,7 +339,7 @@ export default React.createClass({
     updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData
     firebase.database().ref().update(updates)
     this.setState(this.state.data)
-    this.refs.ShowAll.className="visibleButton"
+    this.refs.ShowAll.className="showLast5Trans"
     this.refs.Show5.className="hiddenButton"
   },
   //*********************************** Modifying a Daily Transaction description **************************
@@ -353,7 +353,7 @@ export default React.createClass({
     updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData
     firebase.database().ref().update(updates)
     this.setState(this.state.data)
-    this.refs.ShowAll.className="visibleButton"
+    this.refs.ShowAll.className="showLast5Trans"
     this.refs.Show5.className="hiddenButton"
   },
   //**************************** Modifying the planned expense amount of a Monthly Bill *************************
@@ -484,20 +484,22 @@ export default React.createClass({
   },
   //********************** Show Daily Transactions Page on Monthly Page ********************************
   onShowDailyTransPage(){
-    this.refs.monthlyDailyTransBox.className="monthlyDailyTransBox"
-    this.refs.showDailyTransPage.className="showDailyTransPage_hidden"
-    this.refs.hideDailyTransPage.className="hideDailyTransPage"
+    this.refs.monthlyDailyTransBox.className = "monthlyDailyTransBox"
+    this.refs.showDailyTransPage.className = "showDailyTransPage_hidden"
+    this.refs.hideDailyTransPage.className = "hideDailyTransPage"
+    this.refs.monthlyBox.className = "monthlyBoxLeft"
   },
   //********************** Hide Daily Transactions Page on Monthly Page ********************************
   onHideDailyTransPage(){
-    this.refs.monthlyDailyTransBox.className="monthlyDailyTransBox_hidden"
-    this.refs.hideDailyTransPage.className="hideDailyTransPage_hidden"
-    this.refs.showDailyTransPage.className="showDailyTransPage"
+    this.refs.monthlyDailyTransBox.className = "monthlyDailyTransBox_hidden"
+    this.refs.hideDailyTransPage.className = "hideDailyTransPage_hidden"
+    this.refs.showDailyTransPage.className = "showDailyTransPage"
+    this.refs.monthlyBox.className = "monthlyBoxCenter"
   },
   //*********************************** Help Button Popup **********************************************
   onClickHelpButton()
   {
-    alert("This will be info button how to use app. When we are unhurried and wise, we perceive that only great and worthy things have any permanent and absolute existence, that petty fears and petty pleasures are but the shadow of the reality. -Henry David Thoreau")
+    alert("This will be info button how to use app. When we are unhurried and wise, we perceive that only great and worthy things have any permanent and absolute existence; that petty fears and petty pleasures are but the shadow of the reality. -Henry David Thoreau")
   },
   //*********************************** Rendering the HTML elements *************************************
   render()
@@ -516,7 +518,7 @@ export default React.createClass({
         <main>
       <section className="dailyTransPageSection">
         <article className="transactionTitleArea">
-          <h1 className="transactionsTitle">DollarTrak - Daily Transactions</h1>
+          <h1 className="transactionsTitle">Daily Transactions</h1>
           <h2 className="userTransName"
               ref="userName">User:  {firebase.auth().currentUser.email}</h2>
         </article>
@@ -548,17 +550,20 @@ export default React.createClass({
                 placeholder="  description of purchase"
                 ref="descriptionInput"
                 type="text"/>
-        <button className="createTrans"
-                type="submit"
-                onClick={this.onClickSubmit}>Submit</button>
-        <button className="hiddenButton"
-                ref="Show5" onClick={this.onClickShow5}>Show Last 5 Transactions Only</button>
-        <button className="visibleButton"
-                ref="ShowAll"
-                onClick={this.onClickShowAll}>    Show All Transactions    </button>
-              <button className="monthlyBudgetButton" onClick={this.onClickMonthlyBudgetButton}>Go to Monthly Budget</button>
-        <button className="signOut"
-                onClick={this.signUserOut}>Log Out</button>
+
+        <article className="transOptionsArea">
+            <button className="transSubmit"
+                    type="submit"
+                    onClick={this.onClickSubmit}>Submit</button>
+            <button className="hiddenButton"
+                    ref="Show5" onClick={this.onClickShow5}>Show Last 5 Transactions</button>
+                  <button className="showLast5Trans"
+                    ref="ShowAll"
+                    onClick={this.onClickShowAll}>    Show All Transactions    </button>
+            <button className="monthlyBudgetButton" onClick={this.onClickMonthlyBudgetButton}>Go to Monthly Budget</button>
+            <button className="signOut"
+                    onClick={this.signUserOut}>Log Out</button>
+        </article>
       </section>
       </main>
     )
@@ -582,7 +587,7 @@ export default React.createClass({
                    ref="passwordInput"
                    type="password"></input>
             <button className="newUser" onClick={this.newUserSignUp}>NEW USER</button>
-            <button className="submitUser" onClick={this.signUserIn}>LOGIN</button>
+            <button className="loginUser" onClick={this.signUserIn}>LOGIN</button>
             <div className="helpContainer">
               <button className="helpButton" onClick={this.onClickHelpButton}>HELP</button>
             </div>
@@ -594,7 +599,7 @@ export default React.createClass({
    if (firebase.auth().currentUser != null && this.state.monthlyFlag === true)
     return (
       <main className="monthlyPageSection">
-        <section className="monthlyBox">
+        <section className="monthlyBoxCenter" ref="monthlyBox">
           <article className="monthlyTitleArea">
             <h1 className="monthlyTitle">Monthly Budget</h1>
             <h2 className="userMonthlyName"
@@ -660,7 +665,7 @@ export default React.createClass({
         </section>
         <section className="monthlyDailyTransBox_hidden" ref="monthlyDailyTransBox">
           <article className="transactionTitleArea">
-            <h1 className="transactionsTitle">DollarTrak - Daily Transactions</h1>
+            <h1 className="transactionsTitle">Daily Transactions</h1>
             <h2 className="userTransName"
                 ref="userName">User:  {firebase.auth().currentUser.email}</h2>
           </article>
@@ -692,12 +697,12 @@ export default React.createClass({
                   placeholder="  description of purchase"
                   ref="descriptionInput"
                   type="text"/>
-          <button className="createTrans"
+                <button className="transSubmit"
                   type="submit"
                   onClick={this.onClickSubmit}>Submit</button>
           <button className="hiddenButton"
-                  ref="Show5" onClick={this.onClickShow5}>Show Last 5 Transactions Only</button>
-          <button className="visibleButton"
+                  ref="Show5" onClick={this.onClickShow5}>Show Last 5 Transactions</button>
+                <button className="showLast5Trans"
                   ref="ShowAll"
                   onClick={this.onClickShowAll}>    Show All Transactions    </button>
                 <button className="monthlyBudgetButton" onClick={this.onClickMonthlyBudgetButton}>Go to Monthly Budget</button>
