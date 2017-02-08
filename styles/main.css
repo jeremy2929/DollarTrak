@@ -5,6 +5,8 @@
 .userInfo{
   border: black solid 2px;
   height: 30px;
+  margin-left: auto;
+  margin-right: auto;
   width: 100px;
 }
 
@@ -122,23 +124,6 @@
   width: 150px;
 }
 
-.userName{
-  background-color: lightcyan;
-  border: black solid 2px;
-  display: inline-block;
-  font-size: 28px;
-  height: 35px;
-  margin: 3px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-bottom:  10px;
-  padding-left: 10px;
-  padding-right: 10px;
-  text-align: center;
-  vertical-align: middle;
-  width: auto;
-  white-space: pre;
-}
 
 .signOut{
   background-color: lightcyan;
@@ -166,7 +151,7 @@
   font-size: 30px;
   height: 40px;
   line-height: 40px;
-  margin-left: 2%;
+  margin-left: 12%;
   margin-top: 5px;
   padding-top: 0px;
   text-align: center;
@@ -183,52 +168,12 @@
   font-size: 30px;
   height: 40px;
   line-height: 40px;
-  margin-left: 2%;
+  margin-left: 12%;
   margin-top: 5px;
   padding-top: 0px;
   text-align: center;
   width: 300px;
 }
-
-.monthlyIncomeArea{
-  display: inline-flex;
-  height: 35px;
-  margin: 0;
-  width: 250px;
-}
-
-.monthlyIncomeLink{
-  display: inline-block;
-  margin: 0;
-}
-
-.monthlyIncomeLabel{
-    background-color: palegreen;
-    border: solid 2px;
-    display: inline;
-    font-size: 18px;
-    height: 30px;
-    margin: 0;
-    margin-top: 0px;
-    padding: 4px;
-    padding-left: 8px;
-    width: 140px;
-}
-
-.monthlyIncomeInput{
-    background-color: white;
-    border: black solid 2px;
-    color: black;
-    display: inline-table;
-    font-size: 18px;
-    height: 30px;
-    margin: 0px;
-    margin-left: 2px;
-    margin-top: 0px;
-    padding-top: 4px;
-    text-align: center;
-    width: 102px;
-  }
 
 
 .monthlyOptionsArea{
@@ -273,6 +218,22 @@
   height: 100px;
   margin-left: 17%;
   width: 701px;
+}
+
+.userTransName{
+  background-color: lightcyan;
+  border: black solid 2px;
+  display: inline-block;
+  font-size: 18px;
+  height: 25px;
+  margin: 0;
+  padding-bottom:  10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  text-align: center;
+  vertical-align: middle;
+  width: 700px;
+  white-space: pre;
 }
 
 .TransIndex{
@@ -357,7 +318,7 @@
   border: solid 2px;
   border-radius: 6px;
   display: inline-block;
-  font-size: 20px;
+  font-size: 15px;
   height: 40px;
   margin-left: 20%;
   margin-bottom: 10px;
@@ -368,7 +329,7 @@
   border: solid 2px;
   border-radius: 6px;
   display: inline-block;
-  font-size: 20px;
+  font-size: 15px;
   height: 40px;
   margin-bottom: 10px;
   width: 538px;
@@ -388,8 +349,18 @@
   width: 700px;
 }
 
+.monthlyBox{
+  /*border: solid 2px;*/
+  display: inline-block;
+  height: 560px;
+  margin-left: 30%;
+  width: 400px;
+}
+
 .monthlyTitleArea{
   height: 100px;
+  margin-left: 5%;
+  margin-right: 5%;
   width: 360px;
 }
 
@@ -408,12 +379,77 @@
   width: 350px;
 }
 
+.userMonthlyName{
+  background-color: lightcyan;
+  border: black solid 2px;
+  display: inline-block;
+  font-size: 18px;
+  height: 25px;
+  margin: 0;
+  padding-bottom:  10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  text-align: center;
+  vertical-align: middle;
+  width: 350px;
+  white-space: pre;
+}
+
+.monthlyIncomeArea{
+  display: inline-flex;
+  height: 35px;
+  margin: 0;
+  margin-left: 20%;
+  width: 250px;
+}
+
+.monthlyIncomeLink{
+  display: inline-block;
+  margin: 0;
+  text-decoration: none;
+}
+
+.monthlyIncomeLabel{
+    background-color: palegreen;
+    border: solid 2px;
+    display: inline;
+    font-size: 18px;
+    height: 30px;
+    margin: 0;
+    margin-top: 0px;
+    padding: 4px;
+    padding-left: 8px;
+    width: 140px;
+}
+
+.monthlyIncomeInput{
+    background-color: white;
+    border: black solid 2px;
+    color: black;
+    font-size: 18px;
+    height: 30px;
+    margin: 0px;
+    margin-top: 0px;
+    padding-top: 4px;
+    text-align: center;
+    width: 102px;
+  }
+
 .monthyBillsRecordsArea{
   height: auto;
   padding-left: inherit;
+  margin: 0;
   margin-left: 0;
   width: 500px;
+}
 
+.monthlyColumnTitles{
+  border: solid 2px;
+  font-size: 12px;
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  width: 390px;
 }
 
 .monthlyInputsArea{
@@ -424,23 +460,23 @@
 
 .enterMonthlyBill{
   border: solid 2px;
-  font-size: 15px;
+  font-size: 18px;
   height: 40px;
-  width: 200px;
+  width: 197px;
 }
 
 .enterMonthlyPlannedAmount{
   border: solid 2px;
-  font-size: 15px;
+  font-size: 18px;
   height: 40px;
-  width: 100px;
+  width: 97px;
 }
 
 .enterMonthlyAmount{
   border: solid 2px;
-  font-size: 15px;
+  font-size: 18px;
   height: 40px;
-  width: 100px;
+  width: 97px;
 }
 
 .createMonthlyBill{
@@ -450,7 +486,7 @@
   display: inline-block;
   font-size: 18px;
   height: 40px;
-  margin-left: 2%;
+  margin-left: 12%;
   width: 300px;
 }
 
