@@ -8,6 +8,13 @@ import ReactFire from 'reactfire'
 var firebase = require('firebase');
 firebase.initializeApp(config);
 
+var monthlyPlannedTotalValue = 0
+var monthlyActualTotalValue = 0
+var mptClass = "monthlyPlannedTotal"
+var matClass = "monthlyActualTotal"
+var mptAlertClass = "monthlyPlannedTotalAlert_hidden"
+var matAlertClass = "monthlyActualTotalAlert_hidden"
+
 export default React.createClass({
   //****************************************************************************************************
   getDefaultProps() {
@@ -205,32 +212,32 @@ export default React.createClass({
 // FIXME Do I need to read in ANY data for a new user? Duh.
 // ************************** still need some code for monthly data for new user below this transactions section (cont)
 // ************************** if ever give user option to go to directly to Monthly page from login
-        var ref = firebase.database().ref("/users/" + currentUser + "/" + "transactions");
-        var comp = this
-        ref.on("value", function(allData) {
-           // is this needed for new user? allData will always be null for new user
-           if (allData.val() != null) {
-               var entireData = allData.val()
-               if (entireData.length > 5){
-                   var dataLength = entireData.length
-                   var dataStart = dataLength-5
-                   var data=[]
-                   var j = 0
-                   for (var i = dataStart; i<dataLength; i++){
-                     data[j]=entireData[i]
-                     j++
-                   }
-               }
-               comp.setState({data})
-               comp.setState({entireData})
-            // above IF statement maybe not needed for new user
-            } else {
-              var entireData = []
-              var data = []
-              comp.setState({data})
-              comp.setState({entireData})
-            }
-         })
+        // var ref = firebase.database().ref("/users/" + currentUser + "/" + "transactions");
+        // var comp = this
+        // ref.on("value", function(allData) {
+        //    // is this needed for new user? allData will always be null for new user
+        //    if (allData.val() != null) {
+        //        var entireData = allData.val()
+        //        if (entireData.length > 5){
+        //            var dataLength = entireData.length
+        //            var dataStart = dataLength-5
+        //            var data=[]
+        //            var j = 0
+        //            for (var i = dataStart; i<dataLength; i++){
+        //              data[j]=entireData[i]
+        //              j++
+        //            }
+        //        }
+        //        comp.setState({data})
+        //        comp.setState({entireData})
+        //     // above IF statement maybe not needed for new user
+        //     } else {
+        //       var entireData = []
+        //       var data = []
+        //       comp.setState({data})
+        //       comp.setState({entireData})
+        //     }
+        //  })
      this.setState(this.state.data)
      this.setState(this.state.entireMonthlyData)
     })
@@ -318,8 +325,10 @@ export default React.createClass({
   onClickTransAmount(e){
     var transSelected = e.target.getAttribute('value')
     var newAmount = prompt("Enter new amount or 000 to delete")
-    // FIXME: numeric testing here for input
-    if (newAmount != "000"){
+    var deleteTest = newAmount
+    newAmount = parseInt(newAmount, 10)
+    if (isNaN(newAmount)){newAmount = 0}
+    if (deleteTest != "000"){
       if (newAmount != null && newAmount != "") {this.state.data[transSelected].amount = newAmount}
     } else {
       this.state.data.splice(transSelected,1)
@@ -360,8 +369,10 @@ export default React.createClass({
   onClickMonthlyBillPlan(e){
     var transSelected = e.target.getAttribute('value')
     var newAmount = prompt("Enter new amount or 000 to delete")
-    // FIXME: numeric testing here for input
-    if (newAmount != "000"){
+    var deleteTest = newAmount
+    newAmount = parseInt(newAmount, 10)
+    if (isNaN(newAmount)){newAmount = 0}
+    if (deleteTest != "000"){
       if (newAmount != null && newAmount != "") {this.state.entireMonthlyData[transSelected].plan = newAmount}
     } else {
       this.state.entireMonthlyData.splice(transSelected,1)
@@ -386,8 +397,10 @@ export default React.createClass({
   onClickMonthlyBillActual(e){
     var transSelected = e.target.getAttribute('value')
     var newAmount = prompt("Enter new amount or 000 to delete")
-    // FIXME: numeric testing here for input
-    if (newAmount != "000"){
+    var deleteTest = newAmount
+    newAmount = parseInt(newAmount, 10)
+    if (isNaN(newAmount)){newAmount = 0}
+    if (deleteTest != "000"){
       if (newAmount != null && newAmount != "") {this.state.entireMonthlyData[transSelected].amount = newAmount}
     } else {
       this.state.entireMonthlyData.splice(transSelected,1)
@@ -401,7 +414,7 @@ export default React.createClass({
       }
       this.setState(this.state.entireMonthlyData)
     }
-    // ********* above to comment maybe not needed
+    // ********* above code to comment maybe not needed
     var updates = {}
     var tempUser = firebase.auth().currentUser.email.split("@")
     var currentUser = tempUser[0]
@@ -426,7 +439,9 @@ export default React.createClass({
   },
   //************************************** Entering the Monthly Income Amount **************************
   onMonthlyIncomeInput(){
-    var monthlyIncome = "$" + prompt("Enter Monthly Income")
+    var monthlyIncome = prompt("Enter Monthly Income")
+    monthlyIncome = parseInt(monthlyIncome, 10)
+    if (isNaN(monthlyIncome)){monthlyIncome = 0}
     var tempUser = firebase.auth().currentUser.email.split("@")
     var currentUser = tempUser[0]
     var updates= {}
@@ -445,8 +460,9 @@ export default React.createClass({
   onClickDailyTransButton(){
     var monthlyFlag = undefined
     this.setState({monthlyFlag})
-    this.refs.enterMonthlyAmount.value = ""
     this.refs.enterMonthlyBill.value  = ""
+    this.refs.ShowAll.className="showLast5Trans"
+    this.refs.Show5.className="hiddenButton"
   },
   //************************************ Adding Monthly Budget items and amounts *************************
   onClickAddMonthlyBill(e){
@@ -454,12 +470,12 @@ export default React.createClass({
     if (this.refs.enterMonthlyPlan.value != "" || this.refs.enterMonthlyBill.value != ""){
     var currentDate = Date().substring(4,15)
     var monthlyPlanInputValue = this.refs.enterMonthlyPlan.value
+    monthlyPlanInputValue = parseInt(monthlyPlanInputValue, 10)
+    if (isNaN(monthlyPlanInputValue)){monthlyPlanInputValue = 0}
     var monthlyBillInputValue = this.refs.enterMonthlyBill.value
     var monthlyType = monthlyBillInputValue.substring(0,3)
     // FIXME what can use instead of eval? need numeric testing here
-    var monthlyAmountInputValue = this.refs.enterMonthlyAmount.value
     this.refs.enterMonthlyBill.value = ""
-    this.refs.enterMonthlyAmount.value = ""
     this.refs.enterMonthlyPlan.value = ""
     var userId = this.state.user
     var updates = {};
@@ -468,7 +484,7 @@ export default React.createClass({
     var newData = ""
       newData=
           {
-            amount: monthlyAmountInputValue,
+            amount: "",
               plan: monthlyPlanInputValue,
               type: monthlyType,
               text: monthlyBillInputValue,
@@ -496,6 +512,12 @@ export default React.createClass({
     this.refs.showDailyTransPage.className = "showDailyTransPage"
     this.refs.monthlyBox.className = "monthlyBoxCenter"
   },
+  monthlyTotalRed(){
+    this.refs.monthlyPlannedTotal.className="monthlyPlannedTotal_red"
+  },
+  monthlyTotalGreen(){
+    this.refs.monthlyPlannedTotal.className="monthlyPlannedTotal"
+  },
   //*********************************** Help Button Popup **********************************************
   onClickHelpButton()
   {
@@ -504,15 +526,12 @@ export default React.createClass({
   //*********************************** Rendering the HTML elements *************************************
   render()
   {
-
-    //FIXME- Should I ask user to enter an 'Actual' amount on Monthly Budget Items?
-    //        Or just Planned amount only? They can click to enter Actual later
-    //
-    //
     // console.log("monthly=",this.state.monthlyFlag);
     // console.log("auth=",firebase.auth().currentUser);
     // console.log("entireMonthlyData at render=",this.state.entireMonthlyData);
     // have to set this.state.monthlyFlag when loggin out
+    var monthlyPlannedTotalValue = 0
+    var monthlyActualTotalValue = 0
     if (firebase.auth().currentUser != null && this.state.monthlyFlag === undefined){
       return (
         <main>
@@ -608,16 +627,37 @@ export default React.createClass({
           <div className="monthlyIncomeArea">
             <p className="monthlyIncomeLabel">Monthly Income</p>
             <a className="monthlyIncomeLink" href="#">
-              <p className="monthlyIncomeInput" ref="monthlyInput" onClick={this.onMonthlyIncomeInput}>{this.state.monthlyIncome}</p>
+              <p className="monthlyIncomeInput" ref="monthlyInput" onClick={this.onMonthlyIncomeInput}>${this.state.monthlyIncome}</p>
             </a>
           </div>
           <h3 className="monthlyColumnTitles">      Type                         Description                                      Planned    Actual</h3>
           <ul id="list" className="monthyBillsRecordsArea">
            {
                this.state.entireMonthlyData.map((record, i)=>{
+console.log(this.state.monthlyIncome);
                  if (record.type != undefined
                      && record.text != "")
                  {
+                   record.plan = parseInt(record.plan, 10)
+                   record.amount = parseInt(record.amount, 10)
+                   if (isNaN(record.plan)){record.plan = 0}
+                   if (isNaN(record.amount)){record.amount= 0}
+                   monthlyPlannedTotalValue += record.plan
+                   monthlyActualTotalValue += record.amount
+                  if (monthlyPlannedTotalValue > this.state.monthlyIncome ){
+                    mptClass = "monthlyPlannedTotal_red"
+                    mptAlertClass = "monthlyPlannedTotalAlert"
+                  } else {
+                    mptClass = "monthlyPlannedTotal"
+                    mptAlertClass = "monthlyPlannedTotalAlert_hidden"
+                  }
+                  if (monthlyActualTotalValue > this.state.monthlyIncome ){
+                    matClass = "monthlyActualTotal_red"
+                    matAlertClass = "monthlyActualTotalAlert"
+                  } else {
+                    matClass = "monthlyActualTotal"
+                    matAlertClass = "monthlyActualTotalAlert_hidden"
+                  }
                    return <article className="eachRecordContainer" key={i}>
                               <p className="monthlyType">{record.type}</p>
                               <a href="#">
@@ -635,18 +675,23 @@ export default React.createClass({
              })
            }
          </ul>
+         <article className="monthlyTotalBox">
+           <p className="monthlyTotalLabel">  TOTALS</p>
+           <p className={mptClass}>${monthlyPlannedTotalValue}</p>
+           <p className={matClass}>${monthlyActualTotalValue}</p>
+         </article>
+         <div className="monthlyAlertBox">
+           <p className={mptAlertClass}>!!! Planned Total Expenses Exceeds Monthly Income !!!</p>
+           <p className={matAlertClass}>!!! Actual Total Expenses Exceeds Monthly Income !!!</p>
+         </div>
          <article className="monthlyInputsArea">
           <input  className="enterMonthlyBill"
-                  placeholder="description"
+                  placeholder="    description"
                   ref="enterMonthlyBill"
                   type="text"/>
           <input className="enterMonthlyPlannedAmount"
-                  placeholder="plan"
+                  placeholder="    plan"
                   ref="enterMonthlyPlan"
-                  type="number"/>
-          <input  className="enterMonthlyAmount"
-                  placeholder="amount"
-                  ref="enterMonthlyAmount"
                   type="number"/>
         </article>
         <article className="monthlyOptionsArea">
@@ -713,20 +758,3 @@ export default React.createClass({
     )
   }
 })
-
-/*
-
-//  var ref = firebase.database().ref("/users/" + currentUser + "/" + "monthly");
-//  var comp = this
-//  ref.on("value", function(allData) {
-//   //   var entireMonthlyData = []
-//   var entireMonthlyData = []
-//   comp.setState({entireMonthlyData})
-//   })
-
-
-
-<form className="monthlyIncomeForm" onSubmit={this.onMonthlyIncomeInput}>
-  <input  className="monthlyIncomeInput" ref="monthlyInput">{this.state.monthlyIncome}</input>
-</form>
-*/
