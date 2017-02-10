@@ -196,6 +196,21 @@ body{
   width: 70px;
 }
 
+.transDateSelected{
+  background-color: yellow;
+  border: solid black 1px;
+  display: inline-block;
+  font-size: 11px;
+  font-weight: bolder;
+  height: 19px;
+  margin: 0px;
+  margin-left: 6px;
+  overflow: auto;
+  padding-left: 5px;
+  padding-top: 2px;
+  width: 70px;
+}
+
 .transAmount{
   background: lavender;
   border: solid black 1px;
@@ -278,6 +293,22 @@ body{
 
 .monthlyBudgetButton{
     background-color: lightcyan;
+    border: solid 2px;
+    border-radius: 6px;
+    color: green;
+    display: inline-block;
+    font-size: 30px;
+    height: 40px;
+    line-height: 40px;
+    margin-left: 2%;
+    margin-top: 5px;
+    padding-top: 0px;
+    text-align: center;
+    width: 400px;
+}
+
+.importButton{
+    background-color: lightblue;
     border: solid 2px;
     border-radius: 6px;
     color: green;
@@ -469,7 +500,21 @@ body{
 }*/
 
 .monthlyType{
-  background: tan;
+  background-color: tan;
+  border: solid black 1px;
+  display: inline-block;
+  font-size: 15px;
+  font-weight: bolder;
+  height: 19px;
+  margin: 0px;
+  margin-left: 3px;
+  overflow: auto;
+  text-align: center;
+  width: 70px;
+}
+
+.monthlyTypeSelected{
+  background-color: yellow;
   border: solid black 1px;
   display: inline-block;
   font-size: 15px;

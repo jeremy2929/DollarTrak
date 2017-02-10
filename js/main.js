@@ -14,6 +14,8 @@ var mptClass = "monthlyPlannedTotal"
 var matClass = "monthlyActualTotal"
 var mptAlertClass = "monthlyPlannedTotalAlert_hidden"
 var matAlertClass = "monthlyActualTotalAlert_hidden"
+var monthlyBillSelectedIndex = -1
+var selectedTrans = []
 
 export default React.createClass({
   //****************************************************************************************************
@@ -323,11 +325,15 @@ export default React.createClass({
   },
   //****************************************** Modifying a Daily Transaction Amount ****************************
   onClickTransAmount(e){
+    /// fix bug here if Prompt is canceled, doesnt write over current valus with null
     var transSelected = e.target.getAttribute('value')
     var newAmount = prompt("Enter new amount or 000 to delete")
     var deleteTest = newAmount
     newAmount = parseInt(newAmount, 10)
-    if (isNaN(newAmount)){newAmount = 0}
+    if (isNaN(newAmount) || newAmount === 0){
+      newAmount = 0
+      this.state.data[transSelected].amount = newAmount
+    }
     if (deleteTest != "000"){
       if (newAmount != null && newAmount != "") {this.state.data[transSelected].amount = newAmount}
     } else {
@@ -371,7 +377,10 @@ export default React.createClass({
     var newAmount = prompt("Enter new amount or 000 to delete")
     var deleteTest = newAmount
     newAmount = parseInt(newAmount, 10)
-    if (isNaN(newAmount)){newAmount = 0}
+    if (isNaN(newAmount) || newAmount === 0){
+      newAmount = 0
+      this.state.entireMonthlyData[transSelected].plan = newAmount
+    }
     if (deleteTest != "000"){
       if (newAmount != null && newAmount != "") {this.state.entireMonthlyData[transSelected].plan = newAmount}
     } else {
@@ -399,7 +408,10 @@ export default React.createClass({
     var newAmount = prompt("Enter new amount or 000 to delete")
     var deleteTest = newAmount
     newAmount = parseInt(newAmount, 10)
-    if (isNaN(newAmount)){newAmount = 0}
+    if (isNaN(newAmount) || newAmount === 0){
+      newAmount = 0
+      this.state.entireMonthlyData[transSelected].amount = newAmount
+    }
     if (deleteTest != "000"){
       if (newAmount != null && newAmount != "") {this.state.entireMonthlyData[transSelected].amount = newAmount}
     } else {
@@ -464,7 +476,7 @@ export default React.createClass({
     this.refs.ShowAll.className="showLast5Trans"
     this.refs.Show5.className="hiddenButton"
   },
-  //************************************ Adding Monthly Budget items and amounts *************************
+  //****************************** Adding Monthly Budget items and planned amounts *************************
   onClickAddMonthlyBill(e){
     e.preventDefault()
     if (this.refs.enterMonthlyPlan.value != "" || this.refs.enterMonthlyBill.value != ""){
@@ -518,6 +530,81 @@ export default React.createClass({
   monthlyTotalGreen(){
     this.refs.monthlyPlannedTotal.className="monthlyPlannedTotal"
   },
+  onClickMonthlyTypeSelected(e){
+    if (monthlyBillSelectedIndex === -1){
+      monthlyBillSelectedIndex = e.target.getAttribute('value')
+      e.target.className = "monthlyTypeSelected"
+    } else {
+      monthlyBillSelectedIndex = -1
+      e.target.className = "monthlyType"
+    }
+    this.setState({monthlyBillSelectedIndex})
+  },
+  onClickSelectedTrans(e){
+    if (e.target.className === "transDateSelected"){
+      var transIndex = selectedTrans.indexOf(e.target.getAttribute('value'))
+      e.target.className = "transDate"
+      selectedTrans.splice(transIndex,1)
+    } else {
+      e.target.className = "transDateSelected"
+      selectedTrans = selectedTrans.concat(e.target.getAttribute('value'))
+    }
+  },
+  onClickImportButton(){
+    var selectedLength = selectedTrans.length
+    var numArray = []
+    var newnum = 0
+    for (var i = 0; i < selectedLength; i++) {
+      var newnum = parseInt(selectedTrans[i])
+      numArray.push(newnum)
+    }
+    var flag = true
+    while (flag) {
+      flag = false
+        for (var i = 0; i < selectedLength; i++) {
+          var first = parseInt(numArray[i],10)
+          var j = i + 1
+          var second = parseInt(numArray[j],10)
+          if (first > second) {
+            var temp = second
+            second = first
+            first = temp
+            flag = true
+          } else {
+          }
+          numArray[i] = first
+          if(isNaN(second)) {} else {numArray[j] = second}
+        }
+    }
+    var workArray = this.state.entireData
+    var totalAmountImported = 0
+    var newArray = []
+    var totalAmountImported = 0
+    var fullArrayLength = workArray.length
+    for (var i = 0; i < fullArrayLength; i++){
+      var flag = false
+      for (var j = 0; j < selectedLength; j++){
+        if (i != numArray[j]){}
+        else {
+          flag = true
+          totalAmountImported += parseInt(workArray[i].amount)
+        }
+      }
+      if (flag === false){newArray.push(workArray[i])}
+    }
+
+
+    document.getElementsByClassName('transDateSelected').class="transDate"
+
+
+    this.state.entireData = newArray
+    this.state.data = newArray
+    var currentBillAmount = parseInt(this.state.entireMonthlyData[this.state.monthlyBillSelectedIndex].amount)
+    currentBillAmount += parseInt(totalAmountImported)
+    this.state.entireMonthlyData[this.state.monthlyBillSelectedIndex].amount = currentBillAmount
+    this.setState(this.state.data)
+    this.setState(this.state.entireMonthlyData)
+  },
   //*********************************** Help Button Popup **********************************************
   onClickHelpButton()
   {
@@ -526,6 +613,7 @@ export default React.createClass({
   //*********************************** Rendering the HTML elements *************************************
   render()
   {
+
     // console.log("monthly=",this.state.monthlyFlag);
     // console.log("auth=",firebase.auth().currentUser);
     // console.log("entireMonthlyData at render=",this.state.entireMonthlyData);
@@ -634,7 +722,6 @@ export default React.createClass({
           <ul id="list" className="monthyBillsRecordsArea">
            {
                this.state.entireMonthlyData.map((record, i)=>{
-console.log(this.state.monthlyIncome);
                  if (record.type != undefined
                      && record.text != "")
                  {
@@ -659,7 +746,9 @@ console.log(this.state.monthlyIncome);
                     matAlertClass = "monthlyActualTotalAlert_hidden"
                   }
                    return <article className="eachRecordContainer" key={i}>
-                              <p className="monthlyType">{record.type}</p>
+                              <a href="#"
+                                 className="monthlyType" ref="monthlyType" value={i} onClick={this.onClickMonthlyTypeSelected}>{record.type}
+                              </a>
                               <a href="#">
                                 <p className="monthlyBillDesc" value={i}
                                     onClick={this.onClickMonthlyDescription}>{record.text}</p>
@@ -698,10 +787,10 @@ console.log(this.state.monthlyIncome);
             <button className="monthlyAddItemButton"
                   type="submit"
                   onClick={this.onClickAddMonthlyBill}>Add Item</button>
-                <button className="showDailyTransPage" ref="showDailyTransPage"
+            <button className="showDailyTransPage" ref="showDailyTransPage"
                   type="submit"
                   onClick={this.onShowDailyTransPage}>Show Daily Transactions</button>
-                <button className="hideDailyTransPage_hidden" ref="hideDailyTransPage"
+            <button className="hideDailyTransPage_hidden" ref="hideDailyTransPage"
                   type="submit"
                   onClick={this.onHideDailyTransPage}>Hide Daily Transactions</button>
             <button className="dailyTransButton" onClick={this.onClickDailyTransButton}>Go to Daily Transactions</button>
@@ -721,7 +810,7 @@ console.log(this.state.monthlyIncome);
                      && record.text != "")
                  {
                    return <article className="eachRecordContainer" key={i}>
-                            <p className="transDate">{record.date}</p>
+                            <a href="#" className="transDate" ref="transDate" value={i} onClick={this.onClickSelectedTrans}>{record.date}</a>
                             <a href="#">
                               <p className="transAmount" value={i}                            onClick={this.onClickTransAmount}>${record.amount}</p>
                             </a>
@@ -742,15 +831,16 @@ console.log(this.state.monthlyIncome);
                   placeholder="  description of purchase"
                   ref="descriptionInput"
                   type="text"/>
-                <button className="transSubmit"
+          <button className="transSubmit"
                   type="submit"
                   onClick={this.onClickSubmit}>Submit</button>
           <button className="hiddenButton"
                   ref="Show5" onClick={this.onClickShow5}>Show Last 5 Transactions</button>
-                <button className="showLast5Trans"
+          <button className="showLast5Trans"
                   ref="ShowAll"
                   onClick={this.onClickShowAll}>    Show All Transactions    </button>
-                <button className="monthlyBudgetButton" onClick={this.onClickMonthlyBudgetButton}>Go to Monthly Budget</button>
+          <button className="monthlyBudgetButton" onClick={this.onClickMonthlyBudgetButton}>Go to Monthly Budget</button>
+          <button className="importButton" onClick={this.onClickImportButton}>Import Transactions</button>
           <button className="signOut"
                   onClick={this.signUserOut}>Log Out</button>
         </section>
