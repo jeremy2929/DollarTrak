@@ -4,6 +4,7 @@
   ( I use two arrays- one is for mapping to render, either chopped down to 5 or show all, and a second array to retain all objects to restore the first one when needed)
 */
 import React from 'react'
+import ReactDOM from 'react-dom'
 import ReactFire from 'reactfire'
 var firebase = require('firebase');
 firebase.initializeApp(config);
@@ -17,6 +18,7 @@ var matAlertClass = "monthlyActualTotalAlert_hidden"
 var monthlyBillSelectedIndex = -1
 var selectedTrans = []
 
+var elementTest = {}
 export default React.createClass({
   //****************************************************************************************************
   getDefaultProps() {
@@ -323,7 +325,7 @@ export default React.createClass({
     }
     this.setState({data})
   },
-  //****************************************** Modifying a Daily Transaction Amount ****************************
+  //********************************** Modifying a Daily Transaction Amount ****************************
   onClickTransAmount(e){
     /// fix bug here if Prompt is canceled, doesnt write over current valus with null
     var transSelected = e.target.getAttribute('value')
@@ -452,8 +454,8 @@ export default React.createClass({
   //************************************** Entering the Monthly Income Amount **************************
   onMonthlyIncomeInput(){
     var monthlyIncome = prompt("Enter Monthly Income")
-    monthlyIncome = parseInt(monthlyIncome, 10)
-    if (isNaN(monthlyIncome)){monthlyIncome = 0}
+    // callling a function for converting any non-numeric input to 0
+    monthlyIncome = this.numericValidate(monthlyIncome)
     var tempUser = firebase.auth().currentUser.email.split("@")
     var currentUser = tempUser[0]
     var updates= {}
@@ -461,8 +463,14 @@ export default React.createClass({
     firebase.database().ref().update(updates)
     this.setState({monthlyIncome})
   },
+  numericValidate(num){
+    num = parseInt(num, 10)
+    if (isNaN(num)){num = 0}
+    return num
+  },
   //*************************************** Navigation button to Monthly Budget page ********************
   onClickMonthlyBudgetButton(){
+
     var monthlyFlag = true
     this.setState({monthlyFlag})
     this.refs.amountInput.value = ""
@@ -512,6 +520,11 @@ export default React.createClass({
   },
   //********************** Show Daily Transactions Page on Monthly Page ********************************
   onShowDailyTransPage(){
+    this.refs.Show5.className="showLast5Trans"
+    this.refs.ShowAll.className="hiddenButton"
+    this.state.data = this.state.entireData
+    this.setState(this.state.data)
+    
     this.refs.monthlyDailyTransBox.className = "monthlyDailyTransBox"
     this.refs.showDailyTransPage.className = "showDailyTransPage_hidden"
     this.refs.hideDailyTransPage.className = "hideDailyTransPage"
@@ -550,7 +563,21 @@ export default React.createClass({
       selectedTrans = selectedTrans.concat(e.target.getAttribute('value'))
     }
   },
-  onClickImportButton(){
+  onClickImportButton(e){
+
+    // reverting yellow highlight of selected transactions to import back to normal class
+    var transSelect = document.getElementsByClassName("transDateSelected")
+    var selectedLEN = transSelect.length
+    for (var i = 0; i< selectedLEN; i++){
+      transSelect.transBox.className = "transDate"
+    }
+    var monthBillHighlight = document.getElementsByClassName("monthlyTypeSelected")
+    var selectedLEN = monthBillHighlight.length
+    for (var i = 0; i< selectedLEN; i++){
+      monthBillHighlight.monthBox.className = "monthlyType"
+    }
+
+    // converting array of strings of numbers to numeric format
     var selectedLength = selectedTrans.length
     var numArray = []
     var newnum = 0
@@ -558,24 +585,25 @@ export default React.createClass({
       var newnum = parseInt(selectedTrans[i])
       numArray.push(newnum)
     }
-    var flag = true
-    while (flag) {
-      flag = false
-        for (var i = 0; i < selectedLength; i++) {
-          var first = parseInt(numArray[i],10)
-          var j = i + 1
-          var second = parseInt(numArray[j],10)
-          if (first > second) {
-            var temp = second
-            second = first
-            first = temp
-            flag = true
-          } else {
-          }
-          numArray[i] = first
-          if(isNaN(second)) {} else {numArray[j] = second}
-        }
-    }
+    // var flag = true
+    // while (flag) {
+    //   flag = false
+    //     for (var i = 0; i < selectedLength; i++) {
+    //       var first = parseInt(numArray[i],10)
+    //       var j = i + 1
+    //       var second = parseInt(numArray[j],10)
+    //       if (first > second) {
+    //         var temp = second
+    //         second = first
+    //         first = temp
+    //         flag = true
+    //       } else {
+    //       }
+    //       numArray[i] = first
+    //       if(isNaN(second)) {} else {numArray[j] = second}
+    //     }
+    // }
+    // scrubbing the Selected List for Import against existing list of Daily Transactions
     var workArray = this.state.entireData
     var totalAmountImported = 0
     var newArray = []
@@ -592,17 +620,15 @@ export default React.createClass({
       }
       if (flag === false){newArray.push(workArray[i])}
     }
-
-
-    document.getElementsByClassName('transDateSelected').class="transDate"
-
-
+    // assigning new scrubbed list of Daily Trans after Import back to original variables
     this.state.entireData = newArray
     this.state.data = newArray
+    // adding the total of selected Daily Transactions to the existing amount of monthly bill selected
     var currentBillAmount = parseInt(this.state.entireMonthlyData[this.state.monthlyBillSelectedIndex].amount)
     currentBillAmount += parseInt(totalAmountImported)
     this.state.entireMonthlyData[this.state.monthlyBillSelectedIndex].amount = currentBillAmount
     this.setState(this.state.data)
+    this.setState(this.state.entireData)
     this.setState(this.state.entireMonthlyData)
   },
   //*********************************** Help Button Popup **********************************************
@@ -747,7 +773,7 @@ export default React.createClass({
                   }
                    return <article className="eachRecordContainer" key={i}>
                               <a href="#"
-                                 className="monthlyType" ref="monthlyType" value={i} onClick={this.onClickMonthlyTypeSelected}>{record.type}
+                                 className="monthlyType" id="monthBox" ref="monthlyType" value={i} onClick={this.onClickMonthlyTypeSelected}>{record.type}
                               </a>
                               <a href="#">
                                 <p className="monthlyBillDesc" value={i}
@@ -810,7 +836,7 @@ export default React.createClass({
                      && record.text != "")
                  {
                    return <article className="eachRecordContainer" key={i}>
-                            <a href="#" className="transDate" ref="transDate" value={i} onClick={this.onClickSelectedTrans}>{record.date}</a>
+                            <a href="#" className="transDate" id="transBox" ref="transDate" value={i} onClick={this.onClickSelectedTrans}>{record.date}</a>
                             <a href="#">
                               <p className="transAmount" value={i}                            onClick={this.onClickTransAmount}>${record.amount}</p>
                             </a>
