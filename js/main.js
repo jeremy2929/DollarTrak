@@ -18,6 +18,8 @@ var matAlertClass = "monthlyActualTotalAlert_hidden"
 var monthlyBillSelectedIndex = -1
 var selectedTrans = []
 
+// activate next line when deploying- commented out for easier testing. it ensures previous user sign out
+// firebase.auth().signOut()
 var elementTest = {}
 export default React.createClass({
   //****************************************************************************************************
@@ -99,20 +101,20 @@ export default React.createClass({
              var entireData = allData.val()
              var dataLength = entireData.length
              var data=[]
-             if (dataLength>5){
-               var dataStart = dataLength-5
-               var j = 0
-               for (var i = dataStart; i<dataLength; i++){
-                 data[j]=entireData[i]
-                 j++
-               }
-               comp.setState({data})
-               comp.setState({entireData})
-             } else {
+            //  if (dataLength>5){
+            //    var dataStart = dataLength-5
+            //    var j = 0
+            //    for (var i = dataStart; i<dataLength; i++){
+            //      data[j]=entireData[i]
+            //      j++
+            //    }
+            //    comp.setState({data})
+            //    comp.setState({entireData})
+            //  } else {
                var data = entireData
                comp.setState({data})
                comp.setState({entireData})
-             }
+            // }
   //********   need ELSE statement to assign empty object to entireData if user isnt new but has no data
           } else {
             var entireData = []
@@ -278,8 +280,8 @@ export default React.createClass({
               text: textInputValue,
           }
         this.state.entireData = this.state.entireData.concat(newData)
-      // rebuilding data last 5 since a new one was added
-      if (this.state.entireData.length >5){
+    //  rebuilding data last 5 since a new one was added
+      if (this.state.entireData.length >5 && this.state.monthlyFlag != true){
         var dataLength = this.state.entireData.length
         var dataStart = dataLength-5
         var data=[]
@@ -288,14 +290,17 @@ export default React.createClass({
           data[j]=this.state.entireData[i]
           j++
         }
+        this.refs.ShowAll.className="showLast5Trans"
+        this.refs.Show5.className="hiddenButton"
       } else {
         data = this.state.entireData
+        this.refs.ShowAll.className="hiddenButton"
+        this.refs.Show5.className="showLast5Trans"
       }
       var tempUser = firebase.auth().currentUser.email.split("@")
       var currentUser = tempUser[0]
       updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData
-      this.refs.ShowAll.className="showLast5Trans"
-      this.refs.Show5.className="hiddenButton"
+
       firebase.database().ref().update(updates)
     }
     this.setState({data})
@@ -327,9 +332,11 @@ export default React.createClass({
   },
   //********************************** Modifying a Daily Transaction Amount ****************************
   onClickTransAmount(e){
+
     /// fix bug here if Prompt is canceled, doesnt write over current valus with null
     var transSelected = e.target.getAttribute('value')
     var newAmount = prompt("Enter new amount or 000 to delete")
+    console.log("input=",newAmount);
     var deleteTest = newAmount
     newAmount = parseInt(newAmount, 10)
     if (isNaN(newAmount) || newAmount === 0){
@@ -498,7 +505,7 @@ export default React.createClass({
     this.refs.enterMonthlyBill.value = ""
     this.refs.enterMonthlyPlan.value = ""
     var userId = this.state.user
-    var updates = {};
+    var updates = {}
     var tempUser = firebase.auth().currentUser.email.split("@")
     var currentUser = tempUser[0]
     var newData = ""
@@ -509,7 +516,7 @@ export default React.createClass({
               type: monthlyType,
               text: monthlyBillInputValue,
           }
-        this.state.entireMonthlyData = this.state.entireMonthlyData.concat(newData)
+      this.state.entireMonthlyData = this.state.entireMonthlyData.concat(newData)
       var monthlyData = this.state.entireMonthlyData
       var tempUser = firebase.auth().currentUser.email.split("@")
       var currentUser = tempUser[0]
@@ -524,7 +531,7 @@ export default React.createClass({
     this.refs.ShowAll.className="hiddenButton"
     this.state.data = this.state.entireData
     this.setState(this.state.data)
-    
+
     this.refs.monthlyDailyTransBox.className = "monthlyDailyTransBox"
     this.refs.showDailyTransPage.className = "showDailyTransPage_hidden"
     this.refs.hideDailyTransPage.className = "hideDailyTransPage"
@@ -537,12 +544,15 @@ export default React.createClass({
     this.refs.showDailyTransPage.className = "showDailyTransPage"
     this.refs.monthlyBox.className = "monthlyBoxCenter"
   },
+  //********************** Alert for Monthly Plan exceeding income ********************************
   monthlyTotalRed(){
     this.refs.monthlyPlannedTotal.className="monthlyPlannedTotal_red"
   },
+  //********************** Removing alert for Monthly Plan exceeding income ********************************
   monthlyTotalGreen(){
     this.refs.monthlyPlannedTotal.className="monthlyPlannedTotal"
   },
+  //********************** Highlighting selected category of Monthly for Import ***************************
   onClickMonthlyTypeSelected(e){
     if (monthlyBillSelectedIndex === -1){
       monthlyBillSelectedIndex = e.target.getAttribute('value')
@@ -553,6 +563,7 @@ export default React.createClass({
     }
     this.setState({monthlyBillSelectedIndex})
   },
+  //********************** Highlighting selected transaction on Daily Trans for Import ********************
   onClickSelectedTrans(e){
     if (e.target.className === "transDateSelected"){
       var transIndex = selectedTrans.indexOf(e.target.getAttribute('value'))
@@ -563,8 +574,8 @@ export default React.createClass({
       selectedTrans = selectedTrans.concat(e.target.getAttribute('value'))
     }
   },
+  //****************** Importing selected Daily Transactions into selected Monthly Category *****************
   onClickImportButton(e){
-
     // reverting yellow highlight of selected transactions to import back to normal class
     var transSelect = document.getElementsByClassName("transDateSelected")
     var selectedLEN = transSelect.length
@@ -623,10 +634,31 @@ export default React.createClass({
     // assigning new scrubbed list of Daily Trans after Import back to original variables
     this.state.entireData = newArray
     this.state.data = newArray
+
     // adding the total of selected Daily Transactions to the existing amount of monthly bill selected
     var currentBillAmount = parseInt(this.state.entireMonthlyData[this.state.monthlyBillSelectedIndex].amount)
     currentBillAmount += parseInt(totalAmountImported)
     this.state.entireMonthlyData[this.state.monthlyBillSelectedIndex].amount = currentBillAmount
+
+// trying to show ALL TRANSACTIONS after Import, but may not need this here, not working
+    this.refs.Show5.className="showLast5Trans"
+    this.refs.ShowAll.className="hiddenButton"
+    this.state.data = this.state.entireData
+
+    var updates = {}
+    var tempUser = firebase.auth().currentUser.email.split("@")
+    var currentUser = tempUser[0]
+    updates["/users/" + currentUser + "/" + "monthly"] = this.state.entireMonthlyData
+    firebase.database().ref().update(updates)
+    this.setState(this.state.entireMonthlyData)
+
+    updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData
+    firebase.database().ref().update(updates)
+    // clearing variables once import is complete
+    var totalAmountImported = 0
+    var monthlyBillSelectedIndex = []
+    selectedTrans = []
+    // setting state to arrays so can be used elsewhere
     this.setState(this.state.data)
     this.setState(this.state.entireData)
     this.setState(this.state.entireMonthlyData)
@@ -675,22 +707,24 @@ export default React.createClass({
            })
          }
        </ul>
-        <input  className="amountItem"
-                placeholder=" $ amount"
-                ref="amountInput"
-                type="number"/>
-        <input  className="descriptionItem"
-                placeholder="  description of purchase"
-                ref="descriptionInput"
-                type="text"/>
-
-        <article className="transOptionsArea">
+       <div className="addTransBox">
+            <input  className="amountItem"
+                    placeholder=" $ amount"
+                    ref="amountInput"
+                    type="number"/>
+            <input  className="descriptionItem"
+                    placeholder="  description of purchase"
+                    ref="descriptionInput"
+                    type="text"/>
             <button className="transSubmit"
                     type="submit"
-                    onClick={this.onClickSubmit}>Submit</button>
-            <button className="hiddenButton"
+                    onClick={this.onClickSubmit}>Add</button>
+        </div>
+        <article className="transOptionsArea">
+
+            <button className="showLast5Trans"
                     ref="Show5" onClick={this.onClickShow5}>Show Last 5 Transactions</button>
-                  <button className="showLast5Trans"
+                  <button className="hiddenButton"
                     ref="ShowAll"
                     onClick={this.onClickShowAll}>    Show All Transactions    </button>
             <button className="monthlyBudgetButton" onClick={this.onClickMonthlyBudgetButton}>Go to Monthly Budget</button>
@@ -744,7 +778,7 @@ export default React.createClass({
               <p className="monthlyIncomeInput" ref="monthlyInput" onClick={this.onMonthlyIncomeInput}>${this.state.monthlyIncome}</p>
             </a>
           </div>
-          <h3 className="monthlyColumnTitles">      Type                         Description                                      Planned    Actual</h3>
+          <h3 className="monthlyColumnTitles">      Select                         Description                                      Planned    Actual</h3>
           <ul id="list" className="monthyBillsRecordsArea">
            {
                this.state.entireMonthlyData.map((record, i)=>{
@@ -773,7 +807,7 @@ export default React.createClass({
                   }
                    return <article className="eachRecordContainer" key={i}>
                               <a href="#"
-                                 className="monthlyType" id="monthBox" ref="monthlyType" value={i} onClick={this.onClickMonthlyTypeSelected}>{record.type}
+                                 className="monthlyType" id="monthBox" ref="monthlyType" value={i} onClick={this.onClickMonthlyTypeSelected}>
                               </a>
                               <a href="#">
                                 <p className="monthlyBillDesc" value={i}
@@ -808,11 +842,12 @@ export default React.createClass({
                   placeholder="    plan"
                   ref="enterMonthlyPlan"
                   type="number"/>
+          <button className="monthlyAddItemButton"
+                  type="submit"
+                  onClick={this.onClickAddMonthlyBill}>Add</button>
         </article>
         <article className="monthlyOptionsArea">
-            <button className="monthlyAddItemButton"
-                  type="submit"
-                  onClick={this.onClickAddMonthlyBill}>Add Item</button>
+
             <button className="showDailyTransPage" ref="showDailyTransPage"
                   type="submit"
                   onClick={this.onShowDailyTransPage}>Show Daily Transactions</button>
@@ -849,26 +884,26 @@ export default React.createClass({
              })
            }
          </ul>
-          <input  className="amountItem"
-                  placeholder=" $ amount"
-                  ref="amountInput"
-                  type="number"/>
-          <input  className="descriptionItem"
-                  placeholder="  description of purchase"
-                  ref="descriptionInput"
-                  type="text"/>
-          <button className="transSubmit"
-                  type="submit"
-                  onClick={this.onClickSubmit}>Submit</button>
-          <button className="hiddenButton"
-                  ref="Show5" onClick={this.onClickShow5}>Show Last 5 Transactions</button>
+         <div className="addTransBox">
+              <input  className="amountItem"
+                      placeholder=" $ amount"
+                      ref="amountInput"
+                      type="number"/>
+              <input  className="descriptionItem"
+                      placeholder="  description of purchase"
+                      ref="descriptionInput"
+                      type="text"/>
+              <button className="transSubmit"
+                      type="submit"
+                      onClick={this.onClickSubmit}>Add</button>
+
+          </div>
           <button className="showLast5Trans"
+                  ref="Show5" onClick={this.onClickShow5}>Show Last 5 Transactions</button>
+          <button className="hiddenButton"
                   ref="ShowAll"
                   onClick={this.onClickShowAll}>    Show All Transactions    </button>
-          <button className="monthlyBudgetButton" onClick={this.onClickMonthlyBudgetButton}>Go to Monthly Budget</button>
           <button className="importButton" onClick={this.onClickImportButton}>Import Transactions</button>
-          <button className="signOut"
-                  onClick={this.signUserOut}>Log Out</button>
         </section>
       </main>
     )

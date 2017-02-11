@@ -118,7 +118,7 @@ body{
   color: green;
   display: inline-block;
   float: left;
-  font-size: 30px;
+  font-size: 20px;
   height: 40px;
   line-height: 40px;
   margin-left: 12%;
@@ -237,36 +237,46 @@ body{
   width: 270px;
 }
 
-.transID{
-  display: inline-block;
-  font-size: 13px;
-  height: auto;
-  margin: 0;
-  margin-left: 50px;
-  margin-top: 5px;
-  vertical-align: top;
-  width: 100px;
+.addTransBox{
+  /*border: solid 2px;*/
+  display: inline-flex;
+  height: 40px;
+  width: 430px;
 }
 
 .amountItem{
   border: solid 2px;
   border-radius: 6px;
   display: inline-block;
-  font-size: 18px;
+  font-size: 20px;
   height: 40px;
-  margin-left: 2%;
+  margin: 0;
   margin-bottom: 10px;
-  width: 120px;
+  width: 115px;
 }
 
 .descriptionItem{
   border: solid 2px;
   border-radius: 6px;
   display: inline-block;
-  font-size: 18px;
+  font-size: 20px;
   height: 40px;
-  margin-bottom: 10px;
-  width: 280px;
+  margin: 0;
+  width: 240px;
+}
+
+.transSubmit{
+  background-color: lightcyan;
+  border: solid 2px;
+  border-radius: 6px;
+  color: green;
+  display: inline-block;
+  font-size: 20px;
+  height: 40px;
+  line-height: 40px;
+  margin: 0;
+  /*text-align: center;*/
+  width: 62px;
 }
 
 .transOptionsArea{
@@ -276,28 +286,13 @@ body{
   width: 420px;
 }
 
-.transSubmit{
-  background-color: lightcyan;
-  border: solid 2px;
-  border-radius: 6px;
-  color: green;
-  display: inline-block;
-  font-size: 30px;
-  height: 40px;
-  line-height: 40px;
-  margin-left: 2%;
-  margin-top: 5px;
-  text-align: center;
-  width: 400px;
-}
-
 .monthlyBudgetButton{
     background-color: lightcyan;
     border: solid 2px;
     border-radius: 6px;
     color: green;
     display: inline-block;
-    font-size: 30px;
+    font-size: 20px;
     height: 40px;
     line-height: 40px;
     margin-left: 2%;
@@ -313,7 +308,7 @@ body{
     border-radius: 6px;
     color: green;
     display: inline-block;
-    font-size: 30px;
+    font-size: 20px;
     height: 40px;
     line-height: 40px;
     margin-left: 2%;
@@ -329,7 +324,7 @@ body{
   border-radius: 6px;
   color: green;
   display: inline-block;
-  font-size: 30px;
+  font-size: 20px;
   height: 40px;
   line-height: 40px;
   margin-left: 2%;
@@ -345,7 +340,7 @@ body{
   border-radius: 6px;
   color: black;
   display: inline-block;
-  font-size: 30px;
+  font-size: 20px;
   height: 40px;
   line-height: 40px;
   margin-left: 2%;
@@ -472,25 +467,40 @@ body{
 }
 
 .monthlyInputsArea{
-  display: inline-block;
+  /*border: solid 2px;*/
+  display: inline-flex;
   height: 41px;
   margin-top: 10px;
-  width: 770px;
+  width: 450px;
 }
 
 .enterMonthlyBill{
   border: solid 2px;
+  border-radius: 6px;
   font-size: 18px;
   height: 40px;
-  width: 278px;
+  width: 250px;
 }
 
 .enterMonthlyPlannedAmount{
   border: solid 2px;
+  border-radius: 6px;
   font-size: 18px;
   height: 40px;
-  width: 120px;
+  width: 80px;
 }
+
+.monthlyAddItemButton{
+  background-color: lightgrey;
+  border: solid 2px;
+  border-radius: 6px;
+  color: green;
+  display: inline-block;
+  font-size: 20px;
+  height: 40px;
+  width: 66px;
+}
+
 
 /*.enterMonthlyAmount{
   border: solid 2px;
@@ -671,17 +681,6 @@ body{
   width: 390px;
 }
 
-.monthlyAddItemButton{
-  background-color: lightgrey;
-  border: solid 2px;
-  border-radius: 6px;
-  color: green;
-  display: inline-block;
-  font-size: 18px;
-  height: 40px;
-  margin-left: 12%;
-  width: 300px;
-}
 
 .showDailyTransPage{
   background-color: peachpuff;
@@ -689,7 +688,7 @@ body{
   border-radius: 6px;
   color: green;
   display: inline-block;
-  font-size: 18px;
+  font-size: 20px;
   height: 40px;
   margin-left: 12%;
   margin-top: 10px;
@@ -702,7 +701,7 @@ body{
   border-radius: 6px;
   color: green;
   display: inline-block;
-  font-size: 18px;
+  font-size: 20px;
   height: 40px;
   margin-left: 12%;
   width: 300px;
@@ -725,6 +724,7 @@ body{
   border: solid 2px;
   display: inline-block;
   height: auto;
+  margin: 0;
   padding-bottom: 10px;
   vertical-align: top;
   width: 420px;
@@ -737,7 +737,7 @@ body{
   color: black;
   display: inline-block;
   float: left;
-  font-size: 30px;
+  font-size: 20px;
   height: 40px;
   line-height: 40px;
   margin-left: 12%;
