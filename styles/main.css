@@ -5,6 +5,7 @@
 body{
   background-color: grey;
 }
+
 .hiddenButton{
   visibility: hidden;
 }
@@ -266,7 +267,7 @@ body{
 }
 
 .transSubmit{
-  background-color: lightcyan;
+  background-color: lightgrey;
   border: solid 2px;
   border-radius: 6px;
   color: green;
@@ -281,7 +282,7 @@ body{
 
 .transOptionsArea{
   /*border: solid 2px;*/
-  height: 190px;
+  height: 150px;
   margin-top: 20px;
   width: 420px;
 }
@@ -319,6 +320,7 @@ body{
 }
 
 .showLast5Trans{
+  /*background-color: yellow;*/
   background-color: lightcyan;
   border: solid 2px;
   border-radius: 6px;
@@ -649,13 +651,14 @@ body{
   border-bottom: solid 1px;
   background-color: lightcoral;
   display: inline-block;
-  height: 25px;
+  height: 20px;
   margin: 0;
   width: 396px;
 }
 
 .monthlyPlannedTotalAlert_hidden{
   display: inline-block;
+  height: 0;
   margin: 0;
   visibility: hidden;
 }
@@ -664,20 +667,21 @@ body{
   border-bottom: solid 1px;
   background-color: lightcoral;
   display: inline-block;
-  height: 25px;
+  height: 20px;
   margin: 0;
   width: 396px;
 }
 
 .monthlyActualTotalAlert_hidden{
   display: inline-block;
+  height: 0;
   margin: 0;
   visibility: hidden;
 }
 
 .monthlyOptionsArea{
-  height: 190px;
-  margin-top: 20px;
+  height: 130px;
+  margin: 0;
   width: 390px;
 }
 

@@ -258,52 +258,57 @@ export default React.createClass({
   },
   //****************************************** Adding Daily Transactions **********************************
   onClickSubmit(e){
-    if (this.refs.amountInput.value != ""){
-    var currentDate = Date().substring(4,15)
-    e.preventDefault()
-    var textInputValue = this.refs.descriptionInput.value
-    // FIXME what can use instead of eval? need numeric testing here
-    var amountInputValue = this.refs.amountInput.value
-    this.refs.descriptionInput.value = ""
-    this.refs.amountInput.value = ""
-    var userId = this.state.user
-    var passwordId = this.state.pswd
-    var updates = {};
-    var tempUser = firebase.auth().currentUser.email.split("@")
-    var currentUser = tempUser[0]
-    var newData = ""
-    var database = ""
-      newData=
-          {
-            amount: amountInputValue,
-              date: currentDate,
-              text: textInputValue,
+    if (this.refs.amountInput.value != "" || parseInt(this.refs.amountInput.value > -.01)){
+        var currentDate = Date().substring(4,15)
+        e.preventDefault()
+        var textInputValue = this.refs.descriptionInput.value
+        var amountInputValue = this.refs.amountInput.value
+        amountInputValue = this.numericValidate(amountInputValue)
+        this.refs.descriptionInput.value = ""
+        this.refs.amountInput.value = ""
+        var userId = this.state.user
+        var passwordId = this.state.pswd
+        var updates = {};
+        var tempUser = firebase.auth().currentUser.email.split("@")
+        var currentUser = tempUser[0]
+        var newData = ""
+        var database = ""
+          newData=
+              {
+                amount: amountInputValue,
+                  date: currentDate,
+                  text: textInputValue,
+              }
+            this.state.entireData = this.state.entireData.concat(newData)
+          //  rebuilding data last 5 since a new one was added
+          if (this.state.entireData.length >5 && this.state.monthlyFlag != true){
+            var dataLength = this.state.entireData.length
+            var dataStart = dataLength-5
+            var data=[]
+            var j = 0
+            for (var i = dataStart; i<dataLength; i++){
+              data[j]=this.state.entireData[i]
+              j++
+            }
+            this.refs.ShowAll.className="showLast5Trans"
+            this.refs.Show5.className="hiddenButton"
+          } else {
+            data = this.state.entireData
+            this.refs.ShowAll.className="hiddenButton"
+            this.refs.Show5.className="showLast5Trans"
           }
-        this.state.entireData = this.state.entireData.concat(newData)
-    //  rebuilding data last 5 since a new one was added
-      if (this.state.entireData.length >5 && this.state.monthlyFlag != true){
-        var dataLength = this.state.entireData.length
-        var dataStart = dataLength-5
-        var data=[]
-        var j = 0
-        for (var i = dataStart; i<dataLength; i++){
-          data[j]=this.state.entireData[i]
-          j++
-        }
-        this.refs.ShowAll.className="showLast5Trans"
-        this.refs.Show5.className="hiddenButton"
-      } else {
-        data = this.state.entireData
-        this.refs.ShowAll.className="hiddenButton"
-        this.refs.Show5.className="showLast5Trans"
-      }
-      var tempUser = firebase.auth().currentUser.email.split("@")
-      var currentUser = tempUser[0]
-      updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData
-
-      firebase.database().ref().update(updates)
+          // updating FireBase with new data
+          var tempUser = firebase.auth().currentUser.email.split("@")
+          var currentUser = tempUser[0]
+          updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData
+          firebase.database().ref().update(updates)
+    } else {
+      alert("Negatives values not allowed")
+      this.refs.descriptionInput.value = ""
+      this.refs.amountInput.value = ""
     }
-    this.setState({data})
+    //this.setState({data})
+    this.setState(this.state.data)
   },
   //***************************************** Show all Daily Transactions **********************************
   onClickShowAll(){
@@ -332,31 +337,31 @@ export default React.createClass({
   },
   //********************************** Modifying a Daily Transaction Amount ****************************
   onClickTransAmount(e){
-
     /// fix bug here if Prompt is canceled, doesnt write over current valus with null
     var transSelected = e.target.getAttribute('value')
     var newAmount = prompt("Enter new amount or 000 to delete")
-    console.log("input=",newAmount);
-    var deleteTest = newAmount
-    newAmount = parseInt(newAmount, 10)
-    if (isNaN(newAmount) || newAmount === 0){
-      newAmount = 0
-      this.state.data[transSelected].amount = newAmount
-    }
-    if (deleteTest != "000"){
-      if (newAmount != null && newAmount != "") {this.state.data[transSelected].amount = newAmount}
-    } else {
-      this.state.data.splice(transSelected,1)
-      var dataLength = this.state.entireData.length
-      if (dataLength>5){
-        var dataPos = dataLength - 5 + eval(transSelected)
-        this.state.entireData.splice(dataPos,1)
-      } else {
-        this.state.entireData.splice(transSelected,1)
-      }
-      this.setState(this.state.data)
-      this.setState(this.state.entireData)
-    }
+    // validating amount entered for numeric only, under 5 digits, or 000 for delete record
+        if (newAmount === "000"){
+            this.state.data.splice(transSelected,1)
+            var dataLength = this.state.entireData.length
+            if (dataLength>5){
+              var dataPos = dataLength - 5 + eval(transSelected)
+              this.state.entireData.splice(dataPos,1)
+            } else {
+              this.state.entireData.splice(transSelected,1)
+            }
+        } else if (newAmount != null && newAmount > -.01){
+          var numericAmount = this.numericValidate(newAmount)
+          if (numericAmount === parseInt(newAmount,10)) {
+            if (newAmount.length > 4){
+              alert("Values longer than 4 digits not allowed")
+            } else {
+              this.state.data[transSelected].amount = numericAmount
+              this.setState(this.state.data)
+            }
+          }
+        }
+
     var updates = {}
     var tempUser = firebase.auth().currentUser.email.split("@")
     var currentUser = tempUser[0]
@@ -380,30 +385,26 @@ export default React.createClass({
     this.refs.ShowAll.className="showLast5Trans"
     this.refs.Show5.className="hiddenButton"
   },
-  //**************************** Modifying the planned expense amount of a Monthly Bill *************************
+  //******************* Modifying the planned expense amount of a Monthly Bill *************************
   onClickMonthlyBillPlan(e){
     var transSelected = e.target.getAttribute('value')
     var newAmount = prompt("Enter new amount or 000 to delete")
-    var deleteTest = newAmount
-    newAmount = parseInt(newAmount, 10)
-    if (isNaN(newAmount) || newAmount === 0){
-      newAmount = 0
-      this.state.entireMonthlyData[transSelected].plan = newAmount
-    }
-    if (deleteTest != "000"){
-      if (newAmount != null && newAmount != "") {this.state.entireMonthlyData[transSelected].plan = newAmount}
-    } else {
-      this.state.entireMonthlyData.splice(transSelected,1)
-      var dataLength = this.state.entireMonthlyData.length
-      if (dataLength>5){
-        var dataPos = dataLength - 5 + eval(transSelected)
-        this.state.entireMonthlyData.splice(dataPos,1)
-      } else {
-        this.state.entireMonthlyData.splice(transSelected,1)
-      }
-    //  this.setState(this.state.data)
-      this.setState(this.state.entireMonthlyData)
-    }
+        // validating amount entered for numeric only, under 5 digits, or 000 for delete record
+        if (newAmount === "000"){
+            this.state.entireMonthlyData.splice(transSelected,1)
+        } else if (newAmount != null && newAmount > -.01){
+          var numericAmount = this.numericValidate(newAmount)
+          if (numericAmount === parseInt(newAmount,10)) {
+            if (newAmount.length > 4){
+              alert("Values longer than 4 digits not allowed")
+            } else {
+              this.state.entireMonthlyData[transSelected].plan = numericAmount
+              this.setState(this.state.entireMonthlyData)
+            }
+          }
+        }
+
+
     var updates = {}
     var tempUser = firebase.auth().currentUser.email.split("@")
     var currentUser = tempUser[0]
@@ -415,27 +416,21 @@ export default React.createClass({
   onClickMonthlyBillActual(e){
     var transSelected = e.target.getAttribute('value')
     var newAmount = prompt("Enter new amount or 000 to delete")
-    var deleteTest = newAmount
-    newAmount = parseInt(newAmount, 10)
-    if (isNaN(newAmount) || newAmount === 0){
-      newAmount = 0
-      this.state.entireMonthlyData[transSelected].amount = newAmount
-    }
-    if (deleteTest != "000"){
-      if (newAmount != null && newAmount != "") {this.state.entireMonthlyData[transSelected].amount = newAmount}
-    } else {
-      this.state.entireMonthlyData.splice(transSelected,1)
-      // is this needed for Monthly Bills, or just extra from Daily Trans copy?
-      var dataLength = this.state.entireMonthlyData.length
-      if (dataLength>5){
-        var dataPos = dataLength - 5 + eval(transSelected)
-        this.state.entireMonthlyData.splice(dataPos,1)
-      } else {
-        this.state.entireMonthlyData.splice(transSelected,1)
-      }
-      this.setState(this.state.entireMonthlyData)
-    }
-    // ********* above code to comment maybe not needed
+        // validating amount entered for numeric only, under 5 digits, or 000 for delete record
+        if (newAmount === "000"){
+            this.state.entireMonthlyData.splice(transSelected,1)
+        } else if (newAmount != null && newAmount > -.01){
+          var numericAmount = this.numericValidate(newAmount)
+          if (numericAmount === parseInt(newAmount,10)) {
+            if (newAmount.length > 4){
+              alert("Values longer than 4 digits not allowed")
+            } else {
+                this.state.entireMonthlyData[transSelected].amount = numericAmount
+                this.setState(this.state.entireMonthlyData)
+            }
+          }
+        }
+
     var updates = {}
     var tempUser = firebase.auth().currentUser.email.split("@")
     var currentUser = tempUser[0]
@@ -470,6 +465,7 @@ export default React.createClass({
     firebase.database().ref().update(updates)
     this.setState({monthlyIncome})
   },
+  //*************************************** Validating numeric input, set to 0 if NaN ********************
   numericValidate(num){
     num = parseInt(num, 10)
     if (isNaN(num)){num = 0}
@@ -494,44 +490,49 @@ export default React.createClass({
   //****************************** Adding Monthly Budget items and planned amounts *************************
   onClickAddMonthlyBill(e){
     e.preventDefault()
-    if (this.refs.enterMonthlyPlan.value != "" || this.refs.enterMonthlyBill.value != ""){
-    var currentDate = Date().substring(4,15)
-    var monthlyPlanInputValue = this.refs.enterMonthlyPlan.value
-    monthlyPlanInputValue = parseInt(monthlyPlanInputValue, 10)
-    if (isNaN(monthlyPlanInputValue)){monthlyPlanInputValue = 0}
-    var monthlyBillInputValue = this.refs.enterMonthlyBill.value
-    var monthlyType = monthlyBillInputValue.substring(0,3)
-    // FIXME what can use instead of eval? need numeric testing here
-    this.refs.enterMonthlyBill.value = ""
-    this.refs.enterMonthlyPlan.value = ""
-    var userId = this.state.user
-    var updates = {}
-    var tempUser = firebase.auth().currentUser.email.split("@")
-    var currentUser = tempUser[0]
-    var newData = ""
-      newData=
-          {
-            amount: "",
-              plan: monthlyPlanInputValue,
-              type: monthlyType,
-              text: monthlyBillInputValue,
-          }
-      this.state.entireMonthlyData = this.state.entireMonthlyData.concat(newData)
-      var monthlyData = this.state.entireMonthlyData
-      var tempUser = firebase.auth().currentUser.email.split("@")
-      var currentUser = tempUser[0]
-      updates["/users/" + currentUser + "/" + "monthly"] = this.state.entireMonthlyData
-      firebase.database().ref().update(updates)
-      this.setState(this.state.entireMonthlyData)
-    }
+    if (this.refs.enterMonthlyPlan.value != "" || this.refs.enterMonthlyBill.value != "" && parseInt(this.refs.amountInput.value > -.01)){
+        var currentDate = Date().substring(4,15)
+        var monthlyPlanInputValue = this.refs.enterMonthlyPlan.value
+        monthlyPlanInputValue = this.numericValidate(monthlyPlanInputValue)
+        var monthlyBillInputValue = this.refs.enterMonthlyBill.value
+        var monthlyType = monthlyBillInputValue.substring(0,3)
+        // FIXME what can use instead of eval? need numeric testing here
+        this.refs.enterMonthlyBill.value = ""
+        this.refs.enterMonthlyPlan.value = ""
+        var userId = this.state.user
+        var updates = {}
+        var tempUser = firebase.auth().currentUser.email.split("@")
+        var currentUser = tempUser[0]
+        var newData = ""
+          newData=
+              {
+                amount: "",
+                  plan: monthlyPlanInputValue,
+                  type: monthlyType,
+                  text: monthlyBillInputValue,
+              }
+          this.state.entireMonthlyData = this.state.entireMonthlyData.concat(newData)
+          var monthlyData = this.state.entireMonthlyData
+          var tempUser = firebase.auth().currentUser.email.split("@")
+          var currentUser = tempUser[0]
+          updates["/users/" + currentUser + "/" + "monthly"] = this.state.entireMonthlyData
+          firebase.database().ref().update(updates)
+          this.setState(this.state.entireMonthlyData)
+        } else {
+          alert("Negatives values not allowed")
+          this.refs.enterMonthlyBill.value = ""
+          this.refs.enterMonthlyPlan.value = ""
+        }
+      this.setState({data})
+      this.setState({entireData})
   },
   //********************** Show Daily Transactions Page on Monthly Page ********************************
   onShowDailyTransPage(){
     this.refs.Show5.className="showLast5Trans"
     this.refs.ShowAll.className="hiddenButton"
+    this.refs.goToDaily.className="hiddenButton"
     this.state.data = this.state.entireData
     this.setState(this.state.data)
-
     this.refs.monthlyDailyTransBox.className = "monthlyDailyTransBox"
     this.refs.showDailyTransPage.className = "showDailyTransPage_hidden"
     this.refs.hideDailyTransPage.className = "hideDailyTransPage"
@@ -542,6 +543,7 @@ export default React.createClass({
     this.refs.monthlyDailyTransBox.className = "monthlyDailyTransBox_hidden"
     this.refs.hideDailyTransPage.className = "hideDailyTransPage_hidden"
     this.refs.showDailyTransPage.className = "showDailyTransPage"
+    this.refs.goToDaily.className="dailyTransButton"
     this.refs.monthlyBox.className = "monthlyBoxCenter"
   },
   //********************** Alert for Monthly Plan exceeding income ********************************
@@ -558,7 +560,7 @@ export default React.createClass({
       monthlyBillSelectedIndex = e.target.getAttribute('value')
       e.target.className = "monthlyTypeSelected"
     } else {
-      monthlyBillSelectedIndex = -1
+    // is this necessary?   monthlyBillSelectedIndex = -1
       e.target.className = "monthlyType"
     }
     this.setState({monthlyBillSelectedIndex})
@@ -576,19 +578,19 @@ export default React.createClass({
   },
   //****************** Importing selected Daily Transactions into selected Monthly Category *****************
   onClickImportButton(e){
-    // reverting yellow highlight of selected transactions to import back to normal class
+    // reverting yellow highlight of selected Daily Transactions to import back to normal class
     var transSelect = document.getElementsByClassName("transDateSelected")
     var selectedLEN = transSelect.length
     for (var i = 0; i< selectedLEN; i++){
       transSelect.transBox.className = "transDate"
     }
+    // reverting yellow highlight of selected Monthly category of import back to normal class
     var monthBillHighlight = document.getElementsByClassName("monthlyTypeSelected")
     var selectedLEN = monthBillHighlight.length
     for (var i = 0; i< selectedLEN; i++){
       monthBillHighlight.monthBox.className = "monthlyType"
     }
-
-    // converting array of strings of numbers to numeric format
+    // converting array of strings of selected Daily Transactions to numeric format
     var selectedLength = selectedTrans.length
     var numArray = []
     var newnum = 0
@@ -614,7 +616,11 @@ export default React.createClass({
     //       if(isNaN(second)) {} else {numArray[j] = second}
     //     }
     // }
+
+
+
     // scrubbing the Selected List for Import against existing list of Daily Transactions
+    // Thus, rebuilding the Daily Transaction array without items that were imported
     var workArray = this.state.entireData
     var totalAmountImported = 0
     var newArray = []
@@ -634,30 +640,30 @@ export default React.createClass({
     // assigning new scrubbed list of Daily Trans after Import back to original variables
     this.state.entireData = newArray
     this.state.data = newArray
-
-    // adding the total of selected Daily Transactions to the existing amount of monthly bill selected
+    // adding the total of selected Daily Transactions to the existing amount of Monthly Category selected
     var currentBillAmount = parseInt(this.state.entireMonthlyData[this.state.monthlyBillSelectedIndex].amount)
     currentBillAmount += parseInt(totalAmountImported)
     this.state.entireMonthlyData[this.state.monthlyBillSelectedIndex].amount = currentBillAmount
-
-// trying to show ALL TRANSACTIONS after Import, but may not need this here, not working
+    // show ALL TRANSACTIONS after Import
     this.refs.Show5.className="showLast5Trans"
     this.refs.ShowAll.className="hiddenButton"
     this.state.data = this.state.entireData
-
+    // writing new Monthly data out to Firebase after Import
     var updates = {}
     var tempUser = firebase.auth().currentUser.email.split("@")
     var currentUser = tempUser[0]
     updates["/users/" + currentUser + "/" + "monthly"] = this.state.entireMonthlyData
     firebase.database().ref().update(updates)
     this.setState(this.state.entireMonthlyData)
-
+    // writing new Dailu Transaction data out to Firebase after Import
     updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData
     firebase.database().ref().update(updates)
     // clearing variables once import is complete
     var totalAmountImported = 0
-    var monthlyBillSelectedIndex = []
     selectedTrans = []
+    // resetting Monthly Category Selected flag
+    monthlyBillSelectedIndex = -1
+    this.setState({monthlyBillSelectedIndex})
     // setting state to arrays so can be used elsewhere
     this.setState(this.state.data)
     this.setState(this.state.entireData)
@@ -710,6 +716,7 @@ export default React.createClass({
        <div className="addTransBox">
             <input  className="amountItem"
                     placeholder=" $ amount"
+                    maxLength="4"
                     ref="amountInput"
                     type="number"/>
             <input  className="descriptionItem"
@@ -838,8 +845,9 @@ export default React.createClass({
                   placeholder="    description"
                   ref="enterMonthlyBill"
                   type="text"/>
-          <input className="enterMonthlyPlannedAmount"
-                  placeholder="    plan"
+          <input  className="enterMonthlyPlannedAmount"
+                  maxLength="4"
+                  placeholder="    plan $"
                   ref="enterMonthlyPlan"
                   type="number"/>
           <button className="monthlyAddItemButton"
@@ -854,7 +862,7 @@ export default React.createClass({
             <button className="hideDailyTransPage_hidden" ref="hideDailyTransPage"
                   type="submit"
                   onClick={this.onHideDailyTransPage}>Hide Daily Transactions</button>
-            <button className="dailyTransButton" onClick={this.onClickDailyTransButton}>Go to Daily Transactions</button>
+                <button className="dailyTransButton" ref="goToDaily" onClick={this.onClickDailyTransButton}>Go to Daily Transactions</button>
             <button className="monthlySignOut" onClick={this.signUserOut}>Log Out</button>
         </article>
         </section>
@@ -886,6 +894,7 @@ export default React.createClass({
          </ul>
          <div className="addTransBox">
               <input  className="amountItem"
+                      maxLength="4"
                       placeholder=" $ amount"
                       ref="amountInput"
                       type="number"/>
