@@ -17,7 +17,8 @@ var mptAlertClass = "monthlyPlannedTotalAlert_hidden"
 var matAlertClass = "monthlyActualTotalAlert_hidden"
 var monthlyBillSelectedIndex = -1
 var selectedTrans = []
-
+var greenBar = "2%"
+var redBar = "2%"
 // activate next line when deploying- commented out for easier testing. it ensures previous user sign out
 // firebase.auth().signOut()
 var elementTest = {}
@@ -560,7 +561,6 @@ export default React.createClass({
       monthlyBillSelectedIndex = e.target.getAttribute('value')
       e.target.className = "monthlyTypeSelected"
     } else {
-    // is this necessary?   monthlyBillSelectedIndex = -1
       e.target.className = "monthlyType"
     }
     this.setState({monthlyBillSelectedIndex})
@@ -598,25 +598,6 @@ export default React.createClass({
       var newnum = parseInt(selectedTrans[i])
       numArray.push(newnum)
     }
-    // var flag = true
-    // while (flag) {
-    //   flag = false
-    //     for (var i = 0; i < selectedLength; i++) {
-    //       var first = parseInt(numArray[i],10)
-    //       var j = i + 1
-    //       var second = parseInt(numArray[j],10)
-    //       if (first > second) {
-    //         var temp = second
-    //         second = first
-    //         first = temp
-    //         flag = true
-    //       } else {
-    //       }
-    //       numArray[i] = first
-    //       if(isNaN(second)) {} else {numArray[j] = second}
-    //     }
-    // }
-
 
 
     // scrubbing the Selected List for Import against existing list of Daily Transactions
@@ -674,71 +655,120 @@ export default React.createClass({
   {
     alert("This will be info button how to use app. When we are unhurried and wise, we perceive that only great and worthy things have any permanent and absolute existence; that petty fears and petty pleasures are but the shadow of the reality. -Henry David Thoreau")
   },
+  spendingGreenBar(){
+    if (this.state.entireData != undefined){
+        // determining percentage of month based on current day and 30 day month
+        var currentDayPercent = (parseInt((((Date().substring(8,10)/30)*100)+.5)));
+        // create total for all Daily Transactions
+        var dataLength = this.state.entireData.length
+        var dailyTotal = 0
+        var combinedTotal = 0
+        for (var i = 0; i < dataLength; i++){
+          dailyTotal += parseInt(this.state.entireData[i].amount)
+        }
+        // find spending cash category in Monthly categories
+        var dataLength = this.state.entireMonthlyData.length
+        var spendingCashActual = 0
+        var spendingCashPlan = 0
+        for (var i = 0; i < dataLength; i++){
+          if (this.state.entireMonthlyData[i].text === "spending cash"){
+            spendingCashActual = this.state.entireMonthlyData[i].amount
+            spendingCashPlan = this.state.entireMonthlyData[i].plan
+          }
+        }
+        combinedTotal = dailyTotal + spendingCashActual
+        var percentageSpent =  parseInt(((combinedTotal / spendingCashPlan) + .005) * 100)
+        redBar = 0
+        greenBar = 0
+        if (percentageSpent > currentDayPercent){
+          redBar = percentageSpent - currentDayPercent
+          if (redBar + currentDayPercent > 100){
+            redBar = 100 - currentDayPercent
+          }
+          greenBar = currentDayPercent.toString()+"%"
+          redBar = redBar.toString() + "%"
+        } else {
+          greenBar = percentageSpent.toString()+"%"
+          redBar = "0%"
+        }
+    }
+  },
+  userIsLoggedIn() {
+    return firebase.auth().currentUser != null
+  },
   //*********************************** Rendering the HTML elements *************************************
   render()
   {
-
+    this.spendingGreenBar()
+    console.log(greenBar);
     // console.log("monthly=",this.state.monthlyFlag);
     // console.log("auth=",firebase.auth().currentUser);
     // console.log("entireMonthlyData at render=",this.state.entireMonthlyData);
     // have to set this.state.monthlyFlag when loggin out
     var monthlyPlannedTotalValue = 0
     var monthlyActualTotalValue = 0
-    if (firebase.auth().currentUser != null && this.state.monthlyFlag === undefined){
+    if (this.userIsLoggedIn() && this.state.monthlyFlag === undefined){
       return (
         <main>
-      <section className="dailyTransPageSection">
-        <article className="transactionTitleArea">
-          <h1 className="transactionsTitle">Daily Transactions</h1>
-          <h2 className="userTransName"
-              ref="userName">User:  {firebase.auth().currentUser.email}</h2>
-        </article>
-        <ul id="list" className="newList">
-         {
-             this.state.data.map((record, i)=>{
-               if (record.date != undefined
-                   && record.text != "")
-               {
-                 return <article className="eachRecordContainer" key={i}>
-                          <p className="transDate">{record.date}</p>
-                          <a href="#">
-                            <p className="transAmount" value={i}                            onClick={this.onClickTransAmount}>${record.amount}</p>
-                          </a>
-                          <a href="#">
-                            <p className="transDesc" value={i}
-                              onClick={this.onClickTransDescription}>{record.text}</p>
-                          </a>
-                        </article>
-             }
-           })
-         }
-       </ul>
-       <div className="addTransBox">
-            <input  className="amountItem"
-                    placeholder=" $ amount"
-                    maxLength="4"
-                    ref="amountInput"
-                    type="number"/>
-            <input  className="descriptionItem"
-                    placeholder="  description of purchase"
-                    ref="descriptionInput"
-                    type="text"/>
-            <button className="transSubmit"
-                    type="submit"
-                    onClick={this.onClickSubmit}>Add</button>
-        </div>
-        <article className="transOptionsArea">
+          <section className="dailyTransPageBox">
 
-            <button className="showLast5Trans"
-                    ref="Show5" onClick={this.onClickShow5}>Show Last 5 Transactions</button>
-                  <button className="hiddenButton"
-                    ref="ShowAll"
-                    onClick={this.onClickShowAll}>    Show All Transactions    </button>
-            <button className="monthlyBudgetButton" onClick={this.onClickMonthlyBudgetButton}>Go to Monthly Budget</button>
-            <button className="signOut"
-                    onClick={this.signUserOut}>Log Out</button>
-        </article>
-      </section>
+            <div className="dailyTransPageSection">
+              <article className="transactionTitleArea">
+                <h1 className="transactionsTitle">Daily Transactions</h1>
+                <h2 className="userTransName"
+                    ref="userName">User:  {firebase.auth().currentUser.email}</h2>
+              </article>
+              <ul id="list" className="newList">
+               {
+                   this.state.data.map((record, i)=>{
+                     if (record.date != undefined
+                         && record.text != "")
+                     {
+                       return <article className="eachRecordContainer" key={i}>
+                                <p className="transDate">{record.date}</p>
+                                <a href="#">
+                                  <p className="transAmount" value={i}                            onClick={this.onClickTransAmount}>${record.amount}</p>
+                                </a>
+                                <a href="#">
+                                  <p className="transDesc" value={i}
+                                    onClick={this.onClickTransDescription}>{record.text}</p>
+                                </a>
+                              </article>
+                   }
+                 })
+               }
+             </ul>
+             <div className="addTransBox">
+                  <input  className="amountItem"
+                          placeholder=" $ amount"
+                          maxLength="4"
+                          ref="amountInput"
+                          type="number"/>
+                  <input  className="descriptionItem"
+                          placeholder="  description of purchase"
+                          ref="descriptionInput"
+                          type="text"/>
+                  <button className="transSubmit"
+                          type="submit"
+                          onClick={this.onClickSubmit}>Add</button>
+              </div>
+              <article className="transOptionsArea">
+
+                  <button className="showLast5Trans"
+                          ref="Show5" onClick={this.onClickShow5}>Show Last 5 Transactions</button>
+                        <button className="hiddenButton"
+                          ref="ShowAll"
+                          onClick={this.onClickShowAll}>    Show All Transactions    </button>
+                  <button className="monthlyBudgetButton" onClick={this.onClickMonthlyBudgetButton}>Go to Monthly Budget</button>
+                  <button className="signOut"
+                          onClick={this.signUserOut}>Log Out</button>
+              </article>
+            </div>
+            <article className="progressBarAreaBottom">
+              <p className="progressBarGreen" style={{width : greenBar}}>Spending cash</p>
+              <p className="progressBarRed" style={{width : redBar}}></p>
+            </article>
+          </section>
       </main>
     )
   } else if (firebase.auth().currentUser === null)

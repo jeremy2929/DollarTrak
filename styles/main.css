@@ -15,12 +15,48 @@ body{
   margin: 0;
 }
 
+.dailyTransPageBox{
+  /*border: solid 2px;*/
+  height: auto;
+  margin-left: 30%;
+  width: 420px;
+}
+
+.progressBarAreaBottom{
+    border: solid 2px;
+    display: inline-flex;
+    height: 21px;
+    margin: 0;
+    width: 100%;
+}
+
+.progressBarGreen{
+    background-color: lightgreen;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: bolder;
+    height: 17px;
+    margin: 0;
+    text-align: left;
+    padding-left: 2px;
+    width: 1%;
+}
+
+.progressBarRed{
+  background-color: red;
+  display: inline-block;
+  height: 17px;
+  margin: 0;
+  width: 1%;
+}
+
 .dailyTransPageSection{
   background-color: peachpuff;
   border: solid 2px;
   display: inline-block;
+  float: right;
   height: auto;
-  margin-left: 30%;
+  margin-left: 0px;
   padding-bottom: 20px;
   vertical-align: top;
   width: 420px;
@@ -100,6 +136,8 @@ body{
   margin-top: 20px;
   width: 150px;
 }
+
+
 
 .newUser{
   background-color: lightblue;
