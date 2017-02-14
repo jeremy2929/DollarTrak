@@ -23,11 +23,24 @@ body{
 }
 
 .progressBarAreaBottom{
+    background-color: white;
     border: solid 2px;
     display: inline-flex;
     height: 21px;
     margin: 0;
     width: 100%;
+}
+
+.progressBarGrey{
+  background-color: lightgrey;
+  display: inline-block;
+  font-size: 12px;
+  font-weight: bolder;
+  height: 17px;
+  margin: 0;
+  text-align: left;
+  padding-left: 2px;
+  width: 1%;
 }
 
 .progressBarGreen{
@@ -48,6 +61,17 @@ body{
   height: 17px;
   margin: 0;
   width: 1%;
+}
+
+.progressBarLabel{
+  background-color: black;
+  /*border: solid 2px;*/
+  color: lightgreen;
+  display: inline-flex;
+  height: 21px;
+  margin: 0;
+  padding-left: 10%;
+  width: 100%;
 }
 
 .dailyTransPageSection{
@@ -315,7 +339,7 @@ body{
   line-height: 40px;
   margin: 0;
   /*text-align: center;*/
-  width: 62px;
+  width: 61px;
 }
 
 .transOptionsArea{
@@ -762,6 +786,18 @@ body{
 }
 
 .monthlyDailyTransBox{
+  /*background-color: peachpuff;*/
+  /*border: solid 2px;*/
+  display: inline-block;
+  height: auto;
+  margin: 0;
+  margin-left: 3px;
+  padding-bottom: 10px;
+  vertical-align: top;
+  width: 420px;
+}
+
+.monthlyDailyTransBoxInner{
   background-color: peachpuff;
   border: solid 2px;
   display: inline-block;

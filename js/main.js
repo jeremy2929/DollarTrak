@@ -17,8 +17,9 @@ var mptAlertClass = "monthlyPlannedTotalAlert_hidden"
 var matAlertClass = "monthlyActualTotalAlert_hidden"
 var monthlyBillSelectedIndex = -1
 var selectedTrans = []
-var greenBar = "2%"
-var redBar = "2%"
+var greyBar
+var greenBar = "0%"
+var redBar = "0%"
 // activate next line when deploying- commented out for easier testing. it ensures previous user sign out
 // firebase.auth().signOut()
 var elementTest = {}
@@ -524,7 +525,7 @@ export default React.createClass({
           this.refs.enterMonthlyBill.value = ""
           this.refs.enterMonthlyPlan.value = ""
         }
-      this.setState({data})
+    //  this.setState({data})
       this.setState({entireData})
   },
   //********************** Show Daily Transactions Page on Monthly Page ********************************
@@ -578,77 +579,107 @@ export default React.createClass({
   },
   //****************** Importing selected Daily Transactions into selected Monthly Category *****************
   onClickImportButton(e){
-    // reverting yellow highlight of selected Daily Transactions to import back to normal class
-    var transSelect = document.getElementsByClassName("transDateSelected")
-    var selectedLEN = transSelect.length
-    for (var i = 0; i< selectedLEN; i++){
-      transSelect.transBox.className = "transDate"
-    }
-    // reverting yellow highlight of selected Monthly category of import back to normal class
-    var monthBillHighlight = document.getElementsByClassName("monthlyTypeSelected")
-    var selectedLEN = monthBillHighlight.length
-    for (var i = 0; i< selectedLEN; i++){
-      monthBillHighlight.monthBox.className = "monthlyType"
-    }
-    // converting array of strings of selected Daily Transactions to numeric format
-    var selectedLength = selectedTrans.length
-    var numArray = []
-    var newnum = 0
-    for (var i = 0; i < selectedLength; i++) {
-      var newnum = parseInt(selectedTrans[i])
-      numArray.push(newnum)
-    }
+    console.log("monthly=",monthlyBillSelectedIndex);
+    console.log("selected trans=",selectedTrans.length);
+    // be sure at least one of each Monthly and Daily Transactions are selected
+    if (monthlyBillSelectedIndex != -1 && selectedTrans.length != 0){
 
+// maybe make function for this highlight removal
 
-    // scrubbing the Selected List for Import against existing list of Daily Transactions
-    // Thus, rebuilding the Daily Transaction array without items that were imported
-    var workArray = this.state.entireData
-    var totalAmountImported = 0
-    var newArray = []
-    var totalAmountImported = 0
-    var fullArrayLength = workArray.length
-    for (var i = 0; i < fullArrayLength; i++){
-      var flag = false
-      for (var j = 0; j < selectedLength; j++){
-        if (i != numArray[j]){}
-        else {
-          flag = true
-          totalAmountImported += parseInt(workArray[i].amount)
+        // reverting yellow highlight of selected Daily Transactions to import back to normal class
+        var transSelect = document.getElementsByClassName("transDateSelected")
+        var selectedLEN = transSelect.length
+        for (var i = 0; i< selectedLEN; i++){
+          transSelect.transBox.className = "transDate"
         }
+        // reverting yellow highlight of selected Monthly category of import back to normal class
+        var monthBillHighlight = document.getElementsByClassName("monthlyTypeSelected")
+        var selectedLEN = monthBillHighlight.length
+        for (var i = 0; i< selectedLEN; i++){
+          monthBillHighlight.monthBox.className = "monthlyType"
+        }
+
+
+
+        // converting array of strings of selected Daily Transactions to numeric format
+        var selectedLength = selectedTrans.length
+        var numArray = []
+        var newnum = 0
+        for (var i = 0; i < selectedLength; i++) {
+          var newnum = parseInt(selectedTrans[i])
+          numArray.push(newnum)
+        }
+
+
+        // scrubbing the Selected List for Import against existing list of Daily Transactions
+        // Thus, rebuilding the Daily Transaction array without items that were imported
+        var workArray = this.state.entireData
+        var totalAmountImported = 0
+        var newArray = []
+        var totalAmountImported = 0
+        var fullArrayLength = workArray.length
+        for (var i = 0; i < fullArrayLength; i++){
+          var flag = false
+          for (var j = 0; j < selectedLength; j++){
+            if (i != numArray[j]){}
+            else {
+              flag = true
+              totalAmountImported += parseInt(workArray[i].amount)
+            }
+          }
+          if (flag === false){newArray.push(workArray[i])}
+        }
+        // assigning new scrubbed list of Daily Trans after Import back to original variables
+        this.state.entireData = newArray
+        this.state.data = newArray
+        // adding the total of selected Daily Transactions to the existing amount of Monthly Category selected
+        var currentBillAmount = parseInt(this.state.entireMonthlyData[this.state.monthlyBillSelectedIndex].amount)
+        currentBillAmount += parseInt(totalAmountImported)
+        this.state.entireMonthlyData[this.state.monthlyBillSelectedIndex].amount = currentBillAmount
+        // show ALL TRANSACTIONS after Import
+        this.refs.Show5.className="showLast5Trans"
+        this.refs.ShowAll.className="hiddenButton"
+        this.state.data = this.state.entireData
+        // writing new Monthly data out to Firebase after Import
+        var updates = {}
+        var tempUser = firebase.auth().currentUser.email.split("@")
+        var currentUser = tempUser[0]
+        updates["/users/" + currentUser + "/" + "monthly"] = this.state.entireMonthlyData
+        firebase.database().ref().update(updates)
+        this.setState(this.state.entireMonthlyData)
+        // writing new Dailu Transaction data out to Firebase after Import
+        updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData
+        firebase.database().ref().update(updates)
+        // clearing variables once import is complete
+        var totalAmountImported = 0
+        selectedTrans = []
+        // resetting Monthly Category Selected flag
+        monthlyBillSelectedIndex = -1
+        this.setState({monthlyBillSelectedIndex})
+        // setting state to arrays so can be used elsewhere
+        this.setState(this.state.data)
+        this.setState(this.state.entireData)
+        this.setState(this.state.entireMonthlyData)
+    } else {
+      monthlyBillSelectedIndex = -1
+      selectedTrans = []
+
+      // maybe put following highlight removal in function
+
+      // reverting yellow highlight of selected Daily Transactions to import back to normal class
+      var transSelect = document.getElementsByClassName("transDateSelected")
+      var selectedLEN = transSelect.length
+      for (var i = 0; i< selectedLEN; i++){
+        transSelect.transBox.className = "transDate"
       }
-      if (flag === false){newArray.push(workArray[i])}
+      // reverting yellow highlight of selected Monthly category of import back to normal class
+      var monthBillHighlight = document.getElementsByClassName("monthlyTypeSelected")
+      var selectedLEN = monthBillHighlight.length
+      for (var i = 0; i< selectedLEN; i++){
+        monthBillHighlight.monthBox.className = "monthlyType"
+      }
+
     }
-    // assigning new scrubbed list of Daily Trans after Import back to original variables
-    this.state.entireData = newArray
-    this.state.data = newArray
-    // adding the total of selected Daily Transactions to the existing amount of Monthly Category selected
-    var currentBillAmount = parseInt(this.state.entireMonthlyData[this.state.monthlyBillSelectedIndex].amount)
-    currentBillAmount += parseInt(totalAmountImported)
-    this.state.entireMonthlyData[this.state.monthlyBillSelectedIndex].amount = currentBillAmount
-    // show ALL TRANSACTIONS after Import
-    this.refs.Show5.className="showLast5Trans"
-    this.refs.ShowAll.className="hiddenButton"
-    this.state.data = this.state.entireData
-    // writing new Monthly data out to Firebase after Import
-    var updates = {}
-    var tempUser = firebase.auth().currentUser.email.split("@")
-    var currentUser = tempUser[0]
-    updates["/users/" + currentUser + "/" + "monthly"] = this.state.entireMonthlyData
-    firebase.database().ref().update(updates)
-    this.setState(this.state.entireMonthlyData)
-    // writing new Dailu Transaction data out to Firebase after Import
-    updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData
-    firebase.database().ref().update(updates)
-    // clearing variables once import is complete
-    var totalAmountImported = 0
-    selectedTrans = []
-    // resetting Monthly Category Selected flag
-    monthlyBillSelectedIndex = -1
-    this.setState({monthlyBillSelectedIndex})
-    // setting state to arrays so can be used elsewhere
-    this.setState(this.state.data)
-    this.setState(this.state.entireData)
-    this.setState(this.state.entireMonthlyData)
   },
   //*********************************** Help Button Popup **********************************************
   onClickHelpButton()
@@ -686,11 +717,18 @@ export default React.createClass({
             redBar = 100 - currentDayPercent
           }
           greenBar = currentDayPercent.toString()+"%"
+
           redBar = redBar.toString() + "%"
         } else {
-          greenBar = percentageSpent.toString()+"%"
+
+          greenBar = percentageSpent
+          //var currentDayPercent = (parseInt((((Date().substring(8,10)/30)*100)+.5)));
+          greyBar = currentDayPercent - greenBar
+          greyBar = greyBar.toString()+"%"
+          greenBar = greenBar.toString()+"%"
           redBar = "0%"
         }
+
     }
   },
   userIsLoggedIn() {
@@ -711,7 +749,6 @@ export default React.createClass({
       return (
         <main>
           <section className="dailyTransPageBox">
-
             <div className="dailyTransPageSection">
               <article className="transactionTitleArea">
                 <h1 className="transactionsTitle">Daily Transactions</h1>
@@ -765,9 +802,11 @@ export default React.createClass({
               </article>
             </div>
             <article className="progressBarAreaBottom">
-              <p className="progressBarGreen" style={{width : greenBar}}>Spending cash</p>
+              <p className="progressBarGreen" style={{width : greenBar}}></p>
+              <p className="progressBarGrey" style={{width : greyBar}}></p>
               <p className="progressBarRed" style={{width : redBar}}></p>
             </article>
+            <div className="progressBarLabel">Progress Bar = Spending Cash + Daily Transactions</div>
           </section>
       </main>
     )
@@ -877,7 +916,7 @@ export default React.createClass({
                   type="text"/>
           <input  className="enterMonthlyPlannedAmount"
                   maxLength="4"
-                  placeholder="    plan $"
+                  placeholder="  plan $"
                   ref="enterMonthlyPlan"
                   type="number"/>
           <button className="monthlyAddItemButton"
@@ -896,55 +935,64 @@ export default React.createClass({
             <button className="monthlySignOut" onClick={this.signUserOut}>Log Out</button>
         </article>
         </section>
-        <section className="monthlyDailyTransBox_hidden" ref="monthlyDailyTransBox">
-          <article className="transactionTitleArea">
-            <h1 className="transactionsTitle">Daily Transactions</h1>
-            <h2 className="userTransName"
-                ref="userName">User:  {firebase.auth().currentUser.email}</h2>
-          </article>
-          <ul id="list" className="newList">
-           {
-               this.state.data.map((record, i)=>{
-                 if (record.date != undefined
-                     && record.text != "")
-                 {
-                   return <article className="eachRecordContainer" key={i}>
-                            <a href="#" className="transDate" id="transBox" ref="transDate" value={i} onClick={this.onClickSelectedTrans}>{record.date}</a>
-                            <a href="#">
-                              <p className="transAmount" value={i}                            onClick={this.onClickTransAmount}>${record.amount}</p>
-                            </a>
-                            <a href="#">
-                              <p className="transDesc" value={i}
-                                onClick={this.onClickTransDescription}>{record.text}</p>
-                            </a>
-                          </article>
-               }
-             })
-           }
-         </ul>
-         <div className="addTransBox">
-              <input  className="amountItem"
-                      maxLength="4"
-                      placeholder=" $ amount"
-                      ref="amountInput"
-                      type="number"/>
-              <input  className="descriptionItem"
-                      placeholder="  description of purchase"
-                      ref="descriptionInput"
-                      type="text"/>
-              <button className="transSubmit"
-                      type="submit"
-                      onClick={this.onClickSubmit}>Add</button>
+        <div className="monthlyDailyTransBox_hidden" ref="monthlyDailyTransBox">
+          <section className="monthlyDailyTransBoxInner" >
 
-          </div>
-          <button className="showLast5Trans"
-                  ref="Show5" onClick={this.onClickShow5}>Show Last 5 Transactions</button>
-          <button className="hiddenButton"
-                  ref="ShowAll"
-                  onClick={this.onClickShowAll}>    Show All Transactions    </button>
-          <button className="importButton" onClick={this.onClickImportButton}>Import Transactions</button>
-        </section>
-      </main>
+              <article className="transactionTitleArea">
+                <h1 className="transactionsTitle">Daily Transactions</h1>
+                <h2 className="userTransName"
+                    ref="userName">User:  {firebase.auth().currentUser.email}</h2>
+              </article>
+              <ul id="list" className="newList">
+               {
+                   this.state.data.map((record, i)=>{
+                     if (record.date != undefined
+                         && record.text != "")
+                     {
+                       return <article className="eachRecordContainer" key={i}>
+                                <a href="#" className="transDate" id="transBox" ref="transDate" value={i} onClick={this.onClickSelectedTrans}>{record.date}</a>
+                                <a href="#">
+                                  <p className="transAmount" value={i}                            onClick={this.onClickTransAmount}>${record.amount}</p>
+                                </a>
+                                <a href="#">
+                                  <p className="transDesc" value={i}
+                                    onClick={this.onClickTransDescription}>{record.text}</p>
+                                </a>
+                              </article>
+
+                   }
+                 })
+               }
+             </ul>
+             <div className="addTransBox">
+                  <input  className="amountItem"
+                          maxLength="4"
+                          placeholder=" $ amount"
+                          ref="amountInput"
+                          type="number"/>
+                  <input  className="descriptionItem"
+                          placeholder="  description of purchase"
+                          ref="descriptionInput"
+                          type="text"/>
+                  <button className="transSubmit"
+                          type="submit"
+                          onClick={this.onClickSubmit}>Add</button>
+              </div>
+              <button className="showLast5Trans"
+                      ref="Show5" onClick={this.onClickShow5}>Show Last 5 Transactions</button>
+              <button className="hiddenButton"
+                      ref="ShowAll"
+                      onClick={this.onClickShowAll}>    Show All Transactions    </button>
+              <button className="importButton" onClick={this.onClickImportButton}>Import Transactions</button>
+            </section>
+            <article className="progressBarAreaBottom">
+              <p className="progressBarGreen" style={{width : greenBar}}></p>
+              <p className="progressBarGrey" style={{width : greyBar}}></p>
+              <p className="progressBarRed" style={{width : redBar}}></p>
+            </article>
+         <div className="progressBarLabel">Progress Bar = Spending Cash + Daily Transactions</div>
+       </div>
+   </main>
     )
   }
 })
