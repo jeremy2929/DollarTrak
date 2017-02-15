@@ -6,13 +6,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import ReactFire from 'reactfire'
-import { fbLogin, fbAuthCurrentUser, fbCreateUserEmailAndPswd, fbSignOut, updateFB, fbRef, fbAuthStateChanged}  from './external_firebase'
-
-
-
-//import { fbSignInWithRedirect, fbSetupSignoutCallback, fbOnAuthStateChanged, fbUpdateUser, fbWhenUserUpdated} from './external_firebase'
-
-
+var firebase = require('firebase');
+firebase.initializeApp(config);
 
 var monthlyPlannedTotalValue = 0
 var monthlyActualTotalValue = 0
@@ -30,63 +25,6 @@ var redBar = "0%"
 var elementTest = {}
 export default React.createClass({
   //****************************************************************************************************
-  loadData(){
-              if (fbAuthCurrentUser() != null){
-                var tempUser = fbAuthCurrentUser().email.split("@")
-                var currentUser = tempUser[0]
-                var userId = tempUser[0]
-            //    var ref = firebase.database().ref("/users/" + currentUser + "/" + "transactions");
-                var ref = fbRef("/users/" + currentUser + "/" + "transactions")
-              //  var ref = firebase.database().ref("/users/" + currentUser + "/" + "transactions");
-                var comp = this
-                ref.on("value", function(allData) {
-        // ************* still need an ELSE for this IF in case user insnt new but has no data
-                 if (allData.val() != null) {
-                    var entireData = allData.val()
-                    var dataLength = entireData.length
-                    var data=[]
-                    var data = entireData
-                    comp.setState({data})
-                    comp.setState({entireData})
-          //********   need ELSE statement to assign empty object to entireData if user isnt new but has no data
-                  } else {
-                    var entireData = []
-                    var data = []
-                    comp.setState({data})
-                    comp.setState({entireData})
-                  }
-               })
-               var ref = fbRef("/users/" + currentUser + "/" + "monthly");
-               var comp = this
-               ref.on("value", function(allData) {
-                //   var entireMonthlyData = []
-                   if (allData.val() != null){
-                     entireMonthlyData = allData.val()
-                     comp.setState({entireMonthlyData})
-                   } else {
-                     var entireMonthlyData = []
-                     comp.setState({entireMonthlyData})
-                   }
-        // are these 2 lines redundant below?
-                //   var entireMonthlyData = []
-                   comp.setState({entireMonthlyData})
-                })
-                var ref = fbRef("/users/" + currentUser + "/" + "monthlyincome");
-                var comp = this
-                ref.on("value", function(allData) {
-                    if (allData.val() != null){
-                      monthlyIncome = allData.val()
-                      comp.setState({monthlyIncome})
-                    } else {
-                      var monthlyIncome = "0"
-                      comp.setState({monthlyIncome})
-                    }
-         // is this line redundant below?
-                    comp.setState({monthlyIncome})
-                 })
-             }
-  },
-  // is this Props function needed?
   getDefaultProps() {
     return {
             user: { authed: false }
@@ -117,30 +55,31 @@ export default React.createClass({
   signUserIn() {
     var email = this.refs.userInput.value
     var password = this.refs.passwordInput.value
-    // imported firebase function
-    fbLogin(email, password)
-    // imported firebase function
-    var currentUser = fbAuthCurrentUser()
-    var authUser = fbAuthCurrentUser()
-
-    //firebase.auth().onAuthStateChanged((authUser) => {
-    fbAuthStateChanged((authUser)=> {
-      if (fbAuthCurrentUser() != null){
+    firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      if (errorCode === 'auth/wrong-password') {
+        alert('Wrong password.');
+      } else {
+        alert(errorMessage);
+      }
+    });
+    var currentUser = firebase.auth().currentUser
+    var authUser = firebase.auth().currentUser
+    firebase.auth().onAuthStateChanged((authUser) => {
+      if (firebase.auth().currentUser != null){
         var currentUser = {};
         var today = new Date();
-        var tempUser = fbAuthCurrentUser().email.split("@")
+        var tempUser = firebase.auth().currentUser.email.split("@")
         var userId = tempUser[0]
         currentUser["/users/" + authUser.uid] = {
           name: authUser.displayName,
           email: authUser.email,
           lastLogin: Date()
         }
-        updateFB(currentUser)
-    //    firebase.database().ref().update(currentUser)
-
-      // This sets up a callback once firebase reports that /users/{user.uid} has a value
-        fbRef("/users/" + authUser.uid).once("value").then((snapshot) => {
-        //firebase.database().ref("/users/" + authUser.uid).once("value").then((snapshot) => {
+        firebase.database().ref().update(currentUser)
+        // This sets up a callback once firebase reports that /users/{user.uid} has a value
+        firebase.database().ref("/users/" + authUser.uid).once("value").then((snapshot) => {
           var snapshotReturn = snapshot.val()
           this.setState({
             user: {
@@ -152,7 +91,69 @@ export default React.createClass({
           })
         });
       }
-      this.loadData()
+      if (firebase.auth().currentUser != null){
+      var tempUser = firebase.auth().currentUser.email.split("@")
+      var currentUser = tempUser[0]
+      var userId = tempUser[0]
+      var ref = firebase.database().ref("/users/" + currentUser + "/" + "transactions");
+      var comp = this
+      ref.on("value", function(allData) {
+// ************* still need an ELSE for this IF in case user insnt new but has no data
+         if (allData.val() != null) {
+             var entireData = allData.val()
+             var dataLength = entireData.length
+             var data=[]
+            //  if (dataLength>5){
+            //    var dataStart = dataLength-5
+            //    var j = 0
+            //    for (var i = dataStart; i<dataLength; i++){
+            //      data[j]=entireData[i]
+            //      j++
+            //    }
+            //    comp.setState({data})
+            //    comp.setState({entireData})
+            //  } else {
+               var data = entireData
+               comp.setState({data})
+               comp.setState({entireData})
+            // }
+  //********   need ELSE statement to assign empty object to entireData if user isnt new but has no data
+          } else {
+            var entireData = []
+            var data = []
+            comp.setState({data})
+            comp.setState({entireData})
+          }
+       })
+       var ref = firebase.database().ref("/users/" + currentUser + "/" + "monthly");
+       var comp = this
+       ref.on("value", function(allData) {
+        //   var entireMonthlyData = []
+           if (allData.val() != null){
+             entireMonthlyData = allData.val()
+             comp.setState({entireMonthlyData})
+           } else {
+             var entireMonthlyData = []
+             comp.setState({entireMonthlyData})
+           }
+// are these 2 lines redundant below?
+        //   var entireMonthlyData = []
+           comp.setState({entireMonthlyData})
+        })
+        var ref = firebase.database().ref("/users/" + currentUser + "/" + "monthlyincome");
+        var comp = this
+        ref.on("value", function(allData) {
+            if (allData.val() != null){
+              monthlyIncome = allData.val()
+              comp.setState({monthlyIncome})
+            } else {
+              var monthlyIncome = "0"
+              comp.setState({monthlyIncome})
+            }
+ // is this line redundant below?
+            comp.setState({monthlyIncome})
+         })
+     }
     })
   },
   //**************************************** New user sign in *************************************
@@ -170,21 +171,30 @@ export default React.createClass({
       // Sign in with email and pass.
       // [START createwithemail]
       var comp = this
-      // imported firebase function
-      fbCreateUserEmailAndPswd(email, password)
+      firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        if (errorCode != null){comp.setState({errorCode})}
+        var errorMessage = error.message;
+        // [START_EXCLUDE]
+        if (errorCode == 'auth/weak-password') {
+          alert('The password is too weak.');
+        } else {
+          alert(errorMessage);
+        }
+        console.log(error);
+        // [END_EXCLUDE]
+      });
       if (this.state.errorCode === undefined)
       {
         alert("Account created! Click OK to login...")
       }
-      // imported firebase function
-      var currentUser = fbAuthCurrentUser()
-      var authUser = fbAuthCurrentUser()
-
-      fbAuthStateChanged((authUser)=> {
-      //  firebase.auth().onAuthStateChanged((authUser) => {
+      var currentUser = firebase.auth().currentUser
+      var authUser = firebase.auth().currentUser
+      firebase.auth().onAuthStateChanged((authUser) => {
         var currentUser = {};
         var today = new Date();
-        var tempUser = fbAuthCurrentUser().email.split("@")
+        var tempUser = firebase.auth().currentUser.email.split("@")
         var userId = tempUser[0]
         currentUser["/users/" + authUser.uid] = {
           name: authUser.displayName,
@@ -193,8 +203,7 @@ export default React.createClass({
         }
         firebase.database().ref().update(currentUser)
         // This sets up a callback once firebase reports that /users/{user.uid} has a value
-        fbRef("/users/" + authUser.uid).once("value").then((snapshot) => {
-      //  firebase.database().ref("/users/" + authUser.uid).once("value").then((snapshot) => {
+        firebase.database().ref("/users/" + authUser.uid).once("value").then((snapshot) => {
           var snapshotReturn = snapshot.val()
           this.setState({
             user: {
@@ -205,9 +214,38 @@ export default React.createClass({
             }
           })
         });
-        var tempUser = fbAuthCurrentUser().email.split("@")
+        var tempUser = firebase.auth().currentUser.email.split("@")
         var currentUser = tempUser[0]
         var userId = tempUser[0]
+// FIXME Do I need to read in ANY data for a new user? Duh.
+// ************************** still need some code for monthly data for new user below this transactions section (cont)
+// ************************** if ever give user option to go to directly to Monthly page from login
+        // var ref = firebase.database().ref("/users/" + currentUser + "/" + "transactions");
+        // var comp = this
+        // ref.on("value", function(allData) {
+        //    // is this needed for new user? allData will always be null for new user
+        //    if (allData.val() != null) {
+        //        var entireData = allData.val()
+        //        if (entireData.length > 5){
+        //            var dataLength = entireData.length
+        //            var dataStart = dataLength-5
+        //            var data=[]
+        //            var j = 0
+        //            for (var i = dataStart; i<dataLength; i++){
+        //              data[j]=entireData[i]
+        //              j++
+        //            }
+        //        }
+        //        comp.setState({data})
+        //        comp.setState({entireData})
+        //     // above IF statement maybe not needed for new user
+        //     } else {
+        //       var entireData = []
+        //       var data = []
+        //       comp.setState({data})
+        //       comp.setState({entireData})
+        //     }
+        //  })
      this.setState(this.state.data)
      this.setState(this.state.entireMonthlyData)
     })
@@ -216,15 +254,15 @@ export default React.createClass({
   },
   //***************************************** User sign out **********************************************
   signUserOut() {
-    fbSignOut()
+    firebase.auth().signOut()
     this.state.monthlyFlag = undefined
     location.reload()
   },
   //****************************************** Adding Daily Transactions **********************************
   onClickSubmit(e){
-    e.preventDefault()
     if (this.refs.amountInput.value != "" || parseInt(this.refs.amountInput.value > -.01)){
         var currentDate = Date().substring(4,15)
+        e.preventDefault()
         var textInputValue = this.refs.descriptionInput.value
         var amountInputValue = this.refs.amountInput.value
         amountInputValue = this.numericValidate(amountInputValue)
@@ -233,8 +271,7 @@ export default React.createClass({
         var userId = this.state.user
         var passwordId = this.state.pswd
         var updates = {};
-
-        var tempUser = fbAuthCurrentUser().email.split("@")
+        var tempUser = firebase.auth().currentUser.email.split("@")
         var currentUser = tempUser[0]
         var newData = ""
         var database = ""
@@ -255,21 +292,18 @@ export default React.createClass({
               data[j]=this.state.entireData[i]
               j++
             }
-            // this.refs.ShowAll.className="showLast5Trans"
-            // this.refs.Show5.className="hiddenButton"
+            this.refs.ShowAll.className="showLast5Trans"
+            this.refs.Show5.className="hiddenButton"
           } else {
             data = this.state.entireData
             this.refs.ShowAll.className="hiddenButton"
             this.refs.Show5.className="showLast5Trans"
           }
           // updating FireBase with new data
-          // imported firebase function
-          var tempUser = fbAuthCurrentUser().email.split("@")
+          var tempUser = firebase.auth().currentUser.email.split("@")
           var currentUser = tempUser[0]
           updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData
-          // imported firebase function
-          updateFB(updates)
-
+          firebase.database().ref().update(updates)
     } else {
       alert("Negatives values not allowed")
       this.refs.descriptionInput.value = ""
@@ -331,12 +365,10 @@ export default React.createClass({
         }
 
     var updates = {}
-    // imported firebase function
-    var tempUser = fbAuthCurrentUser().email.split("@")
+    var tempUser = firebase.auth().currentUser.email.split("@")
     var currentUser = tempUser[0]
     updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData
-    // imported firebase function
-    updateFB(updates)
+    firebase.database().ref().update(updates)
     this.setState(this.state.data)
     this.refs.ShowAll.className="showLast5Trans"
     this.refs.Show5.className="hiddenButton"
@@ -347,11 +379,10 @@ export default React.createClass({
     var newDesc = prompt("Enter new description")
     if (newDesc != null && newDesc != "") {this.state.data[transSelected].text = newDesc}
     var updates = {}
-    var tempUser = fbAuthCurrentUser().email.split("@")
+    var tempUser = firebase.auth().currentUser.email.split("@")
     var currentUser = tempUser[0]
     updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData
-    // imported firebase function
-    updateFB(updates)
+    firebase.database().ref().update(updates)
     this.setState(this.state.data)
     this.refs.ShowAll.className="showLast5Trans"
     this.refs.Show5.className="hiddenButton"
@@ -363,7 +394,7 @@ export default React.createClass({
         // validating amount entered for numeric only, under 5 digits, or 000 for delete record
         if (newAmount === "000"){
             this.state.entireMonthlyData.splice(transSelected,1)
-        } else if (newAmount != null && newAmount > -.01) {
+        } else if (newAmount != null && newAmount > -.01){
           var numericAmount = this.numericValidate(newAmount)
           if (numericAmount === parseInt(newAmount,10)) {
             if (newAmount.length > 4){
@@ -374,22 +405,23 @@ export default React.createClass({
             }
           }
         }
+
+
     var updates = {}
-    var tempUser = fbAuthCurrentUser().email.split("@")
+    var tempUser = firebase.auth().currentUser.email.split("@")
     var currentUser = tempUser[0]
     updates["/users/" + currentUser + "/" + "monthly"] = this.state.entireMonthlyData
-    // imported firebase function
-    updateFB(updates)
+    firebase.database().ref().update(updates)
     this.setState(this.state.entireMonthlyData)
   },
-  //********************** Modifying the actual expense amount of a Monthly Bill ***********************
+  //***************************** Modifying the actual expense amount of a Monthly Bill ***********************
   onClickMonthlyBillActual(e){
     var transSelected = e.target.getAttribute('value')
     var newAmount = prompt("Enter new amount or 000 to delete")
         // validating amount entered for numeric only, under 5 digits, or 000 for delete record
         if (newAmount === "000"){
             this.state.entireMonthlyData.splice(transSelected,1)
-        } else if (newAmount != null && newAmount > -.01) {
+        } else if (newAmount != null && newAmount > -.01){
           var numericAmount = this.numericValidate(newAmount)
           if (numericAmount === parseInt(newAmount,10)) {
             if (newAmount.length > 4){
@@ -400,12 +432,12 @@ export default React.createClass({
             }
           }
         }
+
     var updates = {}
-    var tempUser = fbAuthCurrentUser().email.split("@")
+    var tempUser = firebase.auth().currentUser.email.split("@")
     var currentUser = tempUser[0]
     updates["/users/" + currentUser + "/" + "monthly"] = this.state.entireMonthlyData
-    // imported firebase function
-    updateFB(updates)
+    firebase.database().ref().update(updates)
     this.setState(this.state.entireMonthlyData)
   },
   //************************************ Modifying a Monthly Bill description *************************
@@ -416,11 +448,10 @@ export default React.createClass({
         // may not need this in condition since blocked above:  && transSelected != 0
         if (newDesc != null && transSelected != 0) {this.state.entireMonthlyData[transSelected].text = newDesc}
           var updates = {}
-          var tempUser = fbAuthCurrentUser().email.split("@")
+          var tempUser = firebase.auth().currentUser.email.split("@")
           var currentUser = tempUser[0]
           updates["/users/" + currentUser + "/" + "monthly"] = this.state.entireMonthlyData
-          // imported firebase function
-          updateFB(updates)
+          firebase.database().ref().update(updates)
           this.setState(this.state.entireMonthlyData)
      }
   },
@@ -429,12 +460,11 @@ export default React.createClass({
     var monthlyIncome = prompt("Enter Monthly Income")
     // callling a function for converting any non-numeric input to 0
     monthlyIncome = this.numericValidate(monthlyIncome)
-    var tempUser = fbAuthCurrentUser().email.split("@")
+    var tempUser = firebase.auth().currentUser.email.split("@")
     var currentUser = tempUser[0]
     var updates= {}
     updates["/users/" + currentUser + "/" + "monthlyincome"] = monthlyIncome
-    // imported firebase function
-    updateFB(updates)
+    firebase.database().ref().update(updates)
     this.setState({monthlyIncome})
   },
   //*************************************** Validating numeric input, set to 0 if NaN ********************
@@ -445,6 +475,7 @@ export default React.createClass({
   },
   //*************************************** Navigation button to Monthly Budget page ********************
   onClickMonthlyBudgetButton(){
+
     var monthlyFlag = true
     this.setState({monthlyFlag})
     this.refs.amountInput.value = ""
@@ -472,7 +503,7 @@ export default React.createClass({
         this.refs.enterMonthlyPlan.value = ""
         var userId = this.state.user
         var updates = {}
-        var tempUser = fbAuthCurrentUser().email.split("@")
+        var tempUser = firebase.auth().currentUser.email.split("@")
         var currentUser = tempUser[0]
         var newData = ""
           newData=
@@ -484,11 +515,10 @@ export default React.createClass({
               }
           this.state.entireMonthlyData = this.state.entireMonthlyData.concat(newData)
           var monthlyData = this.state.entireMonthlyData
-          var tempUser = fbAuthCurrentUser().email.split("@")
+          var tempUser = firebase.auth().currentUser.email.split("@")
           var currentUser = tempUser[0]
           updates["/users/" + currentUser + "/" + "monthly"] = this.state.entireMonthlyData
-          // imported firebase function
-          updateFB(updates)
+          firebase.database().ref().update(updates)
           this.setState(this.state.entireMonthlyData)
         } else {
           alert("Negatives values not allowed")
@@ -496,7 +526,7 @@ export default React.createClass({
           this.refs.enterMonthlyPlan.value = ""
         }
     //  this.setState({data})
-    //  this.setState({entireData})
+      this.setState({entireData})
   },
   //********************** Show Daily Transactions Page on Monthly Page ********************************
   onShowDailyTransPage(){
@@ -528,19 +558,16 @@ export default React.createClass({
   },
   //********************** Highlighting selected category of Monthly for Import ***************************
   onClickMonthlyTypeSelected(e){
-    e.preventDefault()
     if (monthlyBillSelectedIndex === -1){
       monthlyBillSelectedIndex = e.target.getAttribute('value')
       e.target.className = "monthlyTypeSelected"
-    } else if(e.target.className === "monthlyTypeSelected"){
+    } else {
       e.target.className = "monthlyType"
-      monthlyBillSelectedIndex = -1
     }
     this.setState({monthlyBillSelectedIndex})
   },
   //********************** Highlighting selected transaction on Daily Trans for Import ********************
   onClickSelectedTrans(e){
-    e.preventDefault()
     if (e.target.className === "transDateSelected"){
       var transIndex = selectedTrans.indexOf(e.target.getAttribute('value'))
       e.target.className = "transDate"
@@ -613,11 +640,10 @@ export default React.createClass({
         this.state.data = this.state.entireData
         // writing new Monthly data out to Firebase after Import
         var updates = {}
-        var tempUser = fbAuthCurrentUser().email.split("@")
+        var tempUser = firebase.auth().currentUser.email.split("@")
         var currentUser = tempUser[0]
         updates["/users/" + currentUser + "/" + "monthly"] = this.state.entireMonthlyData
-        // imported firebase function
-        updateFB(updates)
+        firebase.database().ref().update(updates)
         this.setState(this.state.entireMonthlyData)
         // writing new Dailu Transaction data out to Firebase after Import
         updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData
@@ -706,7 +732,7 @@ export default React.createClass({
     }
   },
   userIsLoggedIn() {
-    return fbAuthCurrentUser() != null
+    return firebase.auth().currentUser != null
   },
   //*********************************** Rendering the HTML elements *************************************
   render()
@@ -726,7 +752,7 @@ export default React.createClass({
               <article className="transactionTitleArea">
                 <h1 className="transactionsTitle">Daily Transactions</h1>
                 <h2 className="userTransName"
-                    ref="userName">User:  {fbAuthCurrentUser().email}</h2>
+                    ref="userName">User:  {firebase.auth().currentUser.email}</h2>
               </article>
               <ul id="list" className="newList">
                {
@@ -783,7 +809,7 @@ export default React.createClass({
           </section>
       </main>
     )
-  } else if (fbAuthCurrentUser() === null)
+  } else if (firebase.auth().currentUser === null)
    {
     return (
       <main>
@@ -803,7 +829,7 @@ export default React.createClass({
                    ref="passwordInput"
                    type="password"></input>
             <button className="newUser" onClick={this.newUserSignUp}>NEW USER</button>
-            <button className="loginUser" ref="loginButton" onClick={this.signUserIn}>LOGIN</button>
+            <button className="loginUser" onClick={this.signUserIn}>LOGIN</button>
             <div className="helpContainer">
               <button className="helpButton" onClick={this.onClickHelpButton}>HELP</button>
             </div>
@@ -812,14 +838,14 @@ export default React.createClass({
       </main>
      )
    }
-   if (fbAuthCurrentUser() != null && this.state.monthlyFlag === true)
+   if (firebase.auth().currentUser != null && this.state.monthlyFlag === true)
     return (
       <main className="monthlyPageSection">
         <section className="monthlyBoxCenter" ref="monthlyBox">
           <article className="monthlyTitleArea">
             <h1 className="monthlyTitle">Monthly Budget</h1>
             <h2 className="userMonthlyName"
-                ref="userName">User:  {fbAuthCurrentUser().email}</h2>
+                ref="userName">User:  {firebase.auth().currentUser.email}</h2>
           </article>
           <div className="monthlyIncomeArea">
             <p className="monthlyIncomeLabel">Monthly Income</p>
@@ -914,7 +940,7 @@ export default React.createClass({
               <article className="transactionTitleArea">
                 <h1 className="transactionsTitle">Daily Transactions</h1>
                 <h2 className="userTransName"
-                    ref="userName">User:  {fbAuthCurrentUser().email}</h2>
+                    ref="userName">User:  {firebase.auth().currentUser.email}</h2>
               </article>
               <ul id="list" className="newList">
                {

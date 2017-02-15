@@ -31,6 +31,10 @@ body{
     width: 100%;
 }
 
+.progressBarGrey_hidden{
+  visibility: hidden;
+}
+
 .progressBarGrey{
   background-color: lightgrey;
   display: inline-block;
@@ -338,6 +342,7 @@ body{
   height: 40px;
   line-height: 40px;
   margin: 0;
+  padding-top: 0px;
   /*text-align: center;*/
   width: 61px;
 }
@@ -358,11 +363,11 @@ body{
     font-size: 20px;
     height: 40px;
     line-height: 40px;
-    margin-left: 2%;
+    margin-left: 12%;
     margin-top: 5px;
     padding-top: 0px;
     text-align: center;
-    width: 400px;
+    width: 300px;
 }
 
 .importButton{
@@ -374,11 +379,11 @@ body{
     font-size: 20px;
     height: 40px;
     line-height: 40px;
-    margin-left: 2%;
+    margin-left: 12%;
     margin-top: 5px;
     padding-top: 0px;
     text-align: center;
-    width: 400px;
+    width: 300px;
 }
 
 .showLast5Trans{
@@ -391,11 +396,11 @@ body{
   font-size: 20px;
   height: 40px;
   line-height: 40px;
-  margin-left: 2%;
+  margin-left: 12%;
   margin-top: 5px;
   padding-top: 0px;
   text-align: center;
-  width: 400px;
+  width: 300px;
 }
 
 .signOut{
@@ -407,11 +412,11 @@ body{
   font-size: 20px;
   height: 40px;
   line-height: 40px;
-  margin-left: 2%;
+  margin-left: 12%;
   margin-top: 5px;
   padding-top: 0px;
   text-align: center;
-  width: 400px;
+  width: 300px;
 }
 
 .monthlyBoxCenter{
