@@ -23,6 +23,15 @@ body{
   width: 100%;
 }
 
+.buttonLockArea_locked{
+  /*border: solid 2px;*/
+  display: inline-block;
+  height: 40px;
+  margin-left: 11%;
+  margin-right: 1%;
+  width: 100%;
+}
+
 .lockButtonOpen{
   background-color: tan;
   border: solid 2px;
@@ -58,6 +67,10 @@ body{
     height: 21px;
     margin: 0;
     width: 100%;
+}
+
+.progressBarAreaBottom_hidden{
+  display: none;
 }
 
 .progressBarGrey_hidden{
@@ -107,6 +120,19 @@ body{
   width: 100%;
 }
 
+.progressBarLabel_hidden{
+  display: none;
+}
+
+.lockLogo{
+  margin-left: 0%;
+margin-top: 50%;
+}
+
+.lockLogo_hidden{
+  display: none;
+}
+
 .dailyTransPageSection{
   background-color: peachpuff;
   border: solid 2px;
@@ -117,6 +143,10 @@ body{
   padding-bottom: 20px;
   vertical-align: top;
   width: 420px;
+}
+
+.dailyTransPageSection_hidden{
+  display: none;
 }
 
 .loginPage{

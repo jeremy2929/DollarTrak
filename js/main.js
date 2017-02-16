@@ -22,6 +22,8 @@ var redBar = "0%"
 var actualClass = "monthlyBillActual"
 var password = ""
 var buttonsLocked = []
+var buttonsUnlockCode = ["1","2","3"]
+var screenLocked = false
 // activate next line when deploying- commented out for easier testing. it ensures previous user sign out
 // firebase.auth().signOut()
 var elementTest = {}
@@ -717,6 +719,45 @@ export default React.createClass({
       e.target.className = "lockButtonClosed"
       buttonsLocked = buttonsLocked.concat(test)
     }
+    buttonsLocked = buttonsLocked.sort()
+    if (JSON.stringify(buttonsLocked) === JSON.stringify(buttonsUnlockCode)){
+      console.log("unlocked");
+      screenLocked = false
+      buttonsLocked = []
+      this.setState(this.state.data)
+      var buttonSelect = document.getElementsByClassName("lockButtonClosed")
+      var buttonLEN = buttonSelect.length
+      for (var i = 0; i< buttonLEN; i++){
+        buttonSelect.lockButtonBox.className = "lockButtonOpen"
+      }
+      this.refs.dailyTransPageSection.className = "dailyTransPageSection"
+      this.refs.progressBarLabel.className = "progressBarLabel"
+      this.refs.progressBarAreaBottom.className = "progressBarAreaBottom"
+      this.refs.lockLogo.className = "lockLogo_hidden"
+      this.refs.buttonLockArea.className = "buttonLockArea"
+
+    }
+    console.log(buttonsLocked);
+    console.log(buttonsUnlockCode);
+    if (buttonsLocked === buttonsUnlockCode){
+      console.log("unlocked");
+    }
+  },
+  onClickLockScreen(e){
+    console.log("locking screen");
+    screenLocked = true
+    this.setState(this.state.data)
+    var buttonSelect = document.getElementsByClassName("lockButtonClosed")
+    var buttonLEN = buttonSelect.length
+    for (var i = 0; i< buttonLEN; i++){
+      buttonSelect.lockButtonBox.className = "lockButtonOpen"
+    }
+    this.refs.dailyTransPageSection.className = "dailyTransPageSection_hidden"
+    this.refs.progressBarLabel.className = "progressBarLabel_hidden"
+    this.refs.progressBarAreaBottom.className = "progressBarAreaBottom_hidden"
+    this.refs.lockLogo.className="lockLogo"
+    this.refs.buttonLockArea.className = "buttonLockArea_locked"
+
   },
   //*********************************** Help Button Popup **********************************************
   onClickHelpButton()
@@ -788,7 +829,7 @@ export default React.createClass({
         <main>
 
           <section className="dailyTransPageBox">
-            <div className="dailyTransPageSection">
+            <div className="dailyTransPageSection" ref="dailyTransPageSection">
               <article className="transactionTitleArea">
                 <h1 className="transactionsTitle">Daily Transactions</h1>
                 <h2 className="userTransName"
@@ -797,6 +838,7 @@ export default React.createClass({
               <ul id="list" className="newList">
                {
                    this.state.data.map((record, i)=>{
+                     if (screenLocked === false){
                      if (record.date != undefined
                          && record.text != "")
                      {
@@ -811,6 +853,7 @@ export default React.createClass({
                                 </a>
                               </article>
                    }
+                 }
                  })
                }
              </ul>
@@ -836,25 +879,26 @@ export default React.createClass({
                           ref="ShowAll"
                           onClick={this.onClickShowAll}>    Show All Transactions    </button>
                   <button className="monthlyBudgetButton" onClick={this.onClickMonthlyBudgetButton}>Go to Monthly Budget</button>
-                    <button className="lockScreen"
-                          onClick={this.lockScreen}>Lock Screen</button>
-                    <button className="signOut"
+                  <button className="lockScreen"
+                          onClick={this.onClickLockScreen}>Lock Screen</button>
+                  <button className="signOut"
                           onClick={this.signUserOut}>Log Out</button>
 
               </article>
             </div>
-            <article className="progressBarAreaBottom">
+            <article className="progressBarAreaBottom" ref="progressBarAreaBottom">
               <p className="progressBarGreen" style={{width : greenBar}}></p>
               <p className="progressBarGrey" ref="greyBar" style={{width : greyBar}}></p>
               <p className="progressBarRed" style={{width : redBar}}></p>
             </article>
-            <div className="progressBarLabel">Progress Bar = Spending Cash + Daily Transactions</div>
-              <article className="buttonLockArea">
-                <button className="lockButtonOpen" ref="lockButton" value="1" onClick={this.onClickLockButton}></button>
-                <button className="lockButtonOpen" ref="lockButton" value="2" onClick={this.onClickLockButton}></button>
-                <button className="lockButtonOpen" ref="lockButton" value="3" onClick={this.onClickLockButton}></button>
-                <button className="lockButtonOpen" ref="lockButton" value="4" onClick={this.onClickLockButton}></button>
-                <button className="lockButtonOpen" ref="lockButton" value="5" onClick={this.onClickLockButton}></button>
+            <div className="progressBarLabel" ref="progressBarLabel">Progress Bar = Spending Cash + Daily Transactions</div>
+            <img src="styles/DollarTrak.png" className="lockLogo_hidden" ref="lockLogo"></img>
+              <article className="buttonLockArea" ref="buttonLockArea">
+                <button className="lockButtonOpen" id="lockButtonBox" ref="lockButton" value="1" onClick={this.onClickLockButton}></button>
+                <button className="lockButtonOpen" id="lockButtonBox" ref="lockButton" value="2" onClick={this.onClickLockButton}></button>
+                <button className="lockButtonOpen" id="lockButtonBox" ref="lockButton" value="3" onClick={this.onClickLockButton}></button>
+                <button className="lockButtonOpen" id="lockButtonBox" ref="lockButton" value="4" onClick={this.onClickLockButton}></button>
+                <button className="lockButtonOpen" id="lockButtonBox" ref="lockButton" value="5" onClick={this.onClickLockButton}></button>
               </article>
           </section>
     </main>
