@@ -233,7 +233,6 @@ export default React.createClass({
    this.setState(this.state.entireMonthlyData)
    var updates = {}
    updates["/users/" + currentUser + "/" + "monthly"] = this.state.entireMonthlyData
-   console.log("updates=",updates);
    // imported firebase function
    updateFB(updates)
    var newData = ""
@@ -241,7 +240,7 @@ export default React.createClass({
    var entireData = []
    newData =
        {
-         amount: null,
+         amount: 0,
            date: null,
            text: null
        }
@@ -404,8 +403,11 @@ export default React.createClass({
     var transSelected = e.target.getAttribute('value')
     var newAmount = prompt("Enter new amount or 000 to delete")
         // validating amount entered for numeric only, under 5 digits, or 000 for delete record
-        if (newAmount === "000"){
+        if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text != "spending cash"){
             this.state.entireMonthlyData.splice(transSelected,1)
+        } else if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text === "spending cash"){
+          alert("Category 'spending cash' can not be deleted")
+          newAmount = null
         } else if (newAmount != null && newAmount > -.01) {
           var numericAmount = this.numericValidate(newAmount)
           if (numericAmount === parseInt(newAmount,10)) {
@@ -430,8 +432,11 @@ export default React.createClass({
     var transSelected = e.target.getAttribute('value')
     var newAmount = prompt("Enter new amount or 000 to delete")
         // validating amount entered for numeric only, under 5 digits, or 000 for delete record
-        if (newAmount === "000"){
+        if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text != "spending cash"){
             this.state.entireMonthlyData.splice(transSelected,1)
+        } else if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text === "spending cash"){
+          alert("Category 'spending cash' can not be deleted")
+          newAmount = null
         } else if (newAmount != null && newAmount > -.01) {
           var numericAmount = this.numericValidate(newAmount)
           if (numericAmount === parseInt(newAmount,10)) {
@@ -442,6 +447,8 @@ export default React.createClass({
                 this.setState(this.state.entireMonthlyData)
             }
           }
+        } else if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text === "spending cash"){
+          alert("Category 'spending cash' can not be deleted")
         }
     var updates = {}
     var tempUser = fbAuthCurrentUser().email.split("@")
@@ -697,7 +704,7 @@ export default React.createClass({
     alert("This will be info button how to use app. When we are unhurried and wise, we perceive that only great and worthy things have any permanent and absolute existence; that petty fears and petty pleasures are but the shadow of the reality. -Henry David Thoreau")
   },
   spendingGreenBar(){
-    if (this.state.entireData[0].text != undefined && this.state.entireMonthlyData.length > 1){
+    if (this.state.entireMonthlyData[0].plan > 0){
         // determining percentage of month based on current day and 30 day month
         var currentDayPercent = (parseInt((((Date().substring(8,10)/30)*100)+.5)));
         // create total for all Daily Transactions
@@ -851,6 +858,8 @@ export default React.createClass({
      )
    }
    if (fbAuthCurrentUser() != null && this.state.monthlyFlag === true)
+    if (this.state.monthlyIncome === 0 || this.state.monthlyIncome === undefined){this.onMonthlyIncomeInput()}
+
     return (
       <main className="monthlyPageSection">
         <section className="monthlyBoxCenter" ref="monthlyBox">
@@ -1013,4 +1022,5 @@ export default React.createClass({
    </main>
     )
   }
+
 })
