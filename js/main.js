@@ -8,12 +8,6 @@ import ReactDOM from 'react-dom'
 import ReactFire from 'reactfire'
 import { fbLogin, fbAuthCurrentUser, fbCreateUserEmailAndPswd, fbSignOut, updateFB, fbRef, fbAuthStateChanged}  from './external_firebase'
 
-
-
-//import { fbSignInWithRedirect, fbSetupSignoutCallback, fbOnAuthStateChanged, fbUpdateUser, fbWhenUserUpdated} from './external_firebase'
-
-
-
 var monthlyPlannedTotalValue = 0
 var monthlyActualTotalValue = 0
 var mptClass = "monthlyPlannedTotal"
@@ -25,6 +19,7 @@ var selectedTrans = []
 var greyBar
 var greenBar = "0%"
 var redBar = "0%"
+var actualClass = "monthlyBillActual"
 // activate next line when deploying- commented out for easier testing. it ensures previous user sign out
 // firebase.auth().signOut()
 var elementTest = {}
@@ -40,7 +35,7 @@ export default React.createClass({
               //  var ref = firebase.database().ref("/users/" + currentUser + "/" + "transactions");
                 var comp = this
                 ref.on("value", function(allData) {
-        // ************* still need an ELSE for this IF in case user insnt new but has no data
+        // ************* does this still need an ELSE for this IF in case user insnt new but has no data
                  if (allData.val() != null) {
                     var entireData = allData.val()
                     var dataLength = entireData.length
@@ -104,6 +99,10 @@ export default React.createClass({
                     lastLogin: undefined
                   },
             data: [
+                    {
+                    }
+                  ],
+      entireData: [
                     {
                     }
                   ],
@@ -177,7 +176,7 @@ export default React.createClass({
         alert("Account created! Click OK to login...")
       }
       // imported firebase function
-      var currentUser = fbAuthCurrentUser()
+    //  var currentUser = fbAuthCurrentUser()
       var authUser = fbAuthCurrentUser()
 
       fbAuthStateChanged((authUser)=> {
@@ -191,7 +190,7 @@ export default React.createClass({
           email: authUser.email,
           lastLogin: "today"
         }
-        firebase.database().ref().update(currentUser)
+        updateFB(currentUser)
         // This sets up a callback once firebase reports that /users/{user.uid} has a value
         fbRef("/users/" + authUser.uid).once("value").then((snapshot) => {
       //  firebase.database().ref("/users/" + authUser.uid).once("value").then((snapshot) => {
@@ -208,11 +207,55 @@ export default React.createClass({
         var tempUser = fbAuthCurrentUser().email.split("@")
         var currentUser = tempUser[0]
         var userId = tempUser[0]
+// is this needed below?  does it execute?**************************
+        var data = []
+        var entireData = []
      this.setState(this.state.data)
+     this.setState(this.state.entireData)
      this.setState(this.state.entireMonthlyData)
-    })
+ // is this needed above?  does it execute?**************************
+// old end of function promise
+
+  var tempUser = fbAuthCurrentUser().email.split("@")
+  var currentUser = tempUser[0]
+  var userId = tempUser[0]
+  var newData = ""
+  var entireMonthlyData = []
+  newData=
+      {
+        amount: 0,
+          plan: 0,
+          type: "spe",
+          text: "spending cash"
+      }
+   entireMonthlyData = entireMonthlyData.concat(newData)
+   this.setState({entireMonthlyData})
+   this.setState(this.state.entireMonthlyData)
+   var updates = {}
+   updates["/users/" + currentUser + "/" + "monthly"] = this.state.entireMonthlyData
+   console.log("updates=",updates);
+   // imported firebase function
+   updateFB(updates)
+   var newData = ""
+   var data = []
+   var entireData = []
+   newData =
+       {
+         amount: null,
+           date: null,
+           text: null
+       }
+   entireData = entireData.concat(newData)
+   data = data.concat(newData)
+   this.setState({data})
+   this.setState({entireData})
    this.setState(this.state.data)
    this.setState(this.state.entireData)
+   var updates = {}
+   updates["/users/" + currentUser + "/" + "transactions"] = entireData
+   // imported firebase function
+   updateFB(updates)
+   })
   },
   //***************************************** User sign out **********************************************
   signUserOut() {
@@ -275,7 +318,7 @@ export default React.createClass({
       this.refs.descriptionInput.value = ""
       this.refs.amountInput.value = ""
     }
-    //this.setState({data})
+    this.setState({data})
     this.setState(this.state.data)
   },
   //***************************************** Show all Daily Transactions **********************************
@@ -570,8 +613,6 @@ export default React.createClass({
           monthBillHighlight.monthBox.className = "monthlyType"
         }
 
-
-
         // converting array of strings of selected Daily Transactions to numeric format
         var selectedLength = selectedTrans.length
         var numArray = []
@@ -580,7 +621,6 @@ export default React.createClass({
           var newnum = parseInt(selectedTrans[i])
           numArray.push(newnum)
         }
-
 
         // scrubbing the Selected List for Import against existing list of Daily Transactions
         // Thus, rebuilding the Daily Transaction array without items that were imported
@@ -637,7 +677,6 @@ export default React.createClass({
       selectedTrans = []
 
       // maybe put following highlight removal in function
-
       // reverting yellow highlight of selected Daily Transactions to import back to normal class
       var transSelect = document.getElementsByClassName("transDateSelected")
       var selectedLEN = transSelect.length
@@ -650,7 +689,6 @@ export default React.createClass({
       for (var i = 0; i< selectedLEN; i++){
         monthBillHighlight.monthBox.className = "monthlyType"
       }
-
     }
   },
   //*********************************** Help Button Popup **********************************************
@@ -659,7 +697,7 @@ export default React.createClass({
     alert("This will be info button how to use app. When we are unhurried and wise, we perceive that only great and worthy things have any permanent and absolute existence; that petty fears and petty pleasures are but the shadow of the reality. -Henry David Thoreau")
   },
   spendingGreenBar(){
-    if (this.state.entireData != undefined){
+    if (this.state.entireData[0].text != undefined && this.state.entireMonthlyData.length > 1){
         // determining percentage of month based on current day and 30 day month
         var currentDayPercent = (parseInt((((Date().substring(8,10)/30)*100)+.5)));
         // create total for all Daily Transactions
@@ -805,7 +843,7 @@ export default React.createClass({
             <button className="newUser" onClick={this.newUserSignUp}>NEW USER</button>
             <button className="loginUser" ref="loginButton" onClick={this.signUserIn}>LOGIN</button>
             <div className="helpContainer">
-              <button className="helpButton" onClick={this.onClickHelpButton}>HELP</button>
+              <button className="helpButton" ref="helpButton" onClick={this.onClickHelpButton}>HELP</button>
             </div>
         </article>
         </section>
@@ -854,6 +892,11 @@ export default React.createClass({
                     matClass = "monthlyActualTotal"
                     matAlertClass = "monthlyActualTotalAlert_hidden"
                   }
+                  if (record.amount > record.plan) {
+                    actualClass = "monthlyBillActualRed"
+                  } else {
+                    actualClass = "monthlyBillActual"
+                  }
                    return <article className="eachRecordContainer" key={i}>
                               <a href="#"
                                  className="monthlyType" id="monthBox" ref="monthlyType" value={i} onClick={this.onClickMonthlyTypeSelected}>
@@ -863,11 +906,13 @@ export default React.createClass({
                                     onClick={this.onClickMonthlyDescription}>{record.text}</p>
                               </a>
                               <a href="#">
-                                <p className="monthlyBillPlan" value={i}                            onClick={this.onClickMonthlyBillPlan}>${record.plan}</p>
+                                <p className="monthlyBillPlan"  value={i}                            onClick={this.onClickMonthlyBillPlan}>${record.plan}</p>
                               </a>
+
                               <a href="#">
-                                <p className="monthlyBillActual" value={i}                            onClick={this.onClickMonthlyBillActual}>${record.amount}</p>
+                                <p className={actualClass} ref="monthlyActual" value={i}                            onClick={this.onClickMonthlyBillActual}>${record.amount}</p>
                               </a>
+
                           </article>
                }
              })

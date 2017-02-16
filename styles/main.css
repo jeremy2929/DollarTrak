@@ -609,6 +609,7 @@ body{
 .monthlyBillDesc{
   background: lavender;
   border: solid black 1px;
+  color: black;
   display: inline-block;
   font-size: 15px;
   height: 19px;
@@ -621,6 +622,7 @@ body{
 .monthlyBillPlan{
   background: lavender;
   border: solid black 1px;
+  color: black;
   display: inline-block;
   font-size: 15px;
   height: auto;
@@ -634,6 +636,21 @@ body{
 .monthlyBillActual{
   background: lavender;
   border: solid black 1px;
+  color: black;
+  display: inline-block;
+  font-size: 15px;
+  height: auto;
+  margin: 0px;
+  overflow: auto;
+  padding-left: 2px;
+  text-align: center;
+  width: 50px;
+}
+
+.monthlyBillActualRed{
+  background: indianred;
+  border: solid black 1px;
+  color: black;
   display: inline-block;
   font-size: 15px;
   height: auto;

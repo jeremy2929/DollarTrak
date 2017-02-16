@@ -2,7 +2,7 @@ import React from 'react'
 import TestUtils from 'react-addons-test-utils'
 import Main from '../js/main'
 
-jest.mock('../js/__mocks__/firebase_mock')
+jest.mock('../js/external_firebase')
 
 describe("Main", ()=>{
   let mainComponent = {}
@@ -21,9 +21,33 @@ describe("Main", ()=>{
     expect(currentLoginButtonElements.textContent).toEqual("LOGIN")
   })
 
-
+  it("Should render a HELP button", ()=>{
+      const currentHelpButtonElements = mainComponent.refs.helpButton
+      expect(currentHelpButtonElements.textContent).toBe("HELP")
+      })
+var user = "xxx"
+  it("It should call the onShowDailyPage function", () => {
+  var fbAuthCurrentUser = jest.fn(e => {
+     return "test"
+   })
+   let test = true
+   let monthlyFlag = true
+   mainComponent.setState({monthlyFlag: true})
+  // mainComponent.setState({fbAuthCurrentUser(){}})
+   mainComponent = TestUtils.renderIntoDocument(<Main monthlyFlag={test}/>)
+ //component = TestUtils.renderIntoDocument(<Ancestor heirlooms={heirlooms}/>);console.log(mainComponent);
+   let ShowDailyButton = mainComponent.refs.showDailyTransPage
+console.log(mainComponent);
+console.log("fbAuth=",fbAuthCurrentUser());
+console.log("mf=",monthlyFlag);
+console.log("show=",ShowDailyButton);
+         TestUtils.Simulate.click(ShowDailyButton)
+         expect(this.onShowDailyTransPage).toBeCalled()
+      })
 })
 
+
+//(fbAuthCurrentUser() != null && this.state.monthlyFlag === true)
 
 //
 //
@@ -74,4 +98,3 @@ describe("Main", ()=>{
 //   //   const createHomeButtonElement = TestUtils.scryRenderedDOMComponentsWithClass(postComponent, "homeButton")
 //   //   expect(createHomeButtonElement).toBeDefined()
 //   // })
-// })

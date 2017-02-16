@@ -1,11 +1,10 @@
 const provider = {}
 
 export function fbLogin(uid, cb) {
-  console.log("FIXME: In mocked fbSignInWithRedirect")
 }
 
-export function fbSignOut(cb) {
-  return cb()
+export function fbSignOut() {
+  return
 }
 
 export function fbAuthStateChanged(cb) {
@@ -16,10 +15,6 @@ export function updateFB(user) {
   //FIXME: Do we need to mock out database?
 }
 
-export function fbAuthStateChanged(cb) {
-  cb()
-}
-
 export function fbRef(cb) {
   cb()
 }
@@ -28,9 +23,8 @@ export function fbCreateUserEmailAndPswd(uid, cb) {
   cb()
 }
 
-export function fbAuthCurrentUser(cb) {
-  console.log("testtt");
-  cb()
+export function fbAuthCurrentUser() {
+  return null
 }
 
 
