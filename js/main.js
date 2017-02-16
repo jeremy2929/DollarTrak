@@ -20,6 +20,7 @@ var greyBar
 var greenBar = "0%"
 var redBar = "0%"
 var actualClass = "monthlyBillActual"
+var password = ""
 // activate next line when deploying- commented out for easier testing. it ensures previous user sign out
 // firebase.auth().signOut()
 var elementTest = {}
@@ -153,6 +154,7 @@ export default React.createClass({
       }
       this.loadData()
     })
+    this.setState({password})
   },
   //**************************************** New user sign in *************************************
   newUserSignUp(){
@@ -250,6 +252,7 @@ export default React.createClass({
    this.setState({entireData})
    this.setState(this.state.data)
    this.setState(this.state.entireData)
+   this.setState({password})
    var updates = {}
    updates["/users/" + currentUser + "/" + "transactions"] = entireData
    // imported firebase function
@@ -495,10 +498,14 @@ export default React.createClass({
   },
   //*************************************** Navigation button to Monthly Budget page ********************
   onClickMonthlyBudgetButton(){
-    var monthlyFlag = true
-    this.setState({monthlyFlag})
-    this.refs.amountInput.value = ""
-    this.refs.descriptionInput.value  = ""
+    // make these commented lines of code active on final
+    // var pswd = prompt ("Please re-enter password")
+    // if (pswd === this.state.password){
+      var monthlyFlag = true
+      this.setState({monthlyFlag})
+      this.refs.amountInput.value = ""
+      this.refs.descriptionInput.value  = ""
+    // }
   },
   //*************************************** Navigation button to Daily Transactions page ********************
   onClickDailyTransButton(){
