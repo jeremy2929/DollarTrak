@@ -21,6 +21,7 @@ var greenBar = "0%"
 var redBar = "0%"
 var actualClass = "monthlyBillActual"
 var password = ""
+var buttonsLocked = []
 // activate next line when deploying- commented out for easier testing. it ensures previous user sign out
 // firebase.auth().signOut()
 var elementTest = {}
@@ -705,6 +706,18 @@ export default React.createClass({
       }
     }
   },
+  onClickLockButton(e){
+    e.preventDefault()
+    var test = e.target.getAttribute('value')
+    if (e.target.className === "lockButtonClosed"){
+      var buttonIndex = buttonsLocked.indexOf(e.target.getAttribute('value'))
+      e.target.className = "lockButtonOpen"
+      buttonsLocked.splice(buttonIndex,1)
+    } else {
+      e.target.className = "lockButtonClosed"
+      buttonsLocked = buttonsLocked.concat(test)
+    }
+  },
   //*********************************** Help Button Popup **********************************************
   onClickHelpButton()
   {
@@ -773,6 +786,7 @@ export default React.createClass({
     if (this.userIsLoggedIn() && this.state.monthlyFlag === undefined){
       return (
         <main>
+
           <section className="dailyTransPageBox">
             <div className="dailyTransPageSection">
               <article className="transactionTitleArea">
@@ -822,8 +836,11 @@ export default React.createClass({
                           ref="ShowAll"
                           onClick={this.onClickShowAll}>    Show All Transactions    </button>
                   <button className="monthlyBudgetButton" onClick={this.onClickMonthlyBudgetButton}>Go to Monthly Budget</button>
-                  <button className="signOut"
+                    <button className="lockScreen"
+                          onClick={this.lockScreen}>Lock Screen</button>
+                    <button className="signOut"
                           onClick={this.signUserOut}>Log Out</button>
+
               </article>
             </div>
             <article className="progressBarAreaBottom">
@@ -832,8 +849,15 @@ export default React.createClass({
               <p className="progressBarRed" style={{width : redBar}}></p>
             </article>
             <div className="progressBarLabel">Progress Bar = Spending Cash + Daily Transactions</div>
+              <article className="buttonLockArea">
+                <button className="lockButtonOpen" ref="lockButton" value="1" onClick={this.onClickLockButton}></button>
+                <button className="lockButtonOpen" ref="lockButton" value="2" onClick={this.onClickLockButton}></button>
+                <button className="lockButtonOpen" ref="lockButton" value="3" onClick={this.onClickLockButton}></button>
+                <button className="lockButtonOpen" ref="lockButton" value="4" onClick={this.onClickLockButton}></button>
+                <button className="lockButtonOpen" ref="lockButton" value="5" onClick={this.onClickLockButton}></button>
+              </article>
           </section>
-      </main>
+    </main>
     )
   } else if (fbAuthCurrentUser() === null)
    {
