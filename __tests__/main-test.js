@@ -35,6 +35,7 @@ var user = "xxx"
    mainComponent.setState({monthlyFlag: true})
   // mainComponent.setState({fbAuthCurrentUser(){}})
    mainComponent = TestUtils.renderIntoDocument(<Main monthlyFlag={test}/>)
+   mainComponent.refs.Show5.className="showLast5Trans"
  //component = TestUtils.renderIntoDocument(<Ancestor heirlooms={heirlooms}/>);console.log(mainComponent);
    let ShowDailyButton = mainComponent.refs.showDailyTransPage
 console.log(mainComponent);

@@ -22,7 +22,7 @@ var redBar = "0%"
 var actualClass = "monthlyBillActual"
 var password = ""
 var buttonsLocked = []
-var buttonsUnlockCode = ["1","2","3"]
+var buttonsUnlockCode = ["1","3","5"]
 var screenLocked = false
 // activate next line when deploying- commented out for easier testing. it ensures previous user sign out
 // firebase.auth().signOut()
@@ -721,7 +721,6 @@ export default React.createClass({
     }
     buttonsLocked = buttonsLocked.sort()
     if (JSON.stringify(buttonsLocked) === JSON.stringify(buttonsUnlockCode)){
-      console.log("unlocked");
       screenLocked = false
       buttonsLocked = []
       this.setState(this.state.data)
@@ -734,17 +733,12 @@ export default React.createClass({
       this.refs.progressBarLabel.className = "progressBarLabel"
       this.refs.progressBarAreaBottom.className = "progressBarAreaBottom"
       this.refs.lockLogo.className = "lockLogo_hidden"
-      this.refs.buttonLockArea.className = "buttonLockArea"
-
+      this.refs.buttonLockArea.className = "buttonLockArea_hidden"
     }
-    console.log(buttonsLocked);
-    console.log(buttonsUnlockCode);
     if (buttonsLocked === buttonsUnlockCode){
-      console.log("unlocked");
     }
   },
   onClickLockScreen(e){
-    console.log("locking screen");
     screenLocked = true
     this.setState(this.state.data)
     var buttonSelect = document.getElementsByClassName("lockButtonClosed")
@@ -756,8 +750,10 @@ export default React.createClass({
     this.refs.progressBarLabel.className = "progressBarLabel_hidden"
     this.refs.progressBarAreaBottom.className = "progressBarAreaBottom_hidden"
     this.refs.lockLogo.className="lockLogo"
+    this.refs.buttonLockArea.className="buttonLockArea"
     this.refs.buttonLockArea.className = "buttonLockArea_locked"
 
+    buttonsLocked = []
   },
   //*********************************** Help Button Popup **********************************************
   onClickHelpButton()
@@ -821,7 +817,7 @@ export default React.createClass({
     // console.log("monthly=",this.state.monthlyFlag);
     // console.log("auth=",firebase.auth().currentUser);
     // console.log("entireMonthlyData at render=",this.state.entireMonthlyData);
-    // have to set this.state.monthlyFlag when loggin out
+    // have to set this.state.monthlyFlag when logging out
     var monthlyPlannedTotalValue = 0
     var monthlyActualTotalValue = 0
     if (this.userIsLoggedIn() && this.state.monthlyFlag === undefined){
@@ -893,7 +889,7 @@ export default React.createClass({
             </article>
             <div className="progressBarLabel" ref="progressBarLabel">Progress Bar = Spending Cash + Daily Transactions</div>
             <img src="styles/DollarTrak.png" className="lockLogo_hidden" ref="lockLogo"></img>
-              <article className="buttonLockArea" ref="buttonLockArea">
+              <article className="buttonLockArea_hidden" ref="buttonLockArea">
                 <button className="lockButtonOpen" id="lockButtonBox" ref="lockButton" value="1" onClick={this.onClickLockButton}></button>
                 <button className="lockButtonOpen" id="lockButtonBox" ref="lockButton" value="2" onClick={this.onClickLockButton}></button>
                 <button className="lockButtonOpen" id="lockButtonBox" ref="lockButton" value="3" onClick={this.onClickLockButton}></button>

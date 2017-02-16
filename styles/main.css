@@ -23,6 +23,10 @@ body{
   width: 100%;
 }
 
+.buttonLockArea_hidden{
+  display: none;
+}
+
 .buttonLockArea_locked{
   /*border: solid 2px;*/
   display: inline-block;
