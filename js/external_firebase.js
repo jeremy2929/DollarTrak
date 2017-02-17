@@ -43,6 +43,76 @@ export function fbRef(dataPath){
   return firebase.database().ref(dataPath)
 }
 
+export function fbGetUserValue(authUser, comp) {
+  firebase.database().ref("/users/" + authUser.uid).once("value").then((snapshot) => {
+    var snapshotReturn = snapshot.val()
+    comp.setState({
+      user: {
+        authed: true,
+        name: authUser.email,
+        email: snapshotReturn.email,
+        lastLogin: snapshotReturn.lastLogin
+      }
+    })
+  })
+
+}
+
+// export function fbOnTransactionValue(dataPath, cb) {
+//
+// }
+
 export function fbAuthStateChanged(authUser){
   return firebase.auth().onAuthStateChanged(authUser)
+}
+
+export function fbGetTransactionData(comp, currentUser) {
+  firebase.database().ref("/users/" + currentUser + "/" + "transactions").on("value",   function(allData) {
+// ************* does this still need an ELSE for this IF in case user insnt new but has no data
+ if (allData.val() != null) {
+    var entireData = allData.val()
+    var dataLength = entireData.length
+    var data=[]
+    var data = entireData
+    comp.setState({data})
+    comp.setState({entireData})
+//********   need ELSE statement to assign empty object to entireData if user isnt new but has no data
+  } else {
+    var entireData = []
+    var data = []
+    comp.setState({data})
+    comp.setState({entireData})
+  }
+})
+}
+
+export function fbGetMonthlyData(comp, currentUser) {
+  firebase.database().ref("/users/" + currentUser + "/" + "monthly").on("value", function(allData) {
+ //   var entireMonthlyData = []
+    if (allData.val() != null){
+      entireMonthlyData = allData.val()
+      comp.setState({entireMonthlyData})
+    } else {
+      var entireMonthlyData = []
+      comp.setState({entireMonthlyData})
+    }
+// are these 2 lines redundant below?
+ //   var entireMonthlyData = []
+    comp.setState({entireMonthlyData})
+ })
+
+}
+
+export function fbGetMonthlyIncome(comp, currentUser) {
+    firebase.database().ref("/users/" + currentUser + "/" + "monthlyincome").on("value", function(allData) {
+        if (allData.val() != null){
+          monthlyIncome = allData.val()
+          comp.setState({monthlyIncome})
+        } else {
+          var monthlyIncome = "0"
+          comp.setState({monthlyIncome})
+        }
+// is this line redundant below?
+        comp.setState({monthlyIncome})
+     })
 }

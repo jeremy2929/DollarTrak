@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <% include ../partials/header.ejs %>
+  </head>
+  <body>
+    <main id="app">
+    </main>
+
+  </body>
+
+  <script src="https://www.gstatic.com/firebasejs/3.6.7/firebase.js"></script>
+ <script>
+   // Initialize Firebase
+   var config = {
+     apiKey: "AIzaSyD0oB8QAoNY0lrgL7GDipF0tU9ql2n8nEM",
+     authDomain: "dollartrak.firebaseapp.com",
+     databaseURL: "https://dollartrak.firebaseio.com",
+     storageBucket: "dollartrak.appspot.com",
+     messagingSenderId: "998138901617"
+   };
+
+   firebase.initializeApp(config);
+  // firebase.initializeApp(config);
+ </script>
+
+
+
+  <script src="dist/bundle.js" charset="utf-8"></script>
+</html>

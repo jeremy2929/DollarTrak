@@ -6,7 +6,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import ReactFire from 'reactfire'
-import { fbLogin, fbAuthCurrentUser, fbCreateUserEmailAndPswd, fbSignOut, updateFB, fbRef, fbAuthStateChanged}  from './external_firebase'
+import { fbLogin, fbAuthCurrentUser, fbCreateUserEmailAndPswd, fbSignOut, updateFB, fbRef, fbAuthStateChanged, fbGetUserValue, fbGetTransactionData, fbGetMonthlyData, fbGetMonthlyIncome}  from './external_firebase'
 
 var monthlyPlannedTotalValue = 0
 var monthlyActualTotalValue = 0
@@ -35,54 +35,11 @@ export default React.createClass({
                 var currentUser = tempUser[0]
                 var userId = tempUser[0]
             //    var ref = firebase.database().ref("/users/" + currentUser + "/" + "transactions");
-                var ref = fbRef("/users/" + currentUser + "/" + "transactions")
+                var comp = this
               //  var ref = firebase.database().ref("/users/" + currentUser + "/" + "transactions");
-                var comp = this
-                ref.on("value", function(allData) {
-        // ************* does this still need an ELSE for this IF in case user insnt new but has no data
-                 if (allData.val() != null) {
-                    var entireData = allData.val()
-                    var dataLength = entireData.length
-                    var data=[]
-                    var data = entireData
-                    comp.setState({data})
-                    comp.setState({entireData})
-          //********   need ELSE statement to assign empty object to entireData if user isnt new but has no data
-                  } else {
-                    var entireData = []
-                    var data = []
-                    comp.setState({data})
-                    comp.setState({entireData})
-                  }
-               })
-               var ref = fbRef("/users/" + currentUser + "/" + "monthly");
-               var comp = this
-               ref.on("value", function(allData) {
-                //   var entireMonthlyData = []
-                   if (allData.val() != null){
-                     entireMonthlyData = allData.val()
-                     comp.setState({entireMonthlyData})
-                   } else {
-                     var entireMonthlyData = []
-                     comp.setState({entireMonthlyData})
-                   }
-        // are these 2 lines redundant below?
-                //   var entireMonthlyData = []
-                   comp.setState({entireMonthlyData})
-                })
-                var ref = fbRef("/users/" + currentUser + "/" + "monthlyincome");
-                var comp = this
-                ref.on("value", function(allData) {
-                    if (allData.val() != null){
-                      monthlyIncome = allData.val()
-                      comp.setState({monthlyIncome})
-                    } else {
-                      var monthlyIncome = "0"
-                      comp.setState({monthlyIncome})
-                    }
-         // is this line redundant below?
-                    comp.setState({monthlyIncome})
-                 })
+               fbGetTransactionData(comp, currentUser)
+               fbGetMonthlyData(comp, currentUser)
+               fbGetMonthlyIncome(comp, currentUser)
              }
   },
   // is this Props function needed?
@@ -125,35 +82,21 @@ export default React.createClass({
     // imported firebase function
     var currentUser = fbAuthCurrentUser()
     var authUser = fbAuthCurrentUser()
-
-    //firebase.auth().onAuthStateChanged((authUser) => {
     fbAuthStateChanged((authUser)=> {
       if (fbAuthCurrentUser() != null){
         var currentUser = {};
         var today = new Date();
         var tempUser = fbAuthCurrentUser().email.split("@")
         var userId = tempUser[0]
+        console.log(authUser)
         currentUser["/users/" + authUser.uid] = {
           name: authUser.displayName,
           email: authUser.email,
           lastLogin: Date()
         }
         updateFB(currentUser)
-    //    firebase.database().ref().update(currentUser)
-
-      // This sets up a callback once firebase reports that /users/{user.uid} has a value
-        fbRef("/users/" + authUser.uid).once("value").then((snapshot) => {
-        //firebase.database().ref("/users/" + authUser.uid).once("value").then((snapshot) => {
-          var snapshotReturn = snapshot.val()
-          this.setState({
-            user: {
-              authed: true,
-              name: authUser.email,
-              email: snapshotReturn.email,
-              lastLogin: snapshotReturn.lastLogin
-            }
-          })
-        });
+        var comp = this
+        fbGetUserValue(authUser, comp)
       }
       this.loadData()
     })
@@ -185,7 +128,6 @@ export default React.createClass({
       var authUser = fbAuthCurrentUser()
 
       fbAuthStateChanged((authUser)=> {
-      //  firebase.auth().onAuthStateChanged((authUser) => {
         var currentUser = {};
         var today = new Date();
         var tempUser = fbAuthCurrentUser().email.split("@")
@@ -198,7 +140,6 @@ export default React.createClass({
         updateFB(currentUser)
         // This sets up a callback once firebase reports that /users/{user.uid} has a value
         fbRef("/users/" + authUser.uid).once("value").then((snapshot) => {
-      //  firebase.database().ref("/users/" + authUser.uid).once("value").then((snapshot) => {
           var snapshotReturn = snapshot.val()
           this.setState({
             user: {
@@ -262,13 +203,13 @@ export default React.createClass({
    updateFB(updates)
    })
   },
-  //***************************************** User sign out **********************************************
+  //*************************** User sign out **********************************************
   signUserOut() {
     fbSignOut()
     this.state.monthlyFlag = undefined
     location.reload()
   },
-  //****************************************** Adding Daily Transactions **********************************
+  //*************************** Adding Daily Transactions **********************************
   onClickSubmit(e){
     e.preventDefault()
     if (this.refs.amountInput.value != "" || parseInt(this.refs.amountInput.value > -.01)){
@@ -351,7 +292,7 @@ export default React.createClass({
     }
     this.setState({data})
   },
-  //********************************** Modifying a Daily Transaction Amount ****************************
+  //***************************** Modifying a Daily Transaction Amount ****************************
   onClickTransAmount(e){
     /// fix bug here if Prompt is canceled, doesnt write over current valus with null
     var transSelected = e.target.getAttribute('value')
@@ -389,7 +330,7 @@ export default React.createClass({
     this.refs.ShowAll.className="showLast5Trans"
     this.refs.Show5.className="hiddenButton"
   },
-  //*********************************** Modifying a Daily Transaction description **************************
+  //************************** Modifying a Daily Transaction description **************************
   onClickTransDescription(e){
     var transSelected = e.target.getAttribute('value')
     var newDesc = prompt("Enter new description")
@@ -404,7 +345,7 @@ export default React.createClass({
     this.refs.ShowAll.className="showLast5Trans"
     this.refs.Show5.className="hiddenButton"
   },
-  //******************* Modifying the planned expense amount of a Monthly Bill *************************
+  //**************** Modifying the planned expense amount of a Monthly Bill *************************
   onClickMonthlyBillPlan(e){
     var transSelected = e.target.getAttribute('value')
     var newAmount = prompt("Enter new amount or 000 to delete")
@@ -433,7 +374,7 @@ export default React.createClass({
     updateFB(updates)
     this.setState(this.state.entireMonthlyData)
   },
-  //********************** Modifying the actual expense amount of a Monthly Bill ***********************
+  //***************** Modifying the actual expense amount of a Monthly Bill ***********************
   onClickMonthlyBillActual(e){
     var transSelected = e.target.getAttribute('value')
     var newAmount = prompt("Enter new amount or 000 to delete")
@@ -464,7 +405,7 @@ export default React.createClass({
     updateFB(updates)
     this.setState(this.state.entireMonthlyData)
   },
-  //************************************ Modifying a Monthly Bill description *************************
+  //********************************** Modifying a Monthly Bill description *************************
   onClickMonthlyDescription(e){
     var transSelected = e.target.getAttribute('value')
     if (transSelected != "0" && newDesc != ""){
@@ -480,7 +421,7 @@ export default React.createClass({
           this.setState(this.state.entireMonthlyData)
      }
   },
-  //************************************** Entering the Monthly Income Amount **************************
+  //********************************* Entering the Monthly Income Amount **************************
   onMonthlyIncomeInput(){
     var monthlyIncome = prompt("Enter Monthly Income")
     // callling a function for converting any non-numeric input to 0
@@ -493,13 +434,13 @@ export default React.createClass({
     updateFB(updates)
     this.setState({monthlyIncome})
   },
-  //*************************************** Validating numeric input, set to 0 if NaN ********************
+  //********************************* Validating numeric input, set to 0 if NaN ********************
   numericValidate(num){
     num = parseInt(num, 10)
     if (isNaN(num)){num = 0}
     return num
   },
-  //*************************************** Navigation button to Monthly Budget page ********************
+  //********************************** Navigation button to Monthly Budget page ********************
   onClickMonthlyBudgetButton(){
     // make these commented lines of code active on final
     // var pswd = prompt ("Please re-enter password")
@@ -510,7 +451,7 @@ export default React.createClass({
       this.refs.descriptionInput.value  = ""
     // }
   },
-  //*************************************** Navigation button to Daily Transactions page ********************
+  //****************************** Navigation button to Daily Transactions page ********************
   onClickDailyTransButton(){
     var monthlyFlag = undefined
     this.setState({monthlyFlag})
@@ -518,7 +459,7 @@ export default React.createClass({
     this.refs.ShowAll.className="showLast5Trans"
     this.refs.Show5.className="hiddenButton"
   },
-  //****************************** Adding Monthly Budget items and planned amounts *************************
+  //*********************** Adding Monthly Budget items and planned amounts *************************
   onClickAddMonthlyBill(e){
     e.preventDefault()
     if (this.refs.enterMonthlyPlan.value != "" || this.refs.enterMonthlyBill.value != "" && parseInt(this.refs.amountInput.value > -.01)){
@@ -558,7 +499,7 @@ export default React.createClass({
     //  this.setState({data})
     //  this.setState({entireData})
   },
-  //********************** Show Daily Transactions Page on Monthly Page ********************************
+  //******************* Show Daily Transactions Page on Monthly Page ********************************
   onShowDailyTransPage(){
     this.refs.Show5.className="showLast5Trans"
     this.refs.ShowAll.className="hiddenButton"
@@ -570,7 +511,7 @@ export default React.createClass({
     this.refs.hideDailyTransPage.className = "hideDailyTransPage"
     this.refs.monthlyBox.className = "monthlyBoxLeft"
   },
-  //********************** Hide Daily Transactions Page on Monthly Page ********************************
+  //******************* Hide Daily Transactions Page on Monthly Page ********************************
   onHideDailyTransPage(){
     this.refs.monthlyDailyTransBox.className = "monthlyDailyTransBox_hidden"
     this.refs.hideDailyTransPage.className = "hideDailyTransPage_hidden"
@@ -582,11 +523,11 @@ export default React.createClass({
   monthlyTotalRed(){
     this.refs.monthlyPlannedTotal.className="monthlyPlannedTotal_red"
   },
-  //********************** Removing alert for Monthly Plan exceeding income ********************************
+  //************** Removing alert for Monthly Plan exceeding income ********************************
   monthlyTotalGreen(){
     this.refs.monthlyPlannedTotal.className="monthlyPlannedTotal"
   },
-  //********************** Highlighting selected category of Monthly for Import ***************************
+  //**************** Highlighting selected category of Monthly for Import ***************************
   onClickMonthlyTypeSelected(e){
     e.preventDefault()
     if (monthlyBillSelectedIndex === -1){
@@ -598,7 +539,7 @@ export default React.createClass({
     }
     this.setState({monthlyBillSelectedIndex})
   },
-  //********************** Highlighting selected transaction on Daily Trans for Import ********************
+  //**************** Highlighting selected transaction on Daily Trans for Import ********************
   onClickSelectedTrans(e){
     e.preventDefault()
     if (e.target.className === "transDateSelected"){
@@ -610,7 +551,7 @@ export default React.createClass({
       selectedTrans = selectedTrans.concat(e.target.getAttribute('value'))
     }
   },
-  //****************** Importing selected Daily Transactions into selected Monthly Category *****************
+  //********** Importing selected Daily Transactions into selected Monthly Category *****************
   onClickImportButton(e){
     // be sure at least one of each Monthly and Daily Transactions are selected
     if (monthlyBillSelectedIndex != -1 && selectedTrans.length != 0){
@@ -755,7 +696,7 @@ export default React.createClass({
 
     buttonsLocked = []
   },
-  //*********************************** Help Button Popup **********************************************
+  //****************************** Help Button Popup **********************************************
   onClickHelpButton()
   {
     alert("This will be info button how to use app. When we are unhurried and wise, we perceive that only great and worthy things have any permanent and absolute existence; that petty fears and petty pleasures are but the shadow of the reality. -Henry David Thoreau")
@@ -791,14 +732,10 @@ export default React.createClass({
             redBar = 100 - currentDayPercent
           }
           greenBar = currentDayPercent.toString()+"%"
-
           redBar = redBar.toString() + "%"
-        //  this.refs.greyBar.className="progressBarGrey_hidden"
         greyBar = 0
         } else {
-
           greenBar = percentageSpent
-          //var currentDayPercent = (parseInt((((Date().substring(8,10)/30)*100)+.5)));
           greyBar = currentDayPercent - greenBar
           greyBar = greyBar.toString()+"%"
           greenBar = greenBar.toString()+"%"
@@ -810,7 +747,7 @@ export default React.createClass({
   userIsLoggedIn() {
     return fbAuthCurrentUser() != null
   },
-  //*********************************** Rendering the HTML elements *************************************
+  //****************************** Rendering the HTML elements *************************************
   render()
   {
     this.spendingGreenBar()
@@ -818,16 +755,17 @@ export default React.createClass({
     // console.log("auth=",firebase.auth().currentUser);
     // console.log("entireMonthlyData at render=",this.state.entireMonthlyData);
     // have to set this.state.monthlyFlag when logging out
+
+
     var monthlyPlannedTotalValue = 0
     var monthlyActualTotalValue = 0
     if (this.userIsLoggedIn() && this.state.monthlyFlag === undefined){
       return (
         <main>
-
           <section className="dailyTransPageBox">
             <div className="dailyTransPageSection" ref="dailyTransPageSection">
               <article className="transactionTitleArea">
-                <h1 className="transactionsTitle">Daily Transactions</h1>
+                <h1 className="transactionsTitle" ref="transactionsTitle">Daily Transactions</h1>
                 <h2 className="userTransName"
                     ref="userName">User:  {fbAuthCurrentUser().email}</h2>
               </article>
@@ -841,11 +779,11 @@ export default React.createClass({
                        return <article className="eachRecordContainer" key={i}>
                                 <p className="transDate">{record.date}</p>
                                 <a href="#">
-                                  <p className="transAmount" value={i}                            onClick={this.onClickTransAmount}>${record.amount}</p>
+                                  <p className="transAmount"value={i}                                  onClick={this.onClickTransAmount}>${record.amount}</p>
                                 </a>
                                 <a href="#">
                                   <p className="transDesc" value={i}
-                                    onClick={this.onClickTransDescription}>{record.text}</p>
+                                     onClick={this.onClickTransDescription}>{record.text}</p>
                                 </a>
                               </article>
                    }
@@ -868,18 +806,17 @@ export default React.createClass({
                           onClick={this.onClickSubmit}>Add</button>
               </div>
               <article className="transOptionsArea">
-
                   <button className="showLast5Trans"
                           ref="Show5" onClick={this.onClickShow5}>Show Last 5 Transactions</button>
-                        <button className="hiddenButton"
-                          ref="ShowAll"
+                  <button className="hiddenButton" ref="ShowAll"
                           onClick={this.onClickShowAll}>    Show All Transactions    </button>
-                  <button className="monthlyBudgetButton" onClick={this.onClickMonthlyBudgetButton}>Go to Monthly Budget</button>
+                  <button className="monthlyBudgetButton"
+                          ref="monthlyBudgetButton"
+                          onClick={this.onClickMonthlyBudgetButton}>Go to Monthly Budget</button>
                   <button className="lockScreen"
                           onClick={this.onClickLockScreen}>Lock Screen</button>
                   <button className="signOut"
                           onClick={this.signUserOut}>Log Out</button>
-
               </article>
             </div>
             <article className="progressBarAreaBottom" ref="progressBarAreaBottom">
@@ -890,11 +827,16 @@ export default React.createClass({
             <div className="progressBarLabel" ref="progressBarLabel">Progress Bar = Spending Cash + Daily Transactions</div>
             <img src="styles/DollarTrak.png" className="lockLogo_hidden" ref="lockLogo"></img>
               <article className="buttonLockArea_hidden" ref="buttonLockArea">
-                <button className="lockButtonOpen" id="lockButtonBox" ref="lockButton" value="1" onClick={this.onClickLockButton}></button>
-                <button className="lockButtonOpen" id="lockButtonBox" ref="lockButton" value="2" onClick={this.onClickLockButton}></button>
-                <button className="lockButtonOpen" id="lockButtonBox" ref="lockButton" value="3" onClick={this.onClickLockButton}></button>
-                <button className="lockButtonOpen" id="lockButtonBox" ref="lockButton" value="4" onClick={this.onClickLockButton}></button>
-                <button className="lockButtonOpen" id="lockButtonBox" ref="lockButton" value="5" onClick={this.onClickLockButton}></button>
+                <button className="lockButtonOpen" id="lockButtonBox" ref="lockButton"
+                        value="1" onClick={this.onClickLockButton}></button>
+                <button className="lockButtonOpen" id="lockButtonBox" ref="lockButton"
+                        value="2" onClick={this.onClickLockButton}></button>
+                <button className="lockButtonOpen" id="lockButtonBox" ref="lockButton"
+                        value="3" onClick={this.onClickLockButton}></button>
+                <button className="lockButtonOpen" id="lockButtonBox" ref="lockButton"
+                        value="4" onClick={this.onClickLockButton}></button>
+                <button className="lockButtonOpen" id="lockButtonBox" ref="lockButton"
+                        value="5" onClick={this.onClickLockButton}></button>
               </article>
           </section>
     </main>
@@ -921,7 +863,7 @@ export default React.createClass({
             <button className="newUser" onClick={this.newUserSignUp}>NEW USER</button>
             <button className="loginUser" ref="loginButton" onClick={this.signUserIn}>LOGIN</button>
             <div className="helpContainer">
-              <button className="helpButton" ref="helpButton" onClick={this.onClickHelpButton}>HELP</button>
+                <button className="helpButton" ref="helpButton"                                       onClick={this.onClickHelpButton}>HELP</button>
             </div>
         </article>
         </section>
@@ -929,8 +871,7 @@ export default React.createClass({
      )
    }
    if (fbAuthCurrentUser() != null && this.state.monthlyFlag === true)
-    if (this.state.monthlyIncome === 0 || this.state.monthlyIncome === undefined){this.onMonthlyIncomeInput()}
-
+      if (this.state.monthlyIncome === 0 || this.state.monthlyIncome ===                            undefined){this.onMonthlyIncomeInput()}
     return (
       <main className="monthlyPageSection">
         <section className="monthlyBoxCenter" ref="monthlyBox">
@@ -983,10 +924,10 @@ export default React.createClass({
                               </a>
                               <a href="#">
                                 <p className="monthlyBillDesc" value={i}
-                                    onClick={this.onClickMonthlyDescription}>{record.text}</p>
+                                   onClick={this.onClickMonthlyDescription}>{record.text}</p>
                               </a>
                               <a href="#">
-                                <p className="monthlyBillPlan"  value={i}                            onClick={this.onClickMonthlyBillPlan}>${record.plan}</p>
+                                <p className="monthlyBillPlan"                      value={i}                                            onClick={this.onClickMonthlyBillPlan}>${record.plan}</p>
                               </a>
 
                               <a href="#">
@@ -1022,20 +963,18 @@ export default React.createClass({
                   onClick={this.onClickAddMonthlyBill}>Add</button>
         </article>
         <article className="monthlyOptionsArea">
-
             <button className="showDailyTransPage" ref="showDailyTransPage"
-                  type="submit"
-                  onClick={this.onShowDailyTransPage}>Show Daily Transactions</button>
+                    type="submit"
+                    onClick={this.onShowDailyTransPage}>Show Daily Transactions</button>
             <button className="hideDailyTransPage_hidden" ref="hideDailyTransPage"
-                  type="submit"
-                  onClick={this.onHideDailyTransPage}>Hide Daily Transactions</button>
-                <button className="dailyTransButton" ref="goToDaily" onClick={this.onClickDailyTransButton}>Go to Daily Transactions</button>
+                    type="submit"
+                    onClick={this.onHideDailyTransPage}>Hide Daily Transactions</button>
+            <button className="dailyTransButton" ref="goToDaily" onClick={this.onClickDailyTransButton}>Go to Daily Transactions</button>
             <button className="monthlySignOut" onClick={this.signUserOut}>Log Out</button>
         </article>
         </section>
         <div className="monthlyDailyTransBox_hidden" ref="monthlyDailyTransBox">
           <section className="monthlyDailyTransBoxInner" >
-
               <article className="transactionTitleArea">
                 <h1 className="transactionsTitle">Daily Transactions</h1>
                 <h2 className="userTransName"
@@ -1093,5 +1032,4 @@ export default React.createClass({
    </main>
     )
   }
-
 })
