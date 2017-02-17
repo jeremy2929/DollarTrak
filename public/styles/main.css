@@ -2,8 +2,9 @@
   box-sizing: border-box;
 }
 
-body{
-  background-color: grey;
+.wholePage{
+  height: 1200px;
+  width: 1400px;
 }
 
 .hiddenButton{
