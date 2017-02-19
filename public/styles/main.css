@@ -2,13 +2,12 @@
   box-sizing: border-box;
 }
 
-.wholePage{
-  height: 1200px;
-  width: 1400px;
+body{
+  background-color: grey;
 }
 
 .hiddenButton{
-  visibility: hidden;
+  display: none;
 }
 
 .eachRecordContainer{
@@ -38,7 +37,7 @@
 }
 
 .lockButtonOpen{
-  background-color: tan;
+  background-color: springgreen;
   border: solid 2px;
   border-radius: 5px;
   height: 40px;
@@ -139,8 +138,8 @@ margin-top: 50%;
 }
 
 .dailyTransPageSection{
-  background-color: peachpuff;
-  border: solid 2px;
+  background-color: silver;
+  border: blue solid 4px;
   display: inline-block;
   float: right;
   height: auto;
@@ -243,10 +242,10 @@ margin-top: 50%;
 }
 
 .dailyTransButton{
-  background-color: peachpuff;
-  border: solid 2px;
+  background-color: silver;
+  border: blue solid 2px;
   border-radius: 6px;
-  color: green;
+  color: black;
   display: inline-block;
   float: left;
   font-size: 20px;
@@ -313,8 +312,9 @@ margin-top: 50%;
 }
 
 .transDate{
-  background: silver;
+  background: tan;
   border: solid black 1px;
+  color: black;
   display: inline-block;
   font-size: 11px;
   font-weight: bolder;
@@ -330,6 +330,7 @@ margin-top: 50%;
 .transDateSelected{
   background-color: yellow;
   border: solid black 1px;
+  color: black;
   display: inline-block;
   font-size: 11px;
   font-weight: bolder;
@@ -345,6 +346,7 @@ margin-top: 50%;
 .transAmount{
   background: lavender;
   border: solid black 1px;
+  color: black;
   display: inline-block;
   font-size: 15px;
   height: auto;
@@ -358,6 +360,7 @@ margin-top: 50%;
 .transDesc{
   background: lavender;
   border: solid black 1px;
+  color: black;
   display: inline-block;
   font-size: 15px;
   height: 19px;
@@ -378,6 +381,7 @@ margin-top: 50%;
 .amountItem{
   border: solid 2px;
   border-radius: 6px;
+  color: black;
   display: inline-block;
   font-size: 20px;
   height: 40px;
@@ -389,6 +393,7 @@ margin-top: 50%;
 .descriptionItem{
   border: solid 2px;
   border-radius: 6px;
+  color: black;
   display: inline-block;
   font-size: 20px;
   height: 40px;
@@ -408,7 +413,7 @@ margin-top: 50%;
   margin: 0;
   padding-top: 0px;
   /*text-align: center;*/
-  width: 61px;
+  width: 57px;
 }
 
 .transOptionsArea{
@@ -419,10 +424,10 @@ margin-top: 50%;
 }
 
 .monthlyBudgetButton{
-    background-color: lightcyan;
-    border: solid 2px;
+    background-color: skyblue;
+    border: green solid 2px;
     border-radius: 6px;
-    color: green;
+    color: black;
     display: inline-block;
     font-size: 20px;
     height: 40px;
@@ -435,10 +440,10 @@ margin-top: 50%;
 }
 
 .importButton{
-    background-color: lightblue;
-    border: solid 2px;
+    background-color: yellow;
+    border: black solid 2px;
     border-radius: 6px;
-    color: green;
+    color: black;
     display: inline-block;
     font-size: 20px;
     height: 40px;
@@ -453,7 +458,7 @@ margin-top: 50%;
 .showLast5Trans{
   /*background-color: yellow;*/
   background-color: lightcyan;
-  border: solid 2px;
+  border: blue solid 2px;
   border-radius: 6px;
   color: green;
   display: inline-block;
@@ -468,7 +473,7 @@ margin-top: 50%;
 }
 
 .lockScreen{
-  background-color: lightgrey;
+  background-color: lightpink;
   border: solid 2px;
   border-radius: 6px;
   color: black;
@@ -500,23 +505,23 @@ margin-top: 50%;
 }
 
 .monthlyBoxCenter{
-  background-color: powderblue;
-  border: solid 2px;
+  background-color: skyblue;
+  border: darkgreen solid 4px;
   display: inline-block;
   height: auto;
   margin-left: 30%;
   padding-bottom: 10px;
-  width: 400px;
+  width: 402px;
 }
 
 .monthlyBoxLeft{
-  background-color: powderblue;
-  border: solid 2px;
+  background-color: skyblue;
+  border: darkgreen solid 4px;
   display: inline-block;
   height: auto;
   margin-left: 5%;
   padding-bottom: 10px;
-  width: 400px;
+  width: 402px;
 }
 
 .monthlyTitleArea{
@@ -620,7 +625,7 @@ margin-top: 50%;
   display: inline-flex;
   height: 41px;
   margin-top: 10px;
-  width: 450px;
+  width: 448px;
 }
 
 .enterMonthlyBill{
@@ -628,7 +633,7 @@ margin-top: 50%;
   border-radius: 6px;
   font-size: 18px;
   height: 40px;
-  width: 250px;
+  width: 248px;
 }
 
 .enterMonthlyPlannedAmount{
@@ -649,14 +654,6 @@ margin-top: 50%;
   height: 40px;
   width: 66px;
 }
-
-
-/*.enterMonthlyAmount{
-  border: solid 2px;
-  font-size: 18px;
-  height: 40px;
-  width: 97px;
-}*/
 
 .monthlyType{
   background-color: tan;
@@ -743,10 +740,10 @@ margin-top: 50%;
 
 .monthlyTotalBox{
   background-color: lightgrey;
-  border: solid 2px;
+  /*border: solid 2px;*/
   display: inline-flex;
-  height: 25px;
-  width: 398px;
+  height: 23px;
+  width: 394px;
   white-space: pre;
 }
 
@@ -756,7 +753,7 @@ margin-top: 50%;
   height: 23px;
   margin: 0;
   padding-top: 4px;
-  width: 288px;
+  width: 292px;
 }
 
 .monthlyPlannedTotal{
@@ -767,7 +764,7 @@ margin-top: 50%;
   margin: 0;
   text-align: center;
   padding-top: 4px;
-  width: 50px;
+  width: 51px;
 }
 
 .monthlyPlannedTotal_red{
@@ -776,39 +773,44 @@ margin-top: 50%;
   display: inline-block;
   height: 23px;
   margin: 0;
-  text-align: center;
   padding-top: 4px;
-  width: 50px;
+  text-align: center;
+  width: 51px;
 }
 
 .monthlyActualTotal{
   background-color: palegreen;
   border: solid 1px;
   display: inline-block;
-  height: 22px;
+  height: 23px;
   margin: 0;
   padding-top: 4px;
   text-align: center;
-  width: 56px;
+  width: 51px;
 }
 
 .monthlyActualTotal_red{
   background-color: lightcoral;
   border: solid 1px;
   display: inline-block;
-  height: 22px;
+  height: 23px;
   margin: 0;
   padding-top: 4px;
   text-align: center;
-  width: 56px;
+  width: 51px;
 }
 
 .monthlyAlertBox{
   display: block;
-  height: 25px;
+  height: auto;
   margin-bottom: 10px;
-  width: 398px;
-  white-space: pre;
+  margin-left: auto;
+  margin-right: auto;
+  width: 394px;
+}
+
+.monthlyAlertBox_hidden{
+  display: none;
 }
 
 .monthlyPlannedTotalAlert{
@@ -817,14 +819,12 @@ margin-top: 50%;
   display: inline-block;
   height: 20px;
   margin: 0;
-  width: 396px;
+  width: 394px;
+  white-space: pre;
 }
 
 .monthlyPlannedTotalAlert_hidden{
-  display: inline-block;
-  height: 0;
-  margin: 0;
-  visibility: hidden;
+  display: none;
 }
 
 .monthlyActualTotalAlert{
@@ -833,28 +833,39 @@ margin-top: 50%;
   display: inline-block;
   height: 20px;
   margin: 0;
-  width: 396px;
+  width: 394px;
+  white-space: pre;
 }
 
 .monthlyActualTotalAlert_hidden{
-  display: inline-block;
-  height: 0;
-  margin: 0;
-  visibility: hidden;
+  display: none;
 }
 
 .monthlyOptionsArea{
-  height: 130px;
+  height: auto;
   margin: 0;
   width: 390px;
 }
 
 
 .showDailyTransPage{
-  background-color: peachpuff;
+  background-color: silver;
   border: solid 2px;
   border-radius: 6px;
-  color: green;
+  color: black;
+  display: inline-block;
+  font-size: 20px;
+  height: 40px;
+  margin-left: 12%;
+  margin-top: 10px;
+  width: 300px;
+}
+
+.selectTransactions{
+  background-color: silver;
+  border: black solid 2px;
+  border-radius: 6px;
+  color: black;
   display: inline-block;
   font-size: 20px;
   height: 40px;
@@ -864,23 +875,24 @@ margin-top: 50%;
 }
 
 .hideDailyTransPage{
-  background-color: peachpuff;
+  background-color: silver;
   border: solid 2px;
   border-radius: 6px;
-  color: green;
+  color: black;
   display: inline-block;
   font-size: 20px;
   height: 40px;
   margin-left: 12%;
+  margin-top: 10px;
   width: 300px;
 }
 
 .hideDailyTransPage_hidden{
-  visibility: hidden;
+  display: none;
 }
 
 .showDailyTransPage_hidden{
-  visibility: hidden;
+  display: none;
 }
 
 .monthlyDailyTransBox_hidden{
@@ -888,7 +900,7 @@ margin-top: 50%;
 }
 
 .monthlyDailyTransBox{
-  /*background-color: peachpuff;*/
+  /*background-color: silver;*/
   /*border: solid 2px;*/
   display: inline-block;
   height: auto;
@@ -900,8 +912,8 @@ margin-top: 50%;
 }
 
 .monthlyDailyTransBoxInner{
-  background-color: peachpuff;
-  border: solid 2px;
+  background-color: silver;
+  border: blue solid 4px;
   display: inline-block;
   height: auto;
   margin: 0;

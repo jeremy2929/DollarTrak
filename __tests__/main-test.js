@@ -34,12 +34,7 @@ describe("Main", ()=>{
       expect(transactionsTitleInputComponent.textContent).toEqual("Daily Transactions")
   })
 
-  it("It should DO SOMETHING", () => {
+  it("It should test main component", () => {
       let monthlyBudgetButtonComponent = mainComponent.refs.monthlyBudgetButton
-      console.log(monthlyBudgetButtonComponent);
-    //  TestUtils.Simulate.click(monthlyBudgetButtonComponent)
-    //  let showDailyComponent = mainComponent.refs.showDailyTransPage
-    //  expect(showDailyComponent.textContent).toEqual("Show Daily Transactions")
   })
-
 })

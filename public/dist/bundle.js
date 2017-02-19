@@ -21513,17 +21513,13 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	/*
-	  in this script I am using a loop to grab last 5 objects of my data arrray because
-	  I when I use splice, it will chop BOTH data arrays!
-	  ( I use two arrays- one is for mapping to render, either chopped down to 5 or show all, and a second array to retain all objects to restore the first one when needed)
-	*/
 	var monthlyPlannedTotalValue = 0;
 	var monthlyActualTotalValue = 0;
 	var mptClass = "monthlyPlannedTotal";
 	var matClass = "monthlyActualTotal";
 	var mptAlertClass = "monthlyPlannedTotalAlert_hidden";
 	var matAlertClass = "monthlyActualTotalAlert_hidden";
+	var monthlyAlertBoxClass = "monthlyAlertBox_hidden";
 	var monthlyBillSelectedIndex = -1;
 	var selectedTrans = [];
 	var greyBar;
@@ -21534,6 +21530,7 @@
 	var buttonsLocked = [];
 	var buttonsUnlockCode = ["1", "3", "5"];
 	var screenLocked = false;
+	
 	// activate next line when deploying- commented out for easier testing. it ensures previous user sign out
 	// firebase.auth().signOut()
 	var elementTest = {};
@@ -21547,54 +21544,11 @@
 	      var currentUser = tempUser[0];
 	      var userId = tempUser[0];
 	      //    var ref = firebase.database().ref("/users/" + currentUser + "/" + "transactions");
-	      var ref = (0, _external_firebase.fbRef)("/users/" + currentUser + "/" + "transactions");
+	      var comp = this;
 	      //  var ref = firebase.database().ref("/users/" + currentUser + "/" + "transactions");
-	      var comp = this;
-	      ref.on("value", function (allData) {
-	        // ************* does this still need an ELSE for this IF in case user insnt new but has no data
-	        if (allData.val() != null) {
-	          var entireData = allData.val();
-	          var dataLength = entireData.length;
-	          var data = [];
-	          var data = entireData;
-	          comp.setState({ data: data });
-	          comp.setState({ entireData: entireData });
-	          //********   need ELSE statement to assign empty object to entireData if user isnt new but has no data
-	        } else {
-	          var entireData = [];
-	          var data = [];
-	          comp.setState({ data: data });
-	          comp.setState({ entireData: entireData });
-	        }
-	      });
-	      var ref = (0, _external_firebase.fbRef)("/users/" + currentUser + "/" + "monthly");
-	      var comp = this;
-	      ref.on("value", function (allData) {
-	        //   var entireMonthlyData = []
-	        if (allData.val() != null) {
-	          entireMonthlyData = allData.val();
-	          comp.setState({ entireMonthlyData: entireMonthlyData });
-	        } else {
-	          var entireMonthlyData = [];
-	          comp.setState({ entireMonthlyData: entireMonthlyData });
-	        }
-	        // are these 2 lines redundant below?
-	        //   var entireMonthlyData = []
-	        comp.setState({ entireMonthlyData: entireMonthlyData });
-	      });
-	      var ref = (0, _external_firebase.fbRef)("/users/" + currentUser + "/" + "monthlyincome");
-	      var comp = this;
-	      ref.on("value", function (allData) {
-	        if (allData.val() != null) {
-	          monthlyIncome = allData.val();
-	          comp.setState({ monthlyIncome: monthlyIncome });
-	        } else {
-	          var monthlyIncome = "0";
-	          comp.setState({ monthlyIncome: monthlyIncome });
-	        }
-	        // is this line redundant below?
-	        comp.setState({ monthlyIncome: monthlyIncome });
-	      });
+	      (0, _external_firebase.fbGetTransactionData)(comp, currentUser);
+	      (0, _external_firebase.fbGetMonthlyData)(comp, currentUser);
+	      (0, _external_firebase.fbGetMonthlyIncome)(comp, currentUser);
 	    }
 	  },
 	
@@ -21633,37 +21587,20 @@
 	    // imported firebase function
 	    var currentUser = (0, _external_firebase.fbAuthCurrentUser)();
 	    var authUser = (0, _external_firebase.fbAuthCurrentUser)();
-	    console.log(authUser);
-	
-	    //firebase.auth().onAuthStateChanged((authUser) => {
 	    (0, _external_firebase.fbAuthStateChanged)(function (authUser) {
 	      if ((0, _external_firebase.fbAuthCurrentUser)() != null) {
 	        var currentUser = {};
 	        var today = new Date();
 	        var tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
 	        var userId = tempUser[0];
-	        console.log(authUser);
-	        currentUser["/users/" + authUser.uid] = {
+	        currentUser["/users/" + authUser.uid + "crap87"] = {
 	          name: authUser.displayName,
 	          email: authUser.email,
 	          lastLogin: Date()
 	        };
-	        (0, _external_firebase.updateFB)(currentUser);
-	        //    firebase.database().ref().update(currentUser)
-	
-	        // This sets up a callback once firebase reports that /users/{user.uid} has a value
-	        (0, _external_firebase.fbGetUserValue)("/users/" + authUser.uid, function (snapshot) {
-	          //firebase.database().ref("/users/" + authUser.uid).once("value").then((snapshot) => {
-	          var snapshotReturn = snapshot.val();
-	          _this.setState({
-	            user: {
-	              authed: true,
-	              name: authUser.email,
-	              email: snapshotReturn.email,
-	              lastLogin: snapshotReturn.lastLogin
-	            }
-	          });
-	        });
+	        //updateFB(currentUser)
+	        var comp = _this;
+	        (0, _external_firebase.fbGetUserValue)(authUser, comp);
 	      }
 	      _this.loadData();
 	    });
@@ -21697,30 +21634,28 @@
 	    var authUser = (0, _external_firebase.fbAuthCurrentUser)();
 	
 	    (0, _external_firebase.fbAuthStateChanged)(function (authUser) {
-	      //  firebase.auth().onAuthStateChanged((authUser) => {
 	      var currentUser = {};
 	      var today = new Date();
 	      var tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
 	      var userId = tempUser[0];
-	      currentUser["/users/" + authUser.uid] = {
+	      currentUser["/users/" + authUser.uid + "crap130"] = {
 	        name: authUser.displayName,
 	        email: authUser.email,
 	        lastLogin: "today"
 	      };
-	      (0, _external_firebase.updateFB)(currentUser);
+	      //updateFB(currentUser)
 	      // This sets up a callback once firebase reports that /users/{user.uid} has a value
-	      (0, _external_firebase.fbRef)("/users/" + authUser.uid).once("value").then(function (snapshot) {
-	        //  firebase.database().ref("/users/" + authUser.uid).once("value").then((snapshot) => {
-	        var snapshotReturn = snapshot.val();
-	        _this2.setState({
-	          user: {
-	            authed: true,
-	            name: authUser.email,
-	            email: snapshotReturn.email,
-	            lastLogin: snapshotReturn.lastLogin
-	          }
-	        });
-	      });
+	      // fbRef("/users/" + ).once("value").then((snapshot) => {
+	      //   var snapshotReturn = snapshot.val()
+	      //   this.setState({
+	      //     user: {
+	      //       authed: true,
+	      //       name: authUser.email,
+	      //       email: snapshotReturn.email,
+	      //       lastLogin: snapshotReturn.lastLogin
+	      //     }
+	      //   })
+	      // });
 	      var tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
 	      var currentUser = tempUser[0];
 	      var userId = tempUser[0];
@@ -21770,17 +21705,21 @@
 	      updates["/users/" + currentUser + "/" + "transactions"] = entireData;
 	      // imported firebase function
 	      (0, _external_firebase.updateFB)(updates);
+	      var monthlyIncome = 0;
+	      var updates = {};
+	      updates["/users/" + currentUser + "/" + "monthlyIncome"] = entireData;
+	      (0, _external_firebase.updateFB)(updates);
 	    });
 	  },
 	
-	  //***************************************** User sign out **********************************************
+	  //*************************** User sign out **********************************************
 	  signUserOut: function signUserOut() {
 	    (0, _external_firebase.fbSignOut)();
 	    this.state.monthlyFlag = undefined;
 	    location.reload();
 	  },
 	
-	  //****************************************** Adding Daily Transactions **********************************
+	  //*************************** Adding Daily Transactions **********************************
 	  onClickSubmit: function onClickSubmit(e) {
 	    e.preventDefault();
 	    if (this.refs.amountInput.value != "" || parseInt(this.refs.amountInput.value > -.01)) {
@@ -21818,8 +21757,8 @@
 	        // this.refs.Show5.className="hiddenButton"
 	      } else {
 	        data = this.state.entireData;
-	        this.refs.ShowAll.className = "hiddenButton";
-	        this.refs.Show5.className = "showLast5Trans";
+	        // this.refs.ShowAll.className="hiddenButton"
+	        // this.refs.Show5.className="showLast5Trans"
 	      }
 	      // updating FireBase with new data
 	      // imported firebase function
@@ -21847,6 +21786,7 @@
 	
 	  //***************************************** Show Only 5 Daily Transactions *********************************
 	  onClickShow5: function onClickShow5() {
+	
 	    this.refs.ShowAll.className = "showLast5Trans";
 	    this.refs.Show5.className = "hiddenButton";
 	    var dataLength = this.state.entireData.length;
@@ -21864,7 +21804,7 @@
 	    this.setState({ data: data });
 	  },
 	
-	  //********************************** Modifying a Daily Transaction Amount ****************************
+	  //***************************** Modifying a Daily Transaction Amount ****************************
 	  onClickTransAmount: function onClickTransAmount(e) {
 	    /// fix bug here if Prompt is canceled, doesnt write over current valus with null
 	    var transSelected = e.target.getAttribute('value');
@@ -21903,7 +21843,7 @@
 	    this.refs.Show5.className = "hiddenButton";
 	  },
 	
-	  //*********************************** Modifying a Daily Transaction description **************************
+	  //************************** Modifying a Daily Transaction description **************************
 	  onClickTransDescription: function onClickTransDescription(e) {
 	    var transSelected = e.target.getAttribute('value');
 	    var newDesc = prompt("Enter new description");
@@ -21921,7 +21861,7 @@
 	    this.refs.Show5.className = "hiddenButton";
 	  },
 	
-	  //******************* Modifying the planned expense amount of a Monthly Bill *************************
+	  //**************** Modifying the planned expense amount of a Monthly Bill *************************
 	  onClickMonthlyBillPlan: function onClickMonthlyBillPlan(e) {
 	    var transSelected = e.target.getAttribute('value');
 	    var newAmount = prompt("Enter new amount or 000 to delete");
@@ -21951,7 +21891,7 @@
 	    this.setState(this.state.entireMonthlyData);
 	  },
 	
-	  //********************** Modifying the actual expense amount of a Monthly Bill ***********************
+	  //***************** Modifying the actual expense amount of a Monthly Bill ***********************
 	  onClickMonthlyBillActual: function onClickMonthlyBillActual(e) {
 	    var transSelected = e.target.getAttribute('value');
 	    var newAmount = prompt("Enter new amount or 000 to delete");
@@ -21983,7 +21923,7 @@
 	    this.setState(this.state.entireMonthlyData);
 	  },
 	
-	  //************************************ Modifying a Monthly Bill description *************************
+	  //********************************** Modifying a Monthly Bill description *************************
 	  onClickMonthlyDescription: function onClickMonthlyDescription(e) {
 	    var transSelected = e.target.getAttribute('value');
 	    if (transSelected != "0" && newDesc != "") {
@@ -22002,7 +21942,7 @@
 	    }
 	  },
 	
-	  //************************************** Entering the Monthly Income Amount **************************
+	  //********************************* Entering the Monthly Income Amount **************************
 	  onMonthlyIncomeInput: function onMonthlyIncomeInput() {
 	    var monthlyIncome = prompt("Enter Monthly Income");
 	    // callling a function for converting any non-numeric input to 0
@@ -22016,7 +21956,7 @@
 	    this.setState({ monthlyIncome: monthlyIncome });
 	  },
 	
-	  //*************************************** Validating numeric input, set to 0 if NaN ********************
+	  //********************************* Validating numeric input, set to 0 if NaN ********************
 	  numericValidate: function numericValidate(num) {
 	    num = parseInt(num, 10);
 	    if (isNaN(num)) {
@@ -22025,7 +21965,7 @@
 	    return num;
 	  },
 	
-	  //*************************************** Navigation button to Monthly Budget page ********************
+	  //********************************** Navigation button to Monthly Budget page ********************
 	  onClickMonthlyBudgetButton: function onClickMonthlyBudgetButton() {
 	    // make these commented lines of code active on final
 	    // var pswd = prompt ("Please re-enter password")
@@ -22034,19 +21974,21 @@
 	    this.setState({ monthlyFlag: monthlyFlag });
 	    this.refs.amountInput.value = "";
 	    this.refs.descriptionInput.value = "";
+	
 	    // }
 	  },
 	
-	  //*************************************** Navigation button to Daily Transactions page ********************
+	  //****************************** Navigation button to Daily Transactions page ********************
 	  onClickDailyTransButton: function onClickDailyTransButton() {
 	    var monthlyFlag = undefined;
 	    this.setState({ monthlyFlag: monthlyFlag });
 	    this.refs.enterMonthlyBill.value = "";
-	    this.refs.ShowAll.className = "showLast5Trans";
-	    this.refs.Show5.className = "hiddenButton";
+	    this.state.date = this.state.entireData;
+	    //  this.refs.ShowAll.className="showLast5Trans"
+	    // this.refs.Show5.className="hiddenButton"
 	  },
 	
-	  //****************************** Adding Monthly Budget items and planned amounts *************************
+	  //*********************** Adding Monthly Budget items and planned amounts *************************
 	  onClickAddMonthlyBill: function onClickAddMonthlyBill(e) {
 	    e.preventDefault();
 	    if (this.refs.enterMonthlyPlan.value != "" || this.refs.enterMonthlyBill.value != "" && parseInt(this.refs.amountInput.value > -.01)) {
@@ -22086,10 +22028,10 @@
 	    //  this.setState({entireData})
 	  },
 	
-	  //********************** Show Daily Transactions Page on Monthly Page ********************************
+	  //******************* Show Daily Transactions Page on Monthly Page ********************************
 	  onShowDailyTransPage: function onShowDailyTransPage() {
-	    this.refs.Show5.className = "showLast5Trans";
-	    this.refs.ShowAll.className = "hiddenButton";
+	    // this.refs.Show5.className="showLast5Trans"
+	    // this.refs.ShowAll.className="hiddenButton"
 	    this.refs.goToDaily.className = "hiddenButton";
 	    this.state.data = this.state.entireData;
 	    this.setState(this.state.data);
@@ -22099,13 +22041,31 @@
 	    this.refs.monthlyBox.className = "monthlyBoxLeft";
 	  },
 	
-	  //********************** Hide Daily Transactions Page on Monthly Page ********************************
+	  //******************* Hide Daily Transactions Page on Monthly Page ********************************
 	  onHideDailyTransPage: function onHideDailyTransPage() {
 	    this.refs.monthlyDailyTransBox.className = "monthlyDailyTransBox_hidden";
 	    this.refs.hideDailyTransPage.className = "hideDailyTransPage_hidden";
-	    this.refs.showDailyTransPage.className = "showDailyTransPage";
+	    this.refs.showDailyTransPage.className = "selectTransactions";
 	    this.refs.goToDaily.className = "dailyTransButton";
 	    this.refs.monthlyBox.className = "monthlyBoxCenter";
+	    this.removeSelectionForImport();
+	  },
+	  removeSelectionForImport: function removeSelectionForImport() {
+	    monthlyBillSelectedIndex = -1;
+	    selectedTrans = [];
+	    // maybe put following highlight removal in function
+	    // reverting yellow highlight of selected Daily Transactions to import back to normal class
+	    var transSelect = document.getElementsByClassName("transDateSelected");
+	    var selectedLEN = transSelect.length;
+	    for (var i = 0; i < selectedLEN; i++) {
+	      transSelect.transBox.className = "transDate";
+	    }
+	    // reverting yellow highlight of selected Monthly category of import back to normal class
+	    var monthBillHighlight = document.getElementsByClassName("monthlyTypeSelected");
+	    var selectedLEN = monthBillHighlight.length;
+	    for (var i = 0; i < selectedLEN; i++) {
+	      monthBillHighlight.monthBox.className = "monthlyType";
+	    }
 	  },
 	
 	  //********************** Alert for Monthly Plan exceeding income ********************************
@@ -22113,12 +22073,12 @@
 	    this.refs.monthlyPlannedTotal.className = "monthlyPlannedTotal_red";
 	  },
 	
-	  //********************** Removing alert for Monthly Plan exceeding income ********************************
+	  //************** Removing alert for Monthly Plan exceeding income ********************************
 	  monthlyTotalGreen: function monthlyTotalGreen() {
 	    this.refs.monthlyPlannedTotal.className = "monthlyPlannedTotal";
 	  },
 	
-	  //********************** Highlighting selected category of Monthly for Import ***************************
+	  //**************** Highlighting selected category of Monthly for Import ***************************
 	  onClickMonthlyTypeSelected: function onClickMonthlyTypeSelected(e) {
 	    e.preventDefault();
 	    if (monthlyBillSelectedIndex === -1) {
@@ -22131,7 +22091,7 @@
 	    this.setState({ monthlyBillSelectedIndex: monthlyBillSelectedIndex });
 	  },
 	
-	  //********************** Highlighting selected transaction on Daily Trans for Import ********************
+	  //**************** Highlighting selected transaction on Daily Trans for Import ********************
 	  onClickSelectedTrans: function onClickSelectedTrans(e) {
 	    e.preventDefault();
 	    if (e.target.className === "transDateSelected") {
@@ -22144,7 +22104,7 @@
 	    }
 	  },
 	
-	  //****************** Importing selected Daily Transactions into selected Monthly Category *****************
+	  //********** Importing selected Daily Transactions into selected Monthly Category *****************
 	  onClickImportButton: function onClickImportButton(e) {
 	    // be sure at least one of each Monthly and Daily Transactions are selected
 	    if (monthlyBillSelectedIndex != -1 && selectedTrans.length != 0) {
@@ -22200,9 +22160,9 @@
 	      currentBillAmount += parseInt(totalAmountImported);
 	      this.state.entireMonthlyData[this.state.monthlyBillSelectedIndex].amount = currentBillAmount;
 	      // show ALL TRANSACTIONS after Import
-	      this.refs.Show5.className = "showLast5Trans";
-	      this.refs.ShowAll.className = "hiddenButton";
-	      this.state.data = this.state.entireData;
+	      // this.refs.Show5.className="showLast5Trans"
+	      // this.refs.ShowAll.className="hiddenButton"
+	      //  this.state.data = this.state.entireData
 	      // writing new Monthly data out to Firebase after Import
 	      var updates = {};
 	      var tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
@@ -22225,22 +22185,24 @@
 	      this.setState(this.state.entireData);
 	      this.setState(this.state.entireMonthlyData);
 	    } else {
-	      monthlyBillSelectedIndex = -1;
-	      selectedTrans = [];
+	      this.removeSelectionForImport();
 	
-	      // maybe put following highlight removal in function
-	      // reverting yellow highlight of selected Daily Transactions to import back to normal class
-	      var transSelect = document.getElementsByClassName("transDateSelected");
-	      var selectedLEN = transSelect.length;
-	      for (var i = 0; i < selectedLEN; i++) {
-	        transSelect.transBox.className = "transDate";
-	      }
-	      // reverting yellow highlight of selected Monthly category of import back to normal class
-	      var monthBillHighlight = document.getElementsByClassName("monthlyTypeSelected");
-	      var selectedLEN = monthBillHighlight.length;
-	      for (var i = 0; i < selectedLEN; i++) {
-	        monthBillHighlight.monthBox.className = "monthlyType";
-	      }
+	      // monthlyBillSelectedIndex = -1
+	      // selectedTrans = []
+	      //
+	      // // maybe put following highlight removal in function
+	      // // reverting yellow highlight of selected Daily Transactions to import back to normal class
+	      // var transSelect = document.getElementsByClassName("transDateSelected")
+	      // var selectedLEN = transSelect.length
+	      // for (var i = 0; i< selectedLEN; i++){
+	      //   transSelect.transBox.className = "transDate"
+	      // }
+	      // // reverting yellow highlight of selected Monthly category of import back to normal class
+	      // var monthBillHighlight = document.getElementsByClassName("monthlyTypeSelected")
+	      // var selectedLEN = monthBillHighlight.length
+	      // for (var i = 0; i< selectedLEN; i++){
+	      //   monthBillHighlight.monthBox.className = "monthlyType"
+	      // }
 	    }
 	  },
 	  onClickLockButton: function onClickLockButton(e) {
@@ -22290,7 +22252,7 @@
 	    buttonsLocked = [];
 	  },
 	
-	  //*********************************** Help Button Popup **********************************************
+	  //****************************** Help Button Popup **********************************************
 	  onClickHelpButton: function onClickHelpButton() {
 	    alert("This will be info button how to use app. When we are unhurried and wise, we perceive that only great and worthy things have any permanent and absolute existence; that petty fears and petty pleasures are but the shadow of the reality. -Henry David Thoreau");
 	  },
@@ -22325,14 +22287,10 @@
 	          redBar = 100 - currentDayPercent;
 	        }
 	        greenBar = currentDayPercent.toString() + "%";
-	
 	        redBar = redBar.toString() + "%";
-	        //  this.refs.greyBar.className="progressBarGrey_hidden"
 	        greyBar = 0;
 	      } else {
-	
 	        greenBar = percentageSpent;
-	        //var currentDayPercent = (parseInt((((Date().substring(8,10)/30)*100)+.5)));
 	        greyBar = currentDayPercent - greenBar;
 	        greyBar = greyBar.toString() + "%";
 	        greenBar = greenBar.toString() + "%";
@@ -22345,7 +22303,7 @@
 	    return (0, _external_firebase.fbAuthCurrentUser)() != null;
 	  },
 	
-	  //*********************************** Rendering the HTML elements *************************************
+	  //****************************** Rendering the HTML elements *************************************
 	  render: function render() {
 	    var _this3 = this;
 	
@@ -22354,6 +22312,12 @@
 	    // console.log("auth=",firebase.auth().currentUser);
 	    // console.log("entireMonthlyData at render=",this.state.entireMonthlyData);
 	    // have to set this.state.monthlyFlag when logging out
+	
+	    //  <button className="showLast5Trans"
+	    //         ref="Show5" onClick={this.onClickShow5}>Show Last 5 Transactions</button>
+	    // <button className="hiddenButton"
+	    //         ref="ShowAll"
+	    //         onClick={this.onClickShowAll}>    Show All Transactions    </button>
 	
 	
 	    var monthlyPlannedTotalValue = 0;
@@ -22373,7 +22337,7 @@
 	              { className: 'transactionTitleArea' },
 	              _react2.default.createElement(
 	                'h1',
-	                { className: 'transactionsTitle' },
+	                { className: 'transactionsTitle', ref: 'transactionsTitle' },
 	                'Daily Transactions'
 	              ),
 	              _react2.default.createElement(
@@ -22450,18 +22414,19 @@
 	                'button',
 	                { className: 'showLast5Trans',
 	                  ref: 'Show5', onClick: this.onClickShow5 },
-	                'Show Last 5 Transactions'
+	                'Last 5 Transactions Only'
 	              ),
 	              _react2.default.createElement(
 	                'button',
-	                { className: 'hiddenButton',
-	                  ref: 'ShowAll',
+	                { className: 'hiddenButton', ref: 'ShowAll',
 	                  onClick: this.onClickShowAll },
 	                '    Show All Transactions    '
 	              ),
 	              _react2.default.createElement(
 	                'button',
-	                { className: 'monthlyBudgetButton', onClick: this.onClickMonthlyBudgetButton },
+	                { className: 'monthlyBudgetButton',
+	                  ref: 'monthlyBudgetButton',
+	                  onClick: this.onClickMonthlyBudgetButton },
 	                'Go to Monthly Budget'
 	              ),
 	              _react2.default.createElement(
@@ -22494,11 +22459,16 @@
 	          _react2.default.createElement(
 	            'article',
 	            { className: 'buttonLockArea_hidden', ref: 'buttonLockArea' },
-	            _react2.default.createElement('button', { className: 'lockButtonOpen', id: 'lockButtonBox', ref: 'lockButton', value: '1', onClick: this.onClickLockButton }),
-	            _react2.default.createElement('button', { className: 'lockButtonOpen', id: 'lockButtonBox', ref: 'lockButton', value: '2', onClick: this.onClickLockButton }),
-	            _react2.default.createElement('button', { className: 'lockButtonOpen', id: 'lockButtonBox', ref: 'lockButton', value: '3', onClick: this.onClickLockButton }),
-	            _react2.default.createElement('button', { className: 'lockButtonOpen', id: 'lockButtonBox', ref: 'lockButton', value: '4', onClick: this.onClickLockButton }),
-	            _react2.default.createElement('button', { className: 'lockButtonOpen', id: 'lockButtonBox', ref: 'lockButton', value: '5', onClick: this.onClickLockButton })
+	            _react2.default.createElement('button', { className: 'lockButtonOpen', id: 'lockButtonBox', ref: 'lockButton',
+	              value: '1', onClick: this.onClickLockButton }),
+	            _react2.default.createElement('button', { className: 'lockButtonOpen', id: 'lockButtonBox', ref: 'lockButton',
+	              value: '2', onClick: this.onClickLockButton }),
+	            _react2.default.createElement('button', { className: 'lockButtonOpen', id: 'lockButtonBox', ref: 'lockButton',
+	              value: '3', onClick: this.onClickLockButton }),
+	            _react2.default.createElement('button', { className: 'lockButtonOpen', id: 'lockButtonBox', ref: 'lockButton',
+	              value: '4', onClick: this.onClickLockButton }),
+	            _react2.default.createElement('button', { className: 'lockButtonOpen', id: 'lockButtonBox', ref: 'lockButton',
+	              value: '5', onClick: this.onClickLockButton })
 	          )
 	        )
 	      );
@@ -22561,7 +22531,6 @@
 	    if ((0, _external_firebase.fbAuthCurrentUser)() != null && this.state.monthlyFlag === true) if (this.state.monthlyIncome === 0 || this.state.monthlyIncome === undefined) {
 	      this.onMonthlyIncomeInput();
 	    }
-	
 	    return _react2.default.createElement(
 	      'main',
 	      { className: 'monthlyPageSection' },
@@ -22606,7 +22575,7 @@
 	        _react2.default.createElement(
 	          'h3',
 	          { className: 'monthlyColumnTitles' },
-	          '      Select                         Description                                      Planned    Actual'
+	          '      Select                         Description                                   Planned   Actual'
 	        ),
 	        _react2.default.createElement(
 	          'ul',
@@ -22636,6 +22605,11 @@
 	              } else {
 	                matClass = "monthlyActualTotal";
 	                matAlertClass = "monthlyActualTotalAlert_hidden";
+	              }
+	              if (monthlyPlannedTotalValue > _this3.state.monthlyIncome || monthlyActualTotalValue > _this3.state.monthlyIncome) {
+	                monthlyAlertBoxClass = "monthlyAlertBox";
+	              } else {
+	                monthlyAlertBoxClass = "monthlyAlertBox_hidden";
 	              }
 	              if (record.amount > record.plan) {
 	                actualClass = "monthlyBillActualRed";
@@ -22704,16 +22678,16 @@
 	        ),
 	        _react2.default.createElement(
 	          'div',
-	          { className: 'monthlyAlertBox' },
+	          { className: monthlyAlertBoxClass },
 	          _react2.default.createElement(
 	            'p',
 	            { className: mptAlertClass },
-	            '!!! Planned Total Expenses Exceeds Monthly Income !!!'
+	            '    !!! Planned Total Expenses Exceeds Monthly Income !!!'
 	          ),
 	          _react2.default.createElement(
 	            'p',
 	            { className: matAlertClass },
-	            '!!! Actual Total Expenses Exceeds Monthly Income !!!'
+	            '     !!! Actual Total Expenses Exceeds Monthly Income !!!'
 	          )
 	        ),
 	        _react2.default.createElement(
@@ -22741,17 +22715,17 @@
 	          { className: 'monthlyOptionsArea' },
 	          _react2.default.createElement(
 	            'button',
-	            { className: 'showDailyTransPage', ref: 'showDailyTransPage',
+	            { className: 'selectTransactions', ref: 'showDailyTransPage',
 	              type: 'submit',
 	              onClick: this.onShowDailyTransPage },
-	            'Show Daily Transactions'
+	            'Select Transactions to Import'
 	          ),
 	          _react2.default.createElement(
 	            'button',
 	            { className: 'hideDailyTransPage_hidden', ref: 'hideDailyTransPage',
 	              type: 'submit',
 	              onClick: this.onHideDailyTransPage },
-	            'Hide Daily Transactions'
+	            'Close Daily Transactions'
 	          ),
 	          _react2.default.createElement(
 	            'button',
@@ -22843,19 +22817,6 @@
 	                onClick: this.onClickSubmit },
 	              'Add'
 	            )
-	          ),
-	          _react2.default.createElement(
-	            'button',
-	            { className: 'showLast5Trans',
-	              ref: 'Show5', onClick: this.onClickShow5 },
-	            'Show Last 5 Transactions'
-	          ),
-	          _react2.default.createElement(
-	            'button',
-	            { className: 'hiddenButton',
-	              ref: 'ShowAll',
-	              onClick: this.onClickShowAll },
-	            '    Show All Transactions    '
 	          ),
 	          _react2.default.createElement(
 	            'button',
@@ -23303,6 +23264,9 @@
 	exports.fbRef = fbRef;
 	exports.fbGetUserValue = fbGetUserValue;
 	exports.fbAuthStateChanged = fbAuthStateChanged;
+	exports.fbGetTransactionData = fbGetTransactionData;
+	exports.fbGetMonthlyData = fbGetMonthlyData;
+	exports.fbGetMonthlyIncome = fbGetMonthlyIncome;
 	function fbLogin(email, password) {
 	  return firebase.auth().signInWithEmailAndPassword(email, password).catch(function (error) {
 	    var errorCode = error.code;
@@ -23350,8 +23314,18 @@
 	  return firebase.database().ref(dataPath);
 	}
 	
-	function fbGetUserValue(dataPath, cb) {
-	  return firebase.database().ref(dataPath).once("value").then(cb);
+	function fbGetUserValue(authUser, comp) {
+	  firebase.database().ref("/users/" + authUser.uid).once("value").then(function (snapshot) {
+	    var snapshotReturn = snapshot.val();
+	    comp.setState({
+	      user: {
+	        authed: true,
+	        name: authUser.email,
+	        email: snapshotReturn.email,
+	        lastLogin: snapshotReturn.lastLogin
+	      }
+	    });
+	  });
 	}
 	
 	// export function fbOnTransactionValue(dataPath, cb) {
@@ -23360,6 +23334,56 @@
 	
 	function fbAuthStateChanged(authUser) {
 	  return firebase.auth().onAuthStateChanged(authUser);
+	}
+	
+	function fbGetTransactionData(comp, currentUser) {
+	  firebase.database().ref("/users/" + currentUser + "/" + "transactions").on("value", function (allData) {
+	    // ************* does this still need an ELSE for this IF in case user insnt new but has no data
+	    if (allData.val() != null) {
+	      var entireData = allData.val();
+	      var dataLength = entireData.length;
+	      var data = [];
+	      var data = entireData;
+	      comp.setState({ data: data });
+	      comp.setState({ entireData: entireData });
+	      //********   need ELSE statement to assign empty object to entireData if user isnt new but has no data
+	    } else {
+	      var entireData = [];
+	      var data = [];
+	      comp.setState({ data: data });
+	      comp.setState({ entireData: entireData });
+	    }
+	  });
+	}
+	
+	function fbGetMonthlyData(comp, currentUser) {
+	  firebase.database().ref("/users/" + currentUser + "/" + "monthly").on("value", function (allData) {
+	    //   var entireMonthlyData = []
+	    if (allData.val() != null) {
+	      entireMonthlyData = allData.val();
+	      comp.setState({ entireMonthlyData: entireMonthlyData });
+	    } else {
+	      var entireMonthlyData = [];
+	      comp.setState({ entireMonthlyData: entireMonthlyData });
+	    }
+	    // are these 2 lines redundant below?
+	    //   var entireMonthlyData = []
+	    //  comp.setState({entireMonthlyData})
+	  });
+	}
+	
+	function fbGetMonthlyIncome(comp, currentUser) {
+	  firebase.database().ref("/users/" + currentUser + "/" + "monthlyincome").on("value", function (allData) {
+	    if (allData.val() != null) {
+	      monthlyIncome = allData.val();
+	      comp.setState({ monthlyIncome: monthlyIncome });
+	    } else {
+	      var monthlyIncome = 0;
+	      comp.setState({ monthlyIncome: monthlyIncome });
+	    }
+	    // is this line redundant below?
+	    comp.setState({ monthlyIncome: monthlyIncome });
+	  });
 	}
 
 /***/ }

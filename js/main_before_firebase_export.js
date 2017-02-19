@@ -309,7 +309,7 @@ export default React.createClass({
       this.refs.descriptionInput.value = ""
       this.refs.amountInput.value = ""
     }
-    //this.setState({data})
+    this.setState({data})
     this.setState(this.state.data)
   },
   //***************************************** Show all Daily Transactions **********************************

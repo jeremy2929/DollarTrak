@@ -98,7 +98,7 @@ export function fbGetMonthlyData(comp, currentUser) {
     }
 // are these 2 lines redundant below?
  //   var entireMonthlyData = []
-    comp.setState({entireMonthlyData})
+  //  comp.setState({entireMonthlyData})
  })
 
 }
@@ -109,7 +109,7 @@ export function fbGetMonthlyIncome(comp, currentUser) {
           monthlyIncome = allData.val()
           comp.setState({monthlyIncome})
         } else {
-          var monthlyIncome = "0"
+          var monthlyIncome = 0
           comp.setState({monthlyIncome})
         }
 // is this line redundant below?
