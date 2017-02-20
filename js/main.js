@@ -24,7 +24,7 @@ var screenLocked = false
 // firebase.auth().signOut()
 var elementTest = {}
 export default React.createClass({
-  //****************************************************************************************************
+  //********************************** Load data for user  *********************************************
   loadData(){
               if (fbAuthCurrentUser() != null){
                 var tempUser = fbAuthCurrentUser().email.split("@")
@@ -44,7 +44,7 @@ export default React.createClass({
             user: { authed: false }
            }
   },
-  //****************************************************************************************************
+  //************************ Defining objects with empty data ****************************************************
   getInitialState() {
     return {
             provider: () => {},
@@ -257,7 +257,6 @@ export default React.createClass({
           updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData
           // imported firebase function
           updateFB(updates)
-
     } else {
       alert("Negatives values not allowed")
       this.refs.descriptionInput.value = ""
@@ -275,7 +274,6 @@ export default React.createClass({
   },
   //***************************************** Show Only 5 Daily Transactions *********************************
   onClickShow5(){
-
         this.refs.ShowAll.className="showLast5Trans"
         this.refs.Show5.className="hiddenButton"
         var dataLength = this.state.entireData.length
@@ -449,7 +447,6 @@ export default React.createClass({
       this.setState({monthlyFlag})
       this.refs.amountInput.value = ""
       this.refs.descriptionInput.value  = ""
-
     // }
   },
   //****************************** Navigation button to Daily Transactions page ********************
@@ -523,6 +520,7 @@ export default React.createClass({
     this.removeSelectionForImport()
 
   },
+  //******************* Remove yellow highlight from selected items for Import ********************************
   removeSelectionForImport(){
     monthlyBillSelectedIndex = -1
     selectedTrans = []
@@ -551,6 +549,7 @@ export default React.createClass({
   //**************** Highlighting selected category of Monthly for Import ***************************
   onClickMonthlyTypeSelected(e){
     e.preventDefault()
+    // toggling between highlighting a selected monthly budget item or removing highlighting when clicked again
     if (monthlyBillSelectedIndex === -1){
       monthlyBillSelectedIndex = e.target.getAttribute('value')
       e.target.className = "monthlyTypeSelected"
@@ -563,6 +562,7 @@ export default React.createClass({
   //**************** Highlighting selected transaction on Daily Trans for Import ********************
   onClickSelectedTrans(e){
     e.preventDefault()
+    // toggling between highlighting a selected transaction or removing highlighting when clicked again
     if (e.target.className === "transDateSelected"){
       var transIndex = selectedTrans.indexOf(e.target.getAttribute('value'))
       e.target.className = "transDate"
@@ -576,22 +576,6 @@ export default React.createClass({
   onClickImportButton(e){
     // be sure at least one of each Monthly and Daily Transactions are selected
     if (monthlyBillSelectedIndex != -1 && selectedTrans.length != 0){
-
-// maybe make function for this highlight removal
-
-        // reverting yellow highlight of selected Daily Transactions to import back to normal class
-        var transSelect = document.getElementsByClassName("transDateSelected")
-        var selectedLEN = transSelect.length
-        for (var i = 0; i< selectedLEN; i++){
-          transSelect.transBox.className = "transDate"
-        }
-        // reverting yellow highlight of selected Monthly category of import back to normal class
-        var monthBillHighlight = document.getElementsByClassName("monthlyTypeSelected")
-        var selectedLEN = monthBillHighlight.length
-        for (var i = 0; i< selectedLEN; i++){
-          monthBillHighlight.monthBox.className = "monthlyType"
-        }
-
         // converting array of strings of selected Daily Transactions to numeric format
         var selectedLength = selectedTrans.length
         var numArray = []
@@ -600,7 +584,6 @@ export default React.createClass({
           var newnum = parseInt(selectedTrans[i])
           numArray.push(newnum)
         }
-
         // scrubbing the Selected List for Import against existing list of Daily Transactions
         // Thus, rebuilding the Daily Transaction array without items that were imported
         var workArray = this.state.entireData
@@ -626,10 +609,6 @@ export default React.createClass({
         var currentBillAmount = parseInt(this.state.entireMonthlyData[this.state.monthlyBillSelectedIndex].amount)
         currentBillAmount += parseInt(totalAmountImported)
         this.state.entireMonthlyData[this.state.monthlyBillSelectedIndex].amount = currentBillAmount
-        // show ALL TRANSACTIONS after Import
-        // this.refs.Show5.className="showLast5Trans"
-        // this.refs.ShowAll.className="hiddenButton"
-      //  this.state.data = this.state.entireData
         // writing new Monthly data out to Firebase after Import
         var updates = {}
         var tempUser = fbAuthCurrentUser().email.split("@")
@@ -643,9 +622,15 @@ export default React.createClass({
         firebase.database().ref().update(updates)
         // clearing variables once import is complete
         var totalAmountImported = 0
-        selectedTrans = []
+
+
         // resetting Monthly Category Selected flag
-        monthlyBillSelectedIndex = -1
+    // selectedTrans = []
+    //  monthlyBillSelectedIndex = -1
+    this.removeSelectionForImport()
+
+
+
         this.setState({monthlyBillSelectedIndex})
         // setting state to arrays so can be used elsewhere
         this.setState(this.state.data)
@@ -653,28 +638,12 @@ export default React.createClass({
         this.setState(this.state.entireMonthlyData)
     } else {
       this.removeSelectionForImport()
-      
-      // monthlyBillSelectedIndex = -1
-      // selectedTrans = []
-      //
-      // // maybe put following highlight removal in function
-      // // reverting yellow highlight of selected Daily Transactions to import back to normal class
-      // var transSelect = document.getElementsByClassName("transDateSelected")
-      // var selectedLEN = transSelect.length
-      // for (var i = 0; i< selectedLEN; i++){
-      //   transSelect.transBox.className = "transDate"
-      // }
-      // // reverting yellow highlight of selected Monthly category of import back to normal class
-      // var monthBillHighlight = document.getElementsByClassName("monthlyTypeSelected")
-      // var selectedLEN = monthBillHighlight.length
-      // for (var i = 0; i< selectedLEN; i++){
-      //   monthBillHighlight.monthBox.className = "monthlyType"
-      // }
     }
   },
   onClickLockButton(e){
     e.preventDefault()
     var test = e.target.getAttribute('value')
+    // toggling a lock button every time one is clicked
     if (e.target.className === "lockButtonClosed"){
       var buttonIndex = buttonsLocked.indexOf(e.target.getAttribute('value'))
       e.target.className = "lockButtonOpen"
@@ -683,6 +652,7 @@ export default React.createClass({
       e.target.className = "lockButtonClosed"
       buttonsLocked = buttonsLocked.concat(test)
     }
+    // sort button unlock code entered and compare to unlock code
     buttonsLocked = buttonsLocked.sort()
     if (JSON.stringify(buttonsLocked) === JSON.stringify(buttonsUnlockCode)){
       screenLocked = false
@@ -705,18 +675,19 @@ export default React.createClass({
   onClickLockScreen(e){
     screenLocked = true
     this.setState(this.state.data)
+    // reset all buttons to not selected in the event that some are
     var buttonSelect = document.getElementsByClassName("lockButtonClosed")
     var buttonLEN = buttonSelect.length
     for (var i = 0; i< buttonLEN; i++){
       buttonSelect.lockButtonBox.className = "lockButtonOpen"
     }
+    // hide all components when screen locked except logo and lock buttons
     this.refs.dailyTransPageSection.className = "dailyTransPageSection_hidden"
     this.refs.progressBarLabel.className = "progressBarLabel_hidden"
     this.refs.progressBarAreaBottom.className = "progressBarAreaBottom_hidden"
     this.refs.lockLogo.className="lockLogo"
     this.refs.buttonLockArea.className="buttonLockArea"
     this.refs.buttonLockArea.className = "buttonLockArea_locked"
-
     buttonsLocked = []
   },
   //****************************** Help Button Popup **********************************************
@@ -745,19 +716,25 @@ export default React.createClass({
             spendingCashPlan = this.state.entireMonthlyData[i].plan
           }
         }
+        // Progress Bar based on total spent in Spending Cash plus all Daily Transactions
         combinedTotal = dailyTotal + spendingCashActual
+        // calculate what percentage the above total equals
         var percentageSpent =  parseInt(((combinedTotal / spendingCashPlan) + .005) * 100)
         redBar = 0
         greenBar = 0
+        // calculate size of red portion of Progress Bar if over budget
         if (percentageSpent > currentDayPercent){
           redBar = percentageSpent - currentDayPercent
           if (redBar + currentDayPercent > 100){
             redBar = 100 - currentDayPercent
           }
+          // set green bar to maximum budget allotment and convert to string with a % sign
           greenBar = currentDayPercent.toString()+"%"
+          // convert ref bar value to string with a % sign
           redBar = redBar.toString() + "%"
         greyBar = 0
         } else {
+          // calculate size of grey bar based on difference between budget and green bar
           greenBar = percentageSpent
           greyBar = currentDayPercent - greenBar
           greyBar = greyBar.toString()+"%"
@@ -779,15 +756,7 @@ export default React.createClass({
     // console.log("entireMonthlyData at render=",this.state.entireMonthlyData);
     // have to set this.state.monthlyFlag when logging out
 
-    //  <button className="showLast5Trans"
-    //         ref="Show5" onClick={this.onClickShow5}>Show Last 5 Transactions</button>
-    // <button className="hiddenButton"
-    //         ref="ShowAll"
-    //         onClick={this.onClickShowAll}>    Show All Transactions    </button>
-
-
-
-
+    // set Planned and Actual spent values to zero to calculate if need warning
     var monthlyPlannedTotalValue = 0
     var monthlyActualTotalValue = 0
     if (this.userIsLoggedIn() && this.state.monthlyFlag === undefined){
@@ -1008,6 +977,8 @@ export default React.createClass({
             <button className="monthlySignOut" onClick={this.signUserOut}>Log Out</button>
         </article>
         </section>
+        <asides className="marketBox">TEST</asides>
+
         <div className="monthlyDailyTransBox_hidden" ref="monthlyDailyTransBox">
           <section className="monthlyDailyTransBoxInner" >
               <article className="transactionTitleArea">

@@ -13,6 +13,7 @@ body{
 .eachRecordContainer{
   height: auto;
   margin: 0;
+  width: 396px;
 }
 
 .buttonLockArea{
@@ -78,7 +79,7 @@ body{
 }
 
 .progressBarGrey_hidden{
-  visibility: hidden;
+  display: none;
 }
 
 .progressBarGrey{
@@ -299,16 +300,18 @@ margin-top: 50%;
   display: inline-block;
   margin: 0;
   height: 0;
-  visibility: hidden;
+  display: none;
   width: 0;
 }
 
 .newList{
   height: auto;
   padding-left: inherit;
+  padding-right: 0;
   margin: 0;
-  margin-left: 0;
-  width: 400px;
+  /*margin-left: 0;*/
+  /*margin-right: 0;*/
+  width: 395px;
 }
 
 .transDate{
@@ -324,7 +327,7 @@ margin-top: 50%;
   overflow: auto;
   padding-left: 5px;
   padding-top: 2px;
-  width: 70px;
+  width: 65px;
 }
 
 .transDateSelected{
@@ -340,7 +343,7 @@ margin-top: 50%;
   overflow: auto;
   padding-left: 5px;
   padding-top: 2px;
-  width: 70px;
+  width: 65px;
 }
 
 .transAmount{
@@ -424,7 +427,7 @@ margin-top: 50%;
 }
 
 .monthlyBudgetButton{
-    background-color: skyblue;
+    background-color: lightcyan;
     border: green solid 2px;
     border-radius: 6px;
     color: black;
@@ -506,7 +509,7 @@ margin-top: 50%;
 
 .monthlyBoxCenter{
   background-color: skyblue;
-  border: darkgreen solid 4px;
+  border: green solid 4px;
   display: inline-block;
   height: auto;
   margin-left: 30%;
@@ -516,7 +519,7 @@ margin-top: 50%;
 
 .monthlyBoxLeft{
   background-color: skyblue;
-  border: darkgreen solid 4px;
+  border: green solid 4px;
   display: inline-block;
   height: auto;
   margin-left: 5%;
@@ -526,8 +529,9 @@ margin-top: 50%;
 
 .monthlyTitleArea{
   height: 100px;
+  margin: 0;
   margin-left: 5%;
-  margin-right: 5%;
+  margin-right: 0%;
   width: 360px;
 }
 
@@ -607,7 +611,7 @@ margin-top: 50%;
   padding-left: inherit;
   margin: 0;
   margin-left: 0;
-  width: 500px;
+  width: 400px;
 }
 
 .monthlyColumnTitles{
@@ -625,7 +629,7 @@ margin-top: 50%;
   display: inline-flex;
   height: 41px;
   margin-top: 10px;
-  width: 448px;
+  width: 396px;
 }
 
 .enterMonthlyBill{
@@ -896,7 +900,7 @@ margin-top: 50%;
 }
 
 .monthlyDailyTransBox_hidden{
-    visibility: hidden;
+    display: none;
 }
 
 .monthlyDailyTransBox{
@@ -959,4 +963,13 @@ margin-top: 50%;
   text-align: center;
   margin: 0;
   width: 50px;
+}
+
+.marketBox{
+  border: solid 2px;
+  height: 300px;
+  margin-left: 3%;
+  margin-top: 100px;
+  padding: 0;
+  width: 300px;
 }
