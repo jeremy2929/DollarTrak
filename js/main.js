@@ -986,7 +986,6 @@ export default React.createClass({
             <button className="monthlySignOut" onClick={this.signUserOut}>Log Out</button>
         </article>
         </section>
-        <asides className="marketBox">TEST</asides>
         <div className="monthlyDailyTransBox_hidden" ref="monthlyDailyTransBox">
           <section className="monthlyDailyTransBoxInner" >
               <article className="transactionTitleArea">
