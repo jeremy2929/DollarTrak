@@ -420,7 +420,7 @@ margin-top: 50%;
   margin: 0;
   padding-top: 0px;
   /*text-align: center;*/
-  width: 57px;
+  width: 58px;
 }
 
 .transOptionsArea{
@@ -644,7 +644,7 @@ margin-top: 50%;
 .monthlyColumnTitlePlanned{
   font-size: 12px;
   margin: 0;
-  margin-left: 10px;
+  padding-left: 130px;
   white-space: pre;
 }
 
@@ -672,9 +672,9 @@ margin-top: 50%;
 .enterMonthlyPlannedAmount{
   border: solid 2px;
   border-radius: 6px;
-  font-size: 18px;
+  font-size: 17px;
   height: 40px;
-  width: 80px;
+  width: 81px;
 }
 
 .monthlyAddItemButton{
@@ -1003,7 +1003,7 @@ margin-top: 50%;
   width: 300px;
 }
 
-@media only screen and (min-width: 478px){
+@media only screen and (max-width: 478px){
 
   .titleLogin{
     color: green;
@@ -1075,7 +1075,7 @@ margin-top: 50%;
   .monthlyColumnTitlePlanned{
     font-size: 12px;
     margin: 0;
-    padding-left: 150px;
+    padding-left: 100px;
     white-space: pre;
   }
 
