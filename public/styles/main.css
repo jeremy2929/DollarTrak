@@ -119,6 +119,7 @@ body{
   /*border: solid 2px;*/
   color: lightgreen;
   display: inline-flex;
+  font-size: 10px;
   height: 21px;
   margin: 0;
   padding-left: 10%;
@@ -262,6 +263,7 @@ margin-top: 50%;
 .transactionTitleArea{
   height: 100px;
   margin-left: 2%;
+  margin-bottom: 1%;
   width: 401px;
 }
 
@@ -291,7 +293,7 @@ margin-top: 50%;
   padding-left: 10px;
   padding-right: 10px;
   text-align: center;
-  vertical-align: middle;
+  /*vertical-align: middle;*/
   width: 397px;
   white-space: pre;
 }
