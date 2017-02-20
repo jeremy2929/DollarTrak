@@ -620,12 +620,37 @@ margin-top: 50%;
 
 .monthlyColumnTitles{
   border: solid 2px;
-  font-size: 12px;
+  font-size: 20px;
   margin: 0;
   margin-left: 3px;
   padding: 0;
   white-space: pre;
   width: 390px;
+}
+
+
+.monthlyColumnTitleSelect{
+  font-size: 12px;
+  padding-left: 10px;
+  white-space: pre;
+}
+
+.monthlyColumnTitleDescription{
+  font-size: 12px;
+  padding-left: 30px;
+  white-space: pre;
+}
+
+.monthlyColumnTitlePlanned{
+  font-size: 12px;
+  margin: 0;
+  padding-left: 140px;
+  white-space: pre;
+}
+
+.monthlyColumnTitleActual{
+  font-size: 12px;
+  white-space: pre;
 }
 
 .monthlyInputsArea{

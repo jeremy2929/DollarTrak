@@ -22289,6 +22289,10 @@
 	    // console.log("entireMonthlyData at render=",this.state.entireMonthlyData);
 	    // have to set this.state.monthlyFlag when logging out
 	
+	    //
+	    // <h3 className="monthlyColumnTitles">      Select                         Description                                                                             Planned            Actual</h3>
+	
+	
 	    // set Planned and Actual spent values to zero to calculate if need warning
 	    var monthlyPlannedTotalValue = 0;
 	    var monthlyActualTotalValue = 0;
@@ -22543,9 +22547,28 @@
 	          )
 	        ),
 	        _react2.default.createElement(
-	          'h3',
+	          'table',
 	          { className: 'monthlyColumnTitles' },
-	          '      Select                         Description                                                                             Planned            Actual'
+	          _react2.default.createElement(
+	            'td',
+	            { className: 'monthlyColumnTitleSelect' },
+	            '  Select'
+	          ),
+	          _react2.default.createElement(
+	            'td',
+	            { className: 'monthlyColumnTitleDescription' },
+	            'Description'
+	          ),
+	          _react2.default.createElement(
+	            'td',
+	            { className: 'monthlyColumnTitlePlanned' },
+	            'Planned'
+	          ),
+	          _react2.default.createElement(
+	            'td',
+	            { className: 'monthlyColumnTitleActual' },
+	            'Actual'
+	          )
 	        ),
 	        _react2.default.createElement(
 	          'ul',

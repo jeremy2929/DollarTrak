@@ -756,6 +756,10 @@ export default React.createClass({
     // console.log("entireMonthlyData at render=",this.state.entireMonthlyData);
     // have to set this.state.monthlyFlag when logging out
 
+    //
+    // <h3 className="monthlyColumnTitles">      Select                         Description                                                                             Planned            Actual</h3>
+
+
     // set Planned and Actual spent values to zero to calculate if need warning
     var monthlyPlannedTotalValue = 0
     var monthlyActualTotalValue = 0
@@ -886,7 +890,12 @@ export default React.createClass({
               <p className="monthlyIncomeInput" ref="monthlyInput" onClick={this.onMonthlyIncomeInput}>${this.state.monthlyIncome}</p>
             </a>
           </div>
-          <h3 className="monthlyColumnTitles">      Select                         Description                                                                             Planned            Actual</h3>
+          <table className="monthlyColumnTitles">
+    <td className="monthlyColumnTitleSelect">  Select</td>
+    <td className="monthlyColumnTitleDescription">Description</td>
+    <td className="monthlyColumnTitlePlanned">Planned</td>
+    <td className="monthlyColumnTitleActual">Actual</td>
+</table>
           <ul id="list" className="monthyBillsRecordsArea">
            {
                this.state.entireMonthlyData.map((record, i)=>{
