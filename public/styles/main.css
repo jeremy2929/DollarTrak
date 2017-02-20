@@ -1075,8 +1075,16 @@ margin-top: 50%;
   .monthlyColumnTitlePlanned{
     font-size: 12px;
     margin: 0;
-    padding-left: 80px;
+    padding-left: 120px;
+    padding-right: 0;
     white-space: pre;
+  }
+
+  .monthlyColumnTitleActual{
+    font-size: 12px;
+    white-space: pre;
+    padding-left: 0;
+    padding-right: 0;
   }
 
 }
