@@ -886,7 +886,7 @@ export default React.createClass({
               <p className="monthlyIncomeInput" ref="monthlyInput" onClick={this.onMonthlyIncomeInput}>${this.state.monthlyIncome}</p>
             </a>
           </div>
-          <h3 className="monthlyColumnTitles">      Select                         Description                                   Planned   Actual</h3>
+          <h3 className="monthlyColumnTitles">      Select                         Description                                                                                         Planned            Actual</h3>
           <ul id="list" className="monthyBillsRecordsArea">
            {
                this.state.entireMonthlyData.map((record, i)=>{
