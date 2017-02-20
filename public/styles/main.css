@@ -1003,7 +1003,7 @@ margin-top: 50%;
   width: 300px;
 }
 
-@media only screen and (max-width: 478px){
+@media only screen and (max-width: 600px){
 
   .titleLogin{
     color: green;
@@ -1075,7 +1075,7 @@ margin-top: 50%;
   .monthlyColumnTitlePlanned{
     font-size: 12px;
     margin: 0;
-    padding-left: 100px;
+    padding-left: 80px;
     white-space: pre;
   }
 
