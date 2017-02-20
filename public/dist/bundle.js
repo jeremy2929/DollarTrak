@@ -22545,7 +22545,7 @@
 	        _react2.default.createElement(
 	          'h3',
 	          { className: 'monthlyColumnTitles' },
-	          '      Select                         Description                                                                                    Planned            Actual'
+	          '      Select                         Description                                                                             Planned            Actual'
 	        ),
 	        _react2.default.createElement(
 	          'ul',
