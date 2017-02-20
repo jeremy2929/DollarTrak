@@ -644,7 +644,7 @@ margin-top: 50%;
 .monthlyColumnTitlePlanned{
   font-size: 12px;
   margin: 0;
-  padding-left: 140px;
+  margin-left: 10px;
   white-space: pre;
 }
 
@@ -1075,7 +1075,7 @@ margin-top: 50%;
   .monthlyColumnTitlePlanned{
     font-size: 12px;
     margin: 0;
-    padding-left: 100px;
+    padding-left: 150px;
     white-space: pre;
   }
 

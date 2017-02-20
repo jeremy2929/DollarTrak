@@ -22562,7 +22562,7 @@
 	          _react2.default.createElement(
 	            'td',
 	            { className: 'monthlyColumnTitlePlanned' },
-	            'Planned'
+	            '     Planned'
 	          ),
 	          _react2.default.createElement(
 	            'td',

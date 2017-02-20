@@ -893,7 +893,7 @@ export default React.createClass({
           <table className="monthlyColumnTitles">
     <td className="monthlyColumnTitleSelect">  Select</td>
     <td className="monthlyColumnTitleDescription">Description</td>
-    <td className="monthlyColumnTitlePlanned">Planned</td>
+    <td className="monthlyColumnTitlePlanned">     Planned</td>
     <td className="monthlyColumnTitleActual">Actual</td>
 </table>
           <ul id="list" className="monthyBillsRecordsArea">
