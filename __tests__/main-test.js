@@ -11,9 +11,9 @@ describe("Main", ()=>{
   var fbAuthCurrentUserMock = jest.fn(e => {
       user = { authed: false }
    })
-  it("Should render a LOGIN button'", ()=>{
+  it("Should render an EMAIL LOGIN button'", ()=>{
       const currentLoginButtonElements = mainComponent.refs.loginButton
-      expect(currentLoginButtonElements.textContent).toEqual("LOGIN")
+      expect(currentLoginButtonElements.textContent).toEqual("EMAIL LOGIN")
   })
   it("Should render a HELP button", ()=>{
       const currentHelpButtonElements = mainComponent.refs.helpButton

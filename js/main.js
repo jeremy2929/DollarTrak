@@ -932,14 +932,14 @@ export default React.createClass({
           </div>
           <table className="monthlyColumnTitles">
             <tbody>
-            <tr>
-              <th className="monthlyColumnTitleSelect">  Select</th>
-              <th className="monthlyColumnTitleDescription">Description</th>
-            <th className="monthlyColumnTitlePlanned">  Planned</th>
-          <th className="monthlyColumnTitleActual">Actual</th>
-          </tr>
-  </tbody>
-      </table>
+              <tr>
+                <th className="monthlyColumnTitleSelect">  Select</th>
+                <th className="monthlyColumnTitleDescription">Description</th>
+                <th className="monthlyColumnTitlePlanned">  Planned</th>
+                <th className="monthlyColumnTitleActual">Actual</th>
+              </tr>
+            </tbody>
+          </table>
           <ul id="list" className="monthyBillsRecordsArea">
            {
                this.state.entireMonthlyData.map((record, i)=>{
