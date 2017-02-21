@@ -204,8 +204,8 @@ margin-top: 50%;
 }
 
 .loginLabel{
-  margin-left: 43%;
-  white-space: pre;
+  font-size: 15px;
+  margin-left: 2%;
 }
 
 .userNameInput{
@@ -221,28 +221,37 @@ margin-top: 50%;
   width: 200px;
 }
 
-.loginUser{
-  background-color: lightgreen;
-  display: inline-block;
-  font-size: 20px;
-  font-weight: bolder;
-  height: 40px;
-  margin-left: 9%;
-  margin-top: 20px;
-  width: 150px;
-}
-
-
-
 .newUser{
   background-color: lightblue;
   display: inline-block;
-  font-size: 20px;
+  font-size: 17px;
   font-weight: bolder;
   height: 40px;
-  margin-left: 17%;
+  margin-left: 2%;
   margin-top: 20px;
-  width: 150px;
+  width: 160px;
+}
+
+.loginUser{
+  background-color: lightgreen;
+  display: inline-block;
+  font-size: 17px;
+  font-weight: bolder;
+  height: 40px;
+  margin-left: 2%;
+  margin-top: 20px;
+  width: 160px;
+}
+
+.googleUser{
+  background-color: darkseagreen;
+  display: inline-block;
+  font-size: 17px;
+  font-weight: bolder;
+  height: 40px;
+  margin-left: 2%;
+  margin-top: 20px;
+  width: 160px;
 }
 
 .dailyTransButton{
@@ -517,7 +526,7 @@ margin-top: 50%;
   display: inline-block;
   height: auto;
   margin-left: 30%;
-  padding-bottom: 10px;
+  /*padding-bottom: 10px;*/
   width: 402px;
 }
 
@@ -527,7 +536,7 @@ margin-top: 50%;
   display: inline-block;
   height: auto;
   margin-left: 5%;
-  padding-bottom: 10px;
+  /*padding-bottom: 10px;*/
   width: 402px;
 }
 
@@ -974,23 +983,39 @@ margin-top: 50%;
 
 .helpContainer{
   height: 17px;
-  margin-bottom: 0;
-  margin-top: 11px;
-  vertical-align: bottom;
-  width: 520px;
+  margin-bottom: 2px;
+  margin-top: 10px;
+  text-align: center;
+  width: 98%;
 }
 
 .helpButton{
   background: thistle;
   border: solid 1px;
   border-radius: 5px;
-  float: right;
   font-size: 10px;
   font-weight: bolder;
   height: 15px;
   padding-top: 0px;
-  text-align: center;
-  margin: 0;
+  padding-bottom: 3px;
+  /*text-align: center;*/
+  /*margin: 0;*/
+  width: 50px;
+}
+
+.helpButtonMonthly{
+  background: thistle;
+  border: solid 1px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: bolder;
+  height: 15px;
+  margin-left: 45%;
+  padding-top: 0px;
+  padding-bottom: 3px;
+  vertical-align: middle;
+  /*text-align: center;*/
+  /*margin: 0;*/
   width: 50px;
 }
 

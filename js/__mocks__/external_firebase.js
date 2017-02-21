@@ -40,6 +40,10 @@ export function fbGetUserValue(authUser, comp) {
   })
 }
 
+export function fbGoogleLogin(){
+
+}
+
 export function fbCreateUserEmailAndPswd(uid, cb) {
   cb()
 }

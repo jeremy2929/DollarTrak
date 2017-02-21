@@ -21505,14 +21505,18 @@
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _reactfire = __webpack_require__(179);
+	var _reactfire = __webpack_require__(183);
 	
 	var _reactfire2 = _interopRequireDefault(_reactfire);
 	
-	var _external_firebase = __webpack_require__(180);
+	var _external_firebase = __webpack_require__(184);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
+	var authUser;
+	var tempUser;
+	var userId;
+	var userDomain;
 	var monthlyPlannedTotalValue = 0;
 	var monthlyActualTotalValue = 0;
 	var mptClass = "monthlyPlannedTotal";
@@ -21530,6 +21534,7 @@
 	var buttonsLocked = [];
 	var buttonsUnlockCode = ["1", "3", "5"];
 	var screenLocked = false;
+	var marketData;
 	
 	// activate next line when deploying- commented out for easier testing. it ensures previous user sign out
 	// firebase.auth().signOut()
@@ -21539,16 +21544,14 @@
 	
 	  //********************************** Load data for user  *********************************************
 	  loadData: function loadData() {
-	    if ((0, _external_firebase.fbAuthCurrentUser)() != null) {
-	      var tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
-	      var currentUser = tempUser[0];
-	      var userId = tempUser[0];
-	      //    var ref = firebase.database().ref("/users/" + currentUser + "/" + "transactions");
+	    userId = tempUser[0];
+	    console.log("userId=", userId);
+	    userDomain = tempUser[1];
+	    if (userId != null) {
 	      var comp = this;
-	      //  var ref = firebase.database().ref("/users/" + currentUser + "/" + "transactions");
-	      (0, _external_firebase.fbGetTransactionData)(comp, currentUser);
-	      (0, _external_firebase.fbGetMonthlyData)(comp, currentUser);
-	      (0, _external_firebase.fbGetMonthlyIncome)(comp, currentUser);
+	      (0, _external_firebase.fbGetTransactionData)(comp, userId);
+	      (0, _external_firebase.fbGetMonthlyData)(comp, userId);
+	      (0, _external_firebase.fbGetMonthlyIncome)(comp, userId);
 	    }
 	  },
 	
@@ -21582,34 +21585,69 @@
 	
 	    var email = this.refs.userInput.value;
 	    var password = this.refs.passwordInput.value;
-	    // imported firebase function
-	    (0, _external_firebase.fbLogin)(email, password);
-	    // imported firebase function
-	    var currentUser = (0, _external_firebase.fbAuthCurrentUser)();
-	    var authUser = (0, _external_firebase.fbAuthCurrentUser)();
+	    tempUser = email.split("@");
+	    userId = tempUser[0];
+	    userDomain = tempUser[1];
+	    if (userDomain === "gmail.com") {
+	      var provider = new _external_firebase.fbGoogleLogin();
+	    } else {
+	      // imported firebase function
+	      (0, _external_firebase.fbLogin)(email, password);
+	      // imported firebase function
+	      authUser = (0, _external_firebase.fbAuthCurrentUser)();
+	    }
 	    (0, _external_firebase.fbAuthStateChanged)(function (authUser) {
 	      if ((0, _external_firebase.fbAuthCurrentUser)() != null) {
 	        var currentUser = {};
 	        var today = new Date();
 	        var tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
-	        var userId = tempUser[0];
-	        currentUser["/users/" + authUser.uid + "crap87"] = {
+	        currentUser["/users/" + authUser.uid] = {
 	          name: authUser.displayName,
 	          email: authUser.email,
 	          lastLogin: Date()
 	        };
 	        //updateFB(currentUser)
 	        var comp = _this;
+	        authUser = (0, _external_firebase.fbAuthCurrentUser)();
 	        (0, _external_firebase.fbGetUserValue)(authUser, comp);
 	      }
 	      _this.loadData();
 	    });
 	    this.setState({ password: password });
 	  },
+	  googleSignIn: function googleSignIn() {
+	    var _this2 = this;
+	
+	    var provider = new _external_firebase.fbGoogleLogin();
+	
+	    (0, _external_firebase.fbAuthStateChanged)(function (authUser) {
+	      // if (fbAuthCurrentUser() != null){
+	      //   var currentUser = {};
+	      //   var today = new Date();
+	      //   var tempUser = fbAuthCurrentUser().email.split("@")
+	      //   currentUser["/users/" + authUser.uid] = {
+	      //     name: authUser.displayName,
+	      //     email: authUser.email,
+	      //     lastLogin: Date()
+	      //   }
+	      //     //updateFB(currentUser)
+	      //   var comp = this
+	      //   authUser = fbAuthCurrentUser()
+	      //   fbGetUserValue(authUser, comp)
+	      //   }
+	      var comp = _this2;
+	      authUser = (0, _external_firebase.fbAuthCurrentUser)();
+	      (0, _external_firebase.fbGetUserValue)(authUser, comp);
+	      tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
+	      //  console.log("google tempuser=",tempUser);
+	      _this2.loadData();
+	    });
+	    this.setState({ password: password });
+	  },
 	
 	  //**************************************** New user sign in *************************************
 	  newUserSignUp: function newUserSignUp() {
-	    var _this2 = this;
+	    var _this3 = this;
 	
 	    var email = this.refs.userInput.value;
 	    var password = this.refs.passwordInput.value;
@@ -21630,43 +21668,46 @@
 	      alert("Account created! Click OK to login...");
 	    }
 	    // imported firebase function
-	    //  var currentUser = fbAuthCurrentUser()
+	    // var currentUser = fbAuthCurrentUser()
 	    var authUser = (0, _external_firebase.fbAuthCurrentUser)();
-	
 	    (0, _external_firebase.fbAuthStateChanged)(function (authUser) {
 	      var currentUser = {};
 	      var today = new Date();
 	      var tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
 	      var userId = tempUser[0];
-	      currentUser["/users/" + authUser.uid + "crap130"] = {
+	      currentUser["/users/" + authUser.uid] = {
 	        name: authUser.displayName,
 	        email: authUser.email,
 	        lastLogin: "today"
 	      };
-	      //updateFB(currentUser)
-	      // This sets up a callback once firebase reports that /users/{user.uid} has a value
-	      // fbRef("/users/" + ).once("value").then((snapshot) => {
-	      //   var snapshotReturn = snapshot.val()
-	      //   this.setState({
-	      //     user: {
-	      //       authed: true,
-	      //       name: authUser.email,
-	      //       email: snapshotReturn.email,
-	      //       lastLogin: snapshotReturn.lastLogin
-	      //     }
-	      //   })
-	      // });
-	      var tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
-	      var currentUser = tempUser[0];
-	      var userId = tempUser[0];
-	      // is this needed below?  does it execute?**************************
-	      var data = [];
-	      var entireData = [];
-	      _this2.setState(_this2.state.data);
-	      _this2.setState(_this2.state.entireData);
-	      _this2.setState(_this2.state.entireMonthlyData);
-	      // is this needed above?  does it execute?**************************
+	      //    updateFB(currentUser)
+	      //  This sets up a callback once firebase reports that /users/{user.uid} has a value
+	
+	
+	      //         fbRef("/users/" + authUser.uid).once("value").then((snapshot) => {
+	      //           var snapshotReturn = snapshot.val()
+	      //           this.setState({
+	      //             user: {
+	      //               authed: true,
+	      //               name: authUser.email,
+	      //               email: snapshotReturn.email,
+	      //               lastLogin: snapshotReturn.lastLogin
+	      //             }
+	      //           })
+	      //         });
+	      //         var tempUser = fbAuthCurrentUser().email.split("@")
+	      //         var currentUser = tempUser[0]
+	      //         var userId = tempUser[0]
+	      // // is this needed below?  does it execute?**************************
+	      //         var data = []
+	      //         var entireData = []
+	      //   //  this.setState(this.state.user)
+	      //      this.setState(this.state.data)
+	      //      this.setState(this.state.entireData)
+	      //      this.setState(this.state.entireMonthlyData)
+	      //  // is this needed above?  does it execute?**************************
 	      // old end of function promise
+	
 	
 	      var tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
 	      var currentUser = tempUser[0];
@@ -21680,10 +21721,10 @@
 	        text: "spending cash"
 	      };
 	      entireMonthlyData = entireMonthlyData.concat(newData);
-	      _this2.setState({ entireMonthlyData: entireMonthlyData });
-	      _this2.setState(_this2.state.entireMonthlyData);
+	      _this3.setState({ entireMonthlyData: entireMonthlyData });
+	      _this3.setState(_this3.state.entireMonthlyData);
 	      var updates = {};
-	      updates["/users/" + currentUser + "/" + "monthly"] = _this2.state.entireMonthlyData;
+	      updates["/users/" + currentUser + "/" + "monthly"] = _this3.state.entireMonthlyData;
 	      // imported firebase function
 	      (0, _external_firebase.updateFB)(updates);
 	      var newData = "";
@@ -21696,18 +21737,18 @@
 	      };
 	      entireData = entireData.concat(newData);
 	      data = data.concat(newData);
-	      _this2.setState({ data: data });
-	      _this2.setState({ entireData: entireData });
-	      _this2.setState(_this2.state.data);
-	      _this2.setState(_this2.state.entireData);
-	      _this2.setState({ password: password });
+	      _this3.setState({ data: data });
+	      _this3.setState({ entireData: entireData });
+	      _this3.setState(_this3.state.data);
+	      _this3.setState(_this3.state.entireData);
+	      _this3.setState({ password: password });
 	      var updates = {};
 	      updates["/users/" + currentUser + "/" + "transactions"] = entireData;
 	      // imported firebase function
 	      (0, _external_firebase.updateFB)(updates);
 	      var monthlyIncome = 0;
 	      var updates = {};
-	      updates["/users/" + currentUser + "/" + "monthlyIncome"] = entireData;
+	      updates["/users/" + currentUser + "/" + "monthlyIncome"] = monthlyIncome;
 	      (0, _external_firebase.updateFB)(updates);
 	    });
 	  },
@@ -21757,8 +21798,6 @@
 	        // this.refs.Show5.className="hiddenButton"
 	      } else {
 	        data = this.state.entireData;
-	        // this.refs.ShowAll.className="hiddenButton"
-	        // this.refs.Show5.className="showLast5Trans"
 	      }
 	      // updating FireBase with new data
 	      // imported firebase function
@@ -21805,7 +21844,6 @@
 	
 	  //***************************** Modifying a Daily Transaction Amount ****************************
 	  onClickTransAmount: function onClickTransAmount(e) {
-	    /// fix bug here if Prompt is canceled, doesnt write over current valus with null
 	    var transSelected = e.target.getAttribute('value');
 	    var newAmount = prompt("Enter new amount or 000 to delete");
 	    // validating amount entered for numeric only, under 5 digits, or 000 for delete record
@@ -21829,7 +21867,6 @@
 	        }
 	      }
 	    }
-	
 	    var updates = {};
 	    // imported firebase function
 	    var tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
@@ -21949,7 +21986,7 @@
 	    var tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
 	    var currentUser = tempUser[0];
 	    var updates = {};
-	    updates["/users/" + currentUser + "/" + "monthlyincome"] = monthlyIncome;
+	    updates["/users/" + currentUser + "/" + "monthlyIncome"] = monthlyIncome;
 	    // imported firebase function
 	    (0, _external_firebase.updateFB)(updates);
 	    this.setState({ monthlyIncome: monthlyIncome });
@@ -21982,8 +22019,6 @@
 	    this.setState({ monthlyFlag: monthlyFlag });
 	    this.refs.enterMonthlyBill.value = "";
 	    this.state.date = this.state.entireData;
-	    //  this.refs.ShowAll.className="showLast5Trans"
-	    // this.refs.Show5.className="hiddenButton"
 	  },
 	
 	  //*********************** Adding Monthly Budget items and planned amounts *************************
@@ -22022,8 +22057,6 @@
 	      this.refs.enterMonthlyBill.value = "";
 	      this.refs.enterMonthlyPlan.value = "";
 	    }
-	    //  this.setState({data})
-	    //  this.setState({entireData})
 	  },
 	
 	  //******************* Show Daily Transactions Page on Monthly Page ********************************
@@ -22157,12 +22190,8 @@
 	      firebase.database().ref().update(updates);
 	      // clearing variables once import is complete
 	      var totalAmountImported = 0;
-	
-	      // resetting Monthly Category Selected flag
-	      // selectedTrans = []
-	      //  monthlyBillSelectedIndex = -1
 	      this.removeSelectionForImport();
-	
+	      // is next line needed?
 	      this.setState({ monthlyBillSelectedIndex: monthlyBillSelectedIndex });
 	      // setting state to arrays so can be used elsewhere
 	      this.setState(this.state.data);
@@ -22222,9 +22251,9 @@
 	    buttonsLocked = [];
 	  },
 	
-	  //****************************** Help Button Popup **********************************************
+	  //***************************** Help Button Popup **********************************************
 	  onClickHelpButton: function onClickHelpButton() {
-	    alert("This will be info button how to use app. When we are unhurried and wise, we perceive that only great and worthy things have any permanent and absolute existence; that petty fears and petty pleasures are but the shadow of the reality. -Henry David Thoreau");
+	    alert("This application will allow user to enter Daily Transactions as money is spent by entering amount/description and clicking Add button. Any transaction amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount. The Monthly Budget Page will allow user to enter Monthly Income and then define the monthly items in their budget by entering description and planned amount to be spent and clicking Add. A default item in Monthly Budget page is Spending Cash.  Any monthly category amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount (except for Spending Cash).  The user can import the Daily Transactions by clicking the Select Transactions to Import, which will display the Daily Transactions list, then selecting one Monthly Budget category and as many Daily Transactions they wish, then clicking Import Transactions button.  This action will remove the Daily Transactions from the list and add the amounts to the Monthly Budget category selected in the Actual column. ");
 	  },
 	  spendingGreenBar: function spendingGreenBar() {
 	    if (this.state.entireMonthlyData[0].plan > 0) {
@@ -22281,7 +22310,7 @@
 	
 	  //****************************** Rendering the HTML elements *************************************
 	  render: function render() {
-	    var _this3 = this;
+	    var _this4 = this;
 	
 	    this.spendingGreenBar();
 	    // console.log("monthly=",this.state.monthlyFlag);
@@ -22289,9 +22318,10 @@
 	    // console.log("entireMonthlyData at render=",this.state.entireMonthlyData);
 	    // have to set this.state.monthlyFlag when logging out
 	
-	    //
-	    // <h3 className="monthlyColumnTitles">      Select                         Description                                                                             Planned            Actual</h3>
-	
+	    // <aside className="marketAsideArea">
+	    //   <p>{marketData}</p>
+	    //   <button className="marketButton" onClick={this.onClickMarketUpdate}>Market Update</button>
+	    // </aside>
 	
 	    // set Planned and Actual spent values to zero to calculate if need warning
 	    var monthlyPlannedTotalValue = 0;
@@ -22341,7 +22371,7 @@
 	                        { href: '#' },
 	                        _react2.default.createElement(
 	                          'p',
-	                          { className: 'transAmount', value: i, onClick: _this3.onClickTransAmount },
+	                          { className: 'transAmount', value: i, onClick: _this4.onClickTransAmount },
 	                          '$',
 	                          record.amount
 	                        )
@@ -22352,7 +22382,7 @@
 	                        _react2.default.createElement(
 	                          'p',
 	                          { className: 'transDesc', value: i,
-	                            onClick: _this3.onClickTransDescription },
+	                            onClick: _this4.onClickTransDescription },
 	                          record.text
 	                        )
 	                      )
@@ -22414,6 +22444,15 @@
 	                { className: 'signOut',
 	                  onClick: this.signUserOut },
 	                'Log Out'
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'helpContainer' },
+	                _react2.default.createElement(
+	                  'button',
+	                  { className: 'helpButton', ref: 'helpButton', onClick: this.onClickHelpButton },
+	                  'HELP'
+	                )
 	              )
 	            )
 	          ),
@@ -22470,7 +22509,7 @@
 	            _react2.default.createElement(
 	              'h2',
 	              { className: 'loginLabel' },
-	              '     '
+	              'You may click Google Login to sign in with Google Account or enter an email address to sign into existing account or create a new account:'
 	            ),
 	            _react2.default.createElement('input', { className: 'userNameInput',
 	              placeholder: '             email address',
@@ -22481,13 +22520,18 @@
 	              type: 'password' }),
 	            _react2.default.createElement(
 	              'button',
-	              { className: 'newUser', onClick: this.newUserSignUp },
+	              { className: 'newUser', ref: 'newUser', onClick: this.newUserSignUp },
 	              'NEW USER'
 	            ),
 	            _react2.default.createElement(
 	              'button',
 	              { className: 'loginUser', ref: 'loginButton', onClick: this.signUserIn },
-	              'LOGIN'
+	              'EMAIL LOGIN'
+	            ),
+	            _react2.default.createElement(
+	              'button',
+	              { className: 'googleUser', ref: 'googleButton', onClick: this.googleSignIn },
+	              'GOOGLE LOGIN'
 	            ),
 	            _react2.default.createElement(
 	              'div',
@@ -22550,24 +22594,32 @@
 	          'table',
 	          { className: 'monthlyColumnTitles' },
 	          _react2.default.createElement(
-	            'td',
-	            { className: 'monthlyColumnTitleSelect' },
-	            '  Select'
-	          ),
-	          _react2.default.createElement(
-	            'td',
-	            { className: 'monthlyColumnTitleDescription' },
-	            'Description'
-	          ),
-	          _react2.default.createElement(
-	            'td',
-	            { className: 'monthlyColumnTitlePlanned' },
-	            '     Planned'
-	          ),
-	          _react2.default.createElement(
-	            'td',
-	            { className: 'monthlyColumnTitleActual' },
-	            'Actual'
+	            'tbody',
+	            null,
+	            _react2.default.createElement(
+	              'tr',
+	              null,
+	              _react2.default.createElement(
+	                'th',
+	                { className: 'monthlyColumnTitleSelect' },
+	                '  Select'
+	              ),
+	              _react2.default.createElement(
+	                'th',
+	                { className: 'monthlyColumnTitleDescription' },
+	                'Description'
+	              ),
+	              _react2.default.createElement(
+	                'th',
+	                { className: 'monthlyColumnTitlePlanned' },
+	                '  Planned'
+	              ),
+	              _react2.default.createElement(
+	                'th',
+	                { className: 'monthlyColumnTitleActual' },
+	                'Actual'
+	              )
+	            )
 	          )
 	        ),
 	        _react2.default.createElement(
@@ -22585,21 +22637,21 @@
 	              }
 	              monthlyPlannedTotalValue += record.plan;
 	              monthlyActualTotalValue += record.amount;
-	              if (monthlyPlannedTotalValue > _this3.state.monthlyIncome) {
+	              if (monthlyPlannedTotalValue > _this4.state.monthlyIncome) {
 	                mptClass = "monthlyPlannedTotal_red";
 	                mptAlertClass = "monthlyPlannedTotalAlert";
 	              } else {
 	                mptClass = "monthlyPlannedTotal";
 	                mptAlertClass = "monthlyPlannedTotalAlert_hidden";
 	              }
-	              if (monthlyActualTotalValue > _this3.state.monthlyIncome) {
+	              if (monthlyActualTotalValue > _this4.state.monthlyIncome) {
 	                matClass = "monthlyActualTotal_red";
 	                matAlertClass = "monthlyActualTotalAlert";
 	              } else {
 	                matClass = "monthlyActualTotal";
 	                matAlertClass = "monthlyActualTotalAlert_hidden";
 	              }
-	              if (monthlyPlannedTotalValue > _this3.state.monthlyIncome || monthlyActualTotalValue > _this3.state.monthlyIncome) {
+	              if (monthlyPlannedTotalValue > _this4.state.monthlyIncome || monthlyActualTotalValue > _this4.state.monthlyIncome) {
 	                monthlyAlertBoxClass = "monthlyAlertBox";
 	              } else {
 	                monthlyAlertBoxClass = "monthlyAlertBox_hidden";
@@ -22613,14 +22665,14 @@
 	                'article',
 	                { className: 'eachRecordContainer', key: i },
 	                _react2.default.createElement('a', { href: '#',
-	                  className: 'monthlyType', id: 'monthBox', ref: 'monthlyType', value: i, onClick: _this3.onClickMonthlyTypeSelected }),
+	                  className: 'monthlyType', id: 'monthBox', ref: 'monthlyType', value: i, onClick: _this4.onClickMonthlyTypeSelected }),
 	                _react2.default.createElement(
 	                  'a',
 	                  { href: '#' },
 	                  _react2.default.createElement(
 	                    'p',
 	                    { className: 'monthlyBillDesc', value: i,
-	                      onClick: _this3.onClickMonthlyDescription },
+	                      onClick: _this4.onClickMonthlyDescription },
 	                    record.text
 	                  )
 	                ),
@@ -22629,7 +22681,7 @@
 	                  { href: '#' },
 	                  _react2.default.createElement(
 	                    'p',
-	                    { className: 'monthlyBillPlan', value: i, onClick: _this3.onClickMonthlyBillPlan },
+	                    { className: 'monthlyBillPlan', value: i, onClick: _this4.onClickMonthlyBillPlan },
 	                    '$',
 	                    record.plan
 	                  )
@@ -22639,7 +22691,7 @@
 	                  { href: '#' },
 	                  _react2.default.createElement(
 	                    'p',
-	                    { className: actualClass, ref: 'monthlyActual', value: i, onClick: _this3.onClickMonthlyBillActual },
+	                    { className: actualClass, ref: 'monthlyActual', value: i, onClick: _this4.onClickMonthlyBillActual },
 	                    '$',
 	                    record.amount
 	                  )
@@ -22729,13 +22781,13 @@
 	            'button',
 	            { className: 'monthlySignOut', onClick: this.signUserOut },
 	            'Log Out'
+	          ),
+	          _react2.default.createElement(
+	            'button',
+	            { className: 'helpButtonMonthly', ref: 'helpButton', onClick: this.onClickHelpButton },
+	            'HELP'
 	          )
 	        )
-	      ),
-	      _react2.default.createElement(
-	        'asides',
-	        { className: 'marketBox' },
-	        'TEST'
 	      ),
 	      _react2.default.createElement(
 	        'div',
@@ -22769,7 +22821,7 @@
 	                  { className: 'eachRecordContainer', key: i },
 	                  _react2.default.createElement(
 	                    'a',
-	                    { href: '#', className: 'transDate', id: 'transBox', ref: 'transDate', value: i, onClick: _this3.onClickSelectedTrans },
+	                    { href: '#', className: 'transDate', id: 'transBox', ref: 'transDate', value: i, onClick: _this4.onClickSelectedTrans },
 	                    record.date
 	                  ),
 	                  _react2.default.createElement(
@@ -22777,7 +22829,7 @@
 	                    { href: '#' },
 	                    _react2.default.createElement(
 	                      'p',
-	                      { className: 'transAmount', value: i, onClick: _this3.onClickTransAmount },
+	                      { className: 'transAmount', value: i, onClick: _this4.onClickTransAmount },
 	                      '$',
 	                      record.amount
 	                    )
@@ -22788,7 +22840,7 @@
 	                    _react2.default.createElement(
 	                      'p',
 	                      { className: 'transDesc', value: i,
-	                        onClick: _this3.onClickTransDescription },
+	                        onClick: _this4.onClickTransDescription },
 	                      record.text
 	                    )
 	                  )
@@ -22840,7 +22892,11 @@
 	});
 
 /***/ },
-/* 179 */
+/* 179 */,
+/* 180 */,
+/* 181 */,
+/* 182 */,
+/* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -23246,7 +23302,7 @@
 
 
 /***/ },
-/* 180 */
+/* 184 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -23265,6 +23321,7 @@
 	exports.fbGetTransactionData = fbGetTransactionData;
 	exports.fbGetMonthlyData = fbGetMonthlyData;
 	exports.fbGetMonthlyIncome = fbGetMonthlyIncome;
+	exports.fbGoogleLogin = fbGoogleLogin;
 	function fbLogin(email, password) {
 	  return firebase.auth().signInWithEmailAndPassword(email, password).catch(function (error) {
 	    var errorCode = error.code;
@@ -23272,15 +23329,13 @@
 	    if (errorCode === 'auth/wrong-password') {
 	      alert('Wrong password.');
 	    } else {
-	      alert(errorMessage);
+	      alert(errorMessage + " If you are a new user, click New User to create account.");
 	    }
 	  });
 	}
-	
 	function fbAuthCurrentUser() {
 	  return firebase.auth().currentUser;
 	}
-	
 	function fbCreateUserEmailAndPswd(email, password) {
 	  return firebase.auth().createUserWithEmailAndPassword(email, password).catch(function (error) {
 	    // Handle Errors here.
@@ -23299,19 +23354,15 @@
 	    // [END_EXCLUDE]
 	  });
 	}
-	
 	function fbSignOut() {
 	  return firebase.auth().signOut();
 	}
-	
 	function updateFB(updates) {
 	  return firebase.database().ref().update(updates);
 	}
-	
 	function fbRef(dataPath) {
 	  return firebase.database().ref(dataPath);
 	}
-	
 	function fbGetUserValue(authUser, comp) {
 	  firebase.database().ref("/users/" + authUser.uid).once("value").then(function (snapshot) {
 	    var snapshotReturn = snapshot.val();
@@ -23325,15 +23376,9 @@
 	    });
 	  });
 	}
-	
-	// export function fbOnTransactionValue(dataPath, cb) {
-	//
-	// }
-	
 	function fbAuthStateChanged(authUser) {
 	  return firebase.auth().onAuthStateChanged(authUser);
 	}
-	
 	function fbGetTransactionData(comp, currentUser) {
 	  firebase.database().ref("/users/" + currentUser + "/" + "transactions").on("value", function (allData) {
 	    // ************* does this still need an ELSE for this IF in case user insnt new but has no data
@@ -23353,34 +23398,57 @@
 	    }
 	  });
 	}
-	
 	function fbGetMonthlyData(comp, currentUser) {
 	  firebase.database().ref("/users/" + currentUser + "/" + "monthly").on("value", function (allData) {
-	    //   var entireMonthlyData = []
 	    if (allData.val() != null) {
-	      entireMonthlyData = allData.val();
+	      var entireMonthlyData = allData.val();
 	      comp.setState({ entireMonthlyData: entireMonthlyData });
 	    } else {
+	      var newData = "";
 	      var entireMonthlyData = [];
+	      newData = {
+	        amount: 0,
+	        plan: 0,
+	        type: "spe",
+	        text: "spending cash"
+	      };
+	      var entireMonthlyData = entireMonthlyData.concat(newData);
 	      comp.setState({ entireMonthlyData: entireMonthlyData });
 	    }
-	    // are these 2 lines redundant below?
-	    //   var entireMonthlyData = []
-	    //  comp.setState({entireMonthlyData})
 	  });
 	}
-	
 	function fbGetMonthlyIncome(comp, currentUser) {
-	  firebase.database().ref("/users/" + currentUser + "/" + "monthlyincome").on("value", function (allData) {
+	  firebase.database().ref("/users/" + currentUser + "/" + "monthlyIncome").on("value", function (allData) {
 	    if (allData.val() != null) {
-	      monthlyIncome = allData.val();
+	      var monthlyIncome = allData.val();
 	      comp.setState({ monthlyIncome: monthlyIncome });
 	    } else {
 	      var monthlyIncome = 0;
 	      comp.setState({ monthlyIncome: monthlyIncome });
 	    }
 	    // is this line redundant below?
-	    comp.setState({ monthlyIncome: monthlyIncome });
+	    // comp.setState({monthlyIncome})
+	  });
+	}
+	function fbGoogleLogin() {
+	  var provider = new firebase.auth.GoogleAuthProvider();
+	  return firebase.auth().signInWithPopup(provider).then(function (result) {
+	    // This gives you a Google Access Token. You can use it to access the Google API.
+	    var token = result.credential.accessToken;
+	    // The signed-in user info.
+	    var user = result.user;
+	    // ...
+	    authUser = fbAuthCurrentUser();
+	    return authUser;
+	  }).catch(function (error) {
+	    // Handle Errors here.
+	    var errorCode = error.code;
+	    var errorMessage = error.message;
+	    // The email of the user's account used.
+	    var email = error.email;
+	    // The firebase.auth.AuthCredential type that was used.
+	    var credential = error.credential;
+	    // ...
 	  });
 	}
 

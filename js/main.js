@@ -1,7 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import ReactFire from 'reactfire'
-import { fbLogin, fbAuthCurrentUser, fbCreateUserEmailAndPswd, fbSignOut, updateFB, fbRef, fbAuthStateChanged, fbGetUserValue, fbGetTransactionData, fbGetMonthlyData, fbGetMonthlyIncome}  from './external_firebase'
+import { fbLogin, fbAuthCurrentUser, fbCreateUserEmailAndPswd, fbSignOut, updateFB, fbRef, fbAuthStateChanged, fbGetUserValue, fbGetTransactionData, fbGetMonthlyData, fbGetMonthlyIncome, fbGoogleLogin}  from './external_firebase'
+
+var authUser
+var tempUser
+var userId
+var userDomain
 var monthlyPlannedTotalValue = 0
 var monthlyActualTotalValue = 0
 var mptClass = "monthlyPlannedTotal"
@@ -19,6 +24,7 @@ var password = ""
 var buttonsLocked = []
 var buttonsUnlockCode = ["1","3","5"]
 var screenLocked = false
+var marketData
 
 // activate next line when deploying- commented out for easier testing. it ensures previous user sign out
 // firebase.auth().signOut()
@@ -26,17 +32,15 @@ var elementTest = {}
 export default React.createClass({
   //********************************** Load data for user  *********************************************
   loadData(){
-              if (fbAuthCurrentUser() != null){
-                var tempUser = fbAuthCurrentUser().email.split("@")
-                var currentUser = tempUser[0]
-                var userId = tempUser[0]
-            //    var ref = firebase.database().ref("/users/" + currentUser + "/" + "transactions");
-                var comp = this
-              //  var ref = firebase.database().ref("/users/" + currentUser + "/" + "transactions");
-               fbGetTransactionData(comp, currentUser)
-               fbGetMonthlyData(comp, currentUser)
-               fbGetMonthlyIncome(comp, currentUser)
-             }
+    userId = tempUser[0]
+    console.log("userId=",userId);
+    userDomain = tempUser[1]
+    if (userId != null){
+        var comp = this
+        fbGetTransactionData(comp, userId)
+        fbGetMonthlyData(comp, userId)
+        fbGetMonthlyIncome(comp, userId)
+    }
   },
   // is this Props function needed?
   getDefaultProps() {
@@ -73,29 +77,66 @@ export default React.createClass({
   signUserIn() {
     var email = this.refs.userInput.value
     var password = this.refs.passwordInput.value
-    // imported firebase function
-    fbLogin(email, password)
-    // imported firebase function
-    var currentUser = fbAuthCurrentUser()
-    var authUser = fbAuthCurrentUser()
-    fbAuthStateChanged((authUser)=> {
-      if (fbAuthCurrentUser() != null){
-        var currentUser = {};
-        var today = new Date();
-        var tempUser = fbAuthCurrentUser().email.split("@")
-        var userId = tempUser[0]
-        currentUser["/users/" + authUser.uid + "crap87"] = {
-          name: authUser.displayName,
-          email: authUser.email,
-          lastLogin: Date()
-        }
+    tempUser = email.split("@")
+    userId = tempUser[0]
+    userDomain = tempUser[1]
+    if (userDomain === "gmail.com") {
+      var provider = new fbGoogleLogin()
+    } else {
+      // imported firebase function
+      fbLogin(email, password)
+      // imported firebase function
+      authUser = fbAuthCurrentUser()
+    }
+  fbAuthStateChanged((authUser)=> {
+    if (fbAuthCurrentUser() != null){
+      var currentUser = {};
+      var today = new Date();
+      var tempUser = fbAuthCurrentUser().email.split("@")
+      currentUser["/users/" + authUser.uid] = {
+        name: authUser.displayName,
+        email: authUser.email,
+        lastLogin: Date()
+      }
         //updateFB(currentUser)
-        var comp = this
-        fbGetUserValue(authUser, comp)
+      var comp = this
+      authUser = fbAuthCurrentUser()
+      fbGetUserValue(authUser, comp)
       }
       this.loadData()
     })
     this.setState({password})
+  },
+
+
+
+  googleSignIn(){
+      var provider = new fbGoogleLogin()
+
+  fbAuthStateChanged((authUser)=> {
+    // if (fbAuthCurrentUser() != null){
+    //   var currentUser = {};
+    //   var today = new Date();
+    //   var tempUser = fbAuthCurrentUser().email.split("@")
+    //   currentUser["/users/" + authUser.uid] = {
+    //     name: authUser.displayName,
+    //     email: authUser.email,
+    //     lastLogin: Date()
+    //   }
+    //     //updateFB(currentUser)
+    //   var comp = this
+    //   authUser = fbAuthCurrentUser()
+    //   fbGetUserValue(authUser, comp)
+    //   }
+      var comp = this
+      authUser = fbAuthCurrentUser()
+      fbGetUserValue(authUser, comp)
+      tempUser = fbAuthCurrentUser().email.split("@")
+    //  console.log("google tempuser=",tempUser);
+      this.loadData()
+    })
+    this.setState({password})
+
   },
   //**************************************** New user sign in *************************************
   newUserSignUp(){
@@ -119,43 +160,53 @@ export default React.createClass({
         alert("Account created! Click OK to login...")
       }
       // imported firebase function
-    //  var currentUser = fbAuthCurrentUser()
+    // var currentUser = fbAuthCurrentUser()
       var authUser = fbAuthCurrentUser()
-
       fbAuthStateChanged((authUser)=> {
         var currentUser = {};
         var today = new Date();
         var tempUser = fbAuthCurrentUser().email.split("@")
         var userId = tempUser[0]
-        currentUser["/users/" + authUser.uid +"crap130"] = {
+        currentUser["/users/" + authUser.uid] = {
           name: authUser.displayName,
           email: authUser.email,
           lastLogin: "today"
         }
-        //updateFB(currentUser)
-        // This sets up a callback once firebase reports that /users/{user.uid} has a value
-        // fbRef("/users/" + ).once("value").then((snapshot) => {
-        //   var snapshotReturn = snapshot.val()
-        //   this.setState({
-        //     user: {
-        //       authed: true,
-        //       name: authUser.email,
-        //       email: snapshotReturn.email,
-        //       lastLogin: snapshotReturn.lastLogin
-        //     }
-        //   })
-        // });
-        var tempUser = fbAuthCurrentUser().email.split("@")
-        var currentUser = tempUser[0]
-        var userId = tempUser[0]
-// is this needed below?  does it execute?**************************
-        var data = []
-        var entireData = []
-     this.setState(this.state.data)
-     this.setState(this.state.entireData)
-     this.setState(this.state.entireMonthlyData)
- // is this needed above?  does it execute?**************************
+    //    updateFB(currentUser)
+      //  This sets up a callback once firebase reports that /users/{user.uid} has a value
+
+
+
+
+
+//         fbRef("/users/" + authUser.uid).once("value").then((snapshot) => {
+//           var snapshotReturn = snapshot.val()
+//           this.setState({
+//             user: {
+//               authed: true,
+//               name: authUser.email,
+//               email: snapshotReturn.email,
+//               lastLogin: snapshotReturn.lastLogin
+//             }
+//           })
+//         });
+//         var tempUser = fbAuthCurrentUser().email.split("@")
+//         var currentUser = tempUser[0]
+//         var userId = tempUser[0]
+// // is this needed below?  does it execute?**************************
+//         var data = []
+//         var entireData = []
+//   //  this.setState(this.state.user)
+//      this.setState(this.state.data)
+//      this.setState(this.state.entireData)
+//      this.setState(this.state.entireMonthlyData)
+//  // is this needed above?  does it execute?**************************
 // old end of function promise
+
+
+
+
+
 
   var tempUser = fbAuthCurrentUser().email.split("@")
   var currentUser = tempUser[0]
@@ -198,7 +249,7 @@ export default React.createClass({
    updateFB(updates)
    var monthlyIncome = 0
    var updates = {}
-   updates["/users/" + currentUser + "/" + "monthlyIncome"] = entireData
+   updates["/users/" + currentUser + "/" + "monthlyIncome"] = monthlyIncome
    updateFB(updates)
    })
   },
@@ -247,8 +298,6 @@ export default React.createClass({
             // this.refs.Show5.className="hiddenButton"
           } else {
             data = this.state.entireData
-            // this.refs.ShowAll.className="hiddenButton"
-            // this.refs.Show5.className="showLast5Trans"
           }
           // updating FireBase with new data
           // imported firebase function
@@ -292,31 +341,29 @@ export default React.createClass({
   },
   //***************************** Modifying a Daily Transaction Amount ****************************
   onClickTransAmount(e){
-    /// fix bug here if Prompt is canceled, doesnt write over current valus with null
     var transSelected = e.target.getAttribute('value')
     var newAmount = prompt("Enter new amount or 000 to delete")
     // validating amount entered for numeric only, under 5 digits, or 000 for delete record
-        if (newAmount === "000"){
-            this.state.data.splice(transSelected,1)
-            var dataLength = this.state.entireData.length
-            if (dataLength>5){
-              var dataPos = dataLength - 5 + eval(transSelected)
-              this.state.entireData.splice(dataPos,1)
-            } else {
-              this.state.entireData.splice(transSelected,1)
-            }
-        } else if (newAmount != null && newAmount > -.01){
-          var numericAmount = this.numericValidate(newAmount)
-          if (numericAmount === parseInt(newAmount,10)) {
-            if (newAmount.length > 4){
-              alert("Values longer than 4 digits not allowed")
-            } else {
-              this.state.data[transSelected].amount = numericAmount
-              this.setState(this.state.data)
-            }
-          }
+    if (newAmount === "000"){
+        this.state.data.splice(transSelected,1)
+        var dataLength = this.state.entireData.length
+        if (dataLength>5){
+          var dataPos = dataLength - 5 + eval(transSelected)
+          this.state.entireData.splice(dataPos,1)
+        } else {
+          this.state.entireData.splice(transSelected,1)
         }
-
+    } else if (newAmount != null && newAmount > -.01){
+      var numericAmount = this.numericValidate(newAmount)
+      if (numericAmount === parseInt(newAmount,10)) {
+        if (newAmount.length > 4){
+          alert("Values longer than 4 digits not allowed")
+        } else {
+          this.state.data[transSelected].amount = numericAmount
+          this.setState(this.state.data)
+        }
+      }
+    }
     var updates = {}
     // imported firebase function
     var tempUser = fbAuthCurrentUser().email.split("@")
@@ -348,22 +395,22 @@ export default React.createClass({
     var transSelected = e.target.getAttribute('value')
     var newAmount = prompt("Enter new amount or 000 to delete")
         // validating amount entered for numeric only, under 5 digits, or 000 for delete record
-        if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text != "spending cash"){
-            this.state.entireMonthlyData.splice(transSelected,1)
-        } else if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text === "spending cash"){
-          alert("Category 'spending cash' can not be deleted")
-          newAmount = null
-        } else if (newAmount != null && newAmount > -.01) {
-          var numericAmount = this.numericValidate(newAmount)
-          if (numericAmount === parseInt(newAmount,10)) {
-            if (newAmount.length > 4){
-              alert("Values longer than 4 digits not allowed")
-            } else {
-              this.state.entireMonthlyData[transSelected].plan = numericAmount
-              this.setState(this.state.entireMonthlyData)
-            }
-          }
+    if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text != "spending cash"){
+        this.state.entireMonthlyData.splice(transSelected,1)
+    } else if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text === "spending cash"){
+      alert("Category 'spending cash' can not be deleted")
+      newAmount = null
+    } else if (newAmount != null && newAmount > -.01) {
+      var numericAmount = this.numericValidate(newAmount)
+      if (numericAmount === parseInt(newAmount,10)) {
+        if (newAmount.length > 4){
+          alert("Values longer than 4 digits not allowed")
+        } else {
+          this.state.entireMonthlyData[transSelected].plan = numericAmount
+          this.setState(this.state.entireMonthlyData)
         }
+      }
+    }
     var updates = {}
     var tempUser = fbAuthCurrentUser().email.split("@")
     var currentUser = tempUser[0]
@@ -376,25 +423,25 @@ export default React.createClass({
   onClickMonthlyBillActual(e){
     var transSelected = e.target.getAttribute('value')
     var newAmount = prompt("Enter new amount or 000 to delete")
-        // validating amount entered for numeric only, under 5 digits, or 000 for delete record
-        if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text != "spending cash"){
-            this.state.entireMonthlyData.splice(transSelected,1)
-        } else if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text === "spending cash"){
-          alert("Category 'spending cash' can not be deleted")
-          newAmount = null
-        } else if (newAmount != null && newAmount > -.01) {
-          var numericAmount = this.numericValidate(newAmount)
-          if (numericAmount === parseInt(newAmount,10)) {
-            if (newAmount.length > 4){
-              alert("Values longer than 4 digits not allowed")
-            } else {
-                this.state.entireMonthlyData[transSelected].amount = numericAmount
-                this.setState(this.state.entireMonthlyData)
-            }
-          }
-        } else if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text === "spending cash"){
-          alert("Category 'spending cash' can not be deleted")
+    // validating amount entered for numeric only, under 5 digits, or 000 for delete record
+    if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text != "spending cash"){
+        this.state.entireMonthlyData.splice(transSelected,1)
+    } else if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text === "spending cash"){
+      alert("Category 'spending cash' can not be deleted")
+      newAmount = null
+    } else if (newAmount != null && newAmount > -.01) {
+      var numericAmount = this.numericValidate(newAmount)
+      if (numericAmount === parseInt(newAmount,10)) {
+        if (newAmount.length > 4){
+          alert("Values longer than 4 digits not allowed")
+        } else {
+            this.state.entireMonthlyData[transSelected].amount = numericAmount
+            this.setState(this.state.entireMonthlyData)
         }
+      }
+    } else if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text === "spending cash"){
+      alert("Category 'spending cash' can not be deleted")
+    }
     var updates = {}
     var tempUser = fbAuthCurrentUser().email.split("@")
     var currentUser = tempUser[0]
@@ -410,13 +457,13 @@ export default React.createClass({
         var newDesc = prompt("Enter new description")
         // may not need this in condition since blocked above:  && transSelected != 0
         if (newDesc != null && transSelected != 0) {this.state.entireMonthlyData[transSelected].text = newDesc}
-          var updates = {}
-          var tempUser = fbAuthCurrentUser().email.split("@")
-          var currentUser = tempUser[0]
-          updates["/users/" + currentUser + "/" + "monthly"] = this.state.entireMonthlyData
-          // imported firebase function
-          updateFB(updates)
-          this.setState(this.state.entireMonthlyData)
+        var updates = {}
+        var tempUser = fbAuthCurrentUser().email.split("@")
+        var currentUser = tempUser[0]
+        updates["/users/" + currentUser + "/" + "monthly"] = this.state.entireMonthlyData
+        // imported firebase function
+        updateFB(updates)
+        this.setState(this.state.entireMonthlyData)
      }
   },
   //********************************* Entering the Monthly Income Amount **************************
@@ -427,7 +474,7 @@ export default React.createClass({
     var tempUser = fbAuthCurrentUser().email.split("@")
     var currentUser = tempUser[0]
     var updates= {}
-    updates["/users/" + currentUser + "/" + "monthlyincome"] = monthlyIncome
+    updates["/users/" + currentUser + "/" + "monthlyIncome"] = monthlyIncome
     // imported firebase function
     updateFB(updates)
     this.setState({monthlyIncome})
@@ -455,8 +502,6 @@ export default React.createClass({
     this.setState({monthlyFlag})
     this.refs.enterMonthlyBill.value  = ""
     this.state.date = this.state.entireData
-  //  this.refs.ShowAll.className="showLast5Trans"
-    // this.refs.Show5.className="hiddenButton"
   },
   //*********************** Adding Monthly Budget items and planned amounts *************************
   onClickAddMonthlyBill(e){
@@ -495,8 +540,6 @@ export default React.createClass({
           this.refs.enterMonthlyBill.value = ""
           this.refs.enterMonthlyPlan.value = ""
         }
-    //  this.setState({data})
-    //  this.setState({entireData})
   },
   //******************* Show Daily Transactions Page on Monthly Page ********************************
   onShowDailyTransPage(){
@@ -518,7 +561,6 @@ export default React.createClass({
     this.refs.goToDaily.className="dailyTransButton"
     this.refs.monthlyBox.className = "monthlyBoxCenter"
     this.removeSelectionForImport()
-
   },
   //******************* Remove yellow highlight from selected items for Import ********************************
   removeSelectionForImport(){
@@ -622,15 +664,8 @@ export default React.createClass({
         firebase.database().ref().update(updates)
         // clearing variables once import is complete
         var totalAmountImported = 0
-
-
-        // resetting Monthly Category Selected flag
-    // selectedTrans = []
-    //  monthlyBillSelectedIndex = -1
-    this.removeSelectionForImport()
-
-
-
+        this.removeSelectionForImport()
+  // is next line needed?
         this.setState({monthlyBillSelectedIndex})
         // setting state to arrays so can be used elsewhere
         this.setState(this.state.data)
@@ -690,10 +725,10 @@ export default React.createClass({
     this.refs.buttonLockArea.className = "buttonLockArea_locked"
     buttonsLocked = []
   },
-  //****************************** Help Button Popup **********************************************
+  //***************************** Help Button Popup **********************************************
   onClickHelpButton()
   {
-    alert("This will be info button how to use app. When we are unhurried and wise, we perceive that only great and worthy things have any permanent and absolute existence; that petty fears and petty pleasures are but the shadow of the reality. -Henry David Thoreau")
+    alert("This application will allow user to enter Daily Transactions as money is spent by entering amount/description and clicking Add button. Any transaction amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount. The Monthly Budget Page will allow user to enter Monthly Income and then define the monthly items in their budget by entering description and planned amount to be spent and clicking Add. A default item in Monthly Budget page is Spending Cash.  Any monthly category amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount (except for Spending Cash).  The user can import the Daily Transactions by clicking the Select Transactions to Import, which will display the Daily Transactions list, then selecting one Monthly Budget category and as many Daily Transactions they wish, then clicking Import Transactions button.  This action will remove the Daily Transactions from the list and add the amounts to the Monthly Budget category selected in the Actual column. ")
   },
   spendingGreenBar(){
     if (this.state.entireMonthlyData[0].plan > 0){
@@ -756,9 +791,10 @@ export default React.createClass({
     // console.log("entireMonthlyData at render=",this.state.entireMonthlyData);
     // have to set this.state.monthlyFlag when logging out
 
-    //
-    // <h3 className="monthlyColumnTitles">      Select                         Description                                                                             Planned            Actual</h3>
-
+    // <aside className="marketAsideArea">
+    //   <p>{marketData}</p>
+    //   <button className="marketButton" onClick={this.onClickMarketUpdate}>Market Update</button>
+    // </aside>
 
     // set Planned and Actual spent values to zero to calculate if need warning
     var monthlyPlannedTotalValue = 0
@@ -821,6 +857,9 @@ export default React.createClass({
                           onClick={this.onClickLockScreen}>Lock Screen</button>
                   <button className="signOut"
                           onClick={this.signUserOut}>Log Out</button>
+                  <div className="helpContainer">
+                      <button className="helpButton" ref="helpButton"                                       onClick={this.onClickHelpButton}>HELP</button>
+                  </div>
               </article>
             </div>
             <article className="progressBarAreaBottom" ref="progressBarAreaBottom">
@@ -856,7 +895,7 @@ export default React.createClass({
             <img className="loginImage" src="styles/titleLogin.jpg"></img>
           </article>
           <article className="loginButtonsSection">
-            <h2 className="loginLabel">     </h2>
+            <h2 className="loginLabel">You may click Google Login to sign in with Google Account or enter an email address to sign into existing account or create a new account:</h2>
             <input className="userNameInput"
                    placeholder="             email address"
                    ref="userInput"></input>
@@ -864,8 +903,9 @@ export default React.createClass({
                    placeholder="               password"
                    ref="passwordInput"
                    type="password"></input>
-            <button className="newUser" onClick={this.newUserSignUp}>NEW USER</button>
-            <button className="loginUser" ref="loginButton" onClick={this.signUserIn}>LOGIN</button>
+            <button className="newUser" ref="newUser" onClick={this.newUserSignUp}>NEW USER</button>
+            <button className="loginUser" ref="loginButton" onClick={this.signUserIn}>EMAIL LOGIN</button>
+            <button className="googleUser" ref="googleButton" onClick={this.googleSignIn}>GOOGLE LOGIN</button>
             <div className="helpContainer">
                 <button className="helpButton" ref="helpButton"                                       onClick={this.onClickHelpButton}>HELP</button>
             </div>
@@ -891,11 +931,15 @@ export default React.createClass({
             </a>
           </div>
           <table className="monthlyColumnTitles">
-    <td className="monthlyColumnTitleSelect">  Select</td>
-    <td className="monthlyColumnTitleDescription">Description</td>
-    <td className="monthlyColumnTitlePlanned">     Planned</td>
-    <td className="monthlyColumnTitleActual">Actual</td>
-</table>
+            <tbody>
+            <tr>
+              <th className="monthlyColumnTitleSelect">  Select</th>
+              <th className="monthlyColumnTitleDescription">Description</th>
+            <th className="monthlyColumnTitlePlanned">  Planned</th>
+          <th className="monthlyColumnTitleActual">Actual</th>
+          </tr>
+  </tbody>
+      </table>
           <ul id="list" className="monthyBillsRecordsArea">
            {
                this.state.entireMonthlyData.map((record, i)=>{
@@ -984,8 +1028,12 @@ export default React.createClass({
                     onClick={this.onHideDailyTransPage}>Close Daily Transactions</button>
             <button className="dailyTransButton" ref="goToDaily" onClick={this.onClickDailyTransButton}>Go to Daily Transactions</button>
             <button className="monthlySignOut" onClick={this.signUserOut}>Log Out</button>
+            <button className="helpButtonMonthly" ref="helpButton"                                       onClick={this.onClickHelpButton}>HELP</button>
+
         </article>
+
         </section>
+
         <div className="monthlyDailyTransBox_hidden" ref="monthlyDailyTransBox">
           <section className="monthlyDailyTransBoxInner" >
               <article className="transactionTitleArea">
