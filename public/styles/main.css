@@ -1114,4 +1114,17 @@ margin-top: 50%;
     padding-right: 0;
   }
 
+  .helpButton{
+    background: thistle;
+    border: solid 1px;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: bolder;
+    height: 15px;
+    padding: auto;
+    /*text-align: center;*/
+    /*margin: 0;*/
+    width: 50px;
+  }
+
 }
