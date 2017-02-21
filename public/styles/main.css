@@ -199,6 +199,7 @@ margin-top: 50%;
   border: black solid 2px;
   display: inline-block;
   height: auto;
+  padding-bottom: 5px;
   margin-left: 28%;
   width: 525px;
 }
