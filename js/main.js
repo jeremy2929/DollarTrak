@@ -31,6 +31,8 @@ var elementTest = {}
 export default React.createClass({
   //************************* Load data for user  *********************************************
   loadData(){
+    //tempUser = fbAuthCurrentUser().email.split("@")
+
     userId = tempUser[0]
     userDomain = tempUser[1]
     if (userId != null){
@@ -134,7 +136,7 @@ export default React.createClass({
         }
         var comp = this
         authUser = fbAuthCurrentUser()
-        fbGetUserValue(authUser, comp)
+      //  fbGetUserValue(authUser, comp)
         this.loadData()
     })
   },

@@ -21543,6 +21543,8 @@
 	
 	  //************************* Load data for user  *********************************************
 	  loadData: function loadData() {
+	    //tempUser = fbAuthCurrentUser().email.split("@")
+	
 	    userId = tempUser[0];
 	    userDomain = tempUser[1];
 	    if (userId != null) {
@@ -21644,7 +21646,7 @@
 	      }
 	      var comp = _this2;
 	      authUser = (0, _external_firebase.fbAuthCurrentUser)();
-	      (0, _external_firebase.fbGetUserValue)(authUser, comp);
+	      //  fbGetUserValue(authUser, comp)
 	      _this2.loadData();
 	    });
 	  },
