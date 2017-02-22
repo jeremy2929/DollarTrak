@@ -31,7 +31,7 @@ var elementTest = {}
 export default React.createClass({
   //************************* Load data for user  *********************************************
   loadData(){
-    //tempUser = fbAuthCurrentUser().email.split("@")
+      tempUser = fbAuthCurrentUser().email.split("@")
 
     userId = tempUser[0]
     userDomain = tempUser[1]
@@ -136,8 +136,23 @@ export default React.createClass({
         }
         var comp = this
         authUser = fbAuthCurrentUser()
-      //  fbGetUserValue(authUser, comp)
-        this.loadData()
+        fbGetUserValue(authUser, comp)
+
+
+        tempUser = fbAuthCurrentUser().email.split("@")
+
+      userId = tempUser[0]
+      userDomain = tempUser[1]
+      if (userId != null){
+          var comp = this
+          fbGetTransactionData(comp, userId)
+          fbGetMonthlyData(comp, userId)
+          fbGetMonthlyIncome(comp, userId)
+      }
+
+
+
+      //  this.loadData()
     })
   },
   //********************************** New user sign in *************************************

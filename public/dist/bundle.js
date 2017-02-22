@@ -21543,7 +21543,7 @@
 	
 	  //************************* Load data for user  *********************************************
 	  loadData: function loadData() {
-	    //tempUser = fbAuthCurrentUser().email.split("@")
+	    tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
 	
 	    userId = tempUser[0];
 	    userDomain = tempUser[1];
@@ -21646,8 +21646,20 @@
 	      }
 	      var comp = _this2;
 	      authUser = (0, _external_firebase.fbAuthCurrentUser)();
-	      //  fbGetUserValue(authUser, comp)
-	      _this2.loadData();
+	      (0, _external_firebase.fbGetUserValue)(authUser, comp);
+	
+	      tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
+	
+	      userId = tempUser[0];
+	      userDomain = tempUser[1];
+	      if (userId != null) {
+	        var comp = _this2;
+	        (0, _external_firebase.fbGetTransactionData)(comp, userId);
+	        (0, _external_firebase.fbGetMonthlyData)(comp, userId);
+	        (0, _external_firebase.fbGetMonthlyIncome)(comp, userId);
+	      }
+	
+	      //  this.loadData()
 	    });
 	  },
 	
