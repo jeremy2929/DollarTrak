@@ -21536,7 +21536,7 @@
 	var screenLocked = false;
 	var marketData;
 	
-	firebase.auth().signOut();
+	(0, _external_firebase.fbSignOut)();
 	var elementTest = {};
 	exports.default = _react2.default.createClass({
 	  displayName: 'main',
@@ -21595,7 +21595,7 @@
 	          email: authUser.email,
 	          lastLogin: Date()
 	        };
-	        //updateFB(currentUser)
+	        (0, _external_firebase.updateFB)(currentUser);
 	        var comp = _this;
 	        authUser = (0, _external_firebase.fbAuthCurrentUser)();
 	        (0, _external_firebase.fbGetUserValue)(authUser, comp);
@@ -21605,6 +21605,26 @@
 	  },
 	  googleSignIn: function googleSignIn() {
 	    var _this2 = this;
+	
+	    //    var provider = new fbGoogleLogin()
+	    //
+	    // fbAuthStateChanged((authUser)=> {
+	    //     var comp = this
+	    //     currentUser = fbAuthCurrentUser()
+	    //     authUser = fbAuthCurrentUser()
+	    //     fbGetUserValue(authUser, comp)
+	    //     tempUser = fbAuthCurrentUser().email.split("@")
+	    //     currentUser["/users/" + authUser.uid] = {
+	    //       name: authUser.displayName,
+	    //       email: authUser.email,
+	    //       lastLogin: Date()
+	    //     }
+	    //     updateFB(currentUser)
+	    //   //  console.log("google tempuser=",tempUser);
+	    //     this.loadData()
+	    //   })
+	    //
+	    //
 	
 	    var provider = new _external_firebase.fbGoogleLogin();
 	    (0, _external_firebase.fbAuthStateChanged)(function (authUser) {
@@ -21617,13 +21637,13 @@
 	          email: authUser.email,
 	          lastLogin: Date()
 	        };
-	        //updateFB(currentUser)
+	        (0, _external_firebase.updateFB)(currentUser);
 	        var comp = _this2;
 	        authUser = (0, _external_firebase.fbAuthCurrentUser)();
 	        (0, _external_firebase.fbGetUserValue)(authUser, comp);
 	      }
 	      var comp = _this2;
-	      //  authUser = fbAuthCurrentUser()
+	      authUser = (0, _external_firebase.fbAuthCurrentUser)();
 	      (0, _external_firebase.fbGetUserValue)(authUser, comp);
 	      _this2.loadData();
 	    });
@@ -22131,7 +22151,7 @@
 	      this.setState(this.state.entireMonthlyData);
 	      // writing new Dailu Transaction data out to Firebase after Import
 	      updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData;
-	      firebase.database().ref().update(updates);
+	      (0, _external_firebase.updateFB)(updates);
 	      // clearing variables once import is complete
 	      var totalAmountImported = 0;
 	      this.removeSelectionForImport();

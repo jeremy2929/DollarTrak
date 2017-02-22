@@ -87,7 +87,7 @@ export default React.createClass({
           email: authUser.email,
           lastLogin: Date()
         }
-          //updateFB(currentUser)
+  updateFB(currentUser)
         var comp = this
         authUser = fbAuthCurrentUser()
         fbGetUserValue(authUser, comp)
@@ -96,6 +96,26 @@ export default React.createClass({
       })
   },
   googleSignIn(){
+    //    var provider = new fbGoogleLogin()
+    //
+    // fbAuthStateChanged((authUser)=> {
+    //     var comp = this
+    //     currentUser = fbAuthCurrentUser()
+    //     authUser = fbAuthCurrentUser()
+    //     fbGetUserValue(authUser, comp)
+    //     tempUser = fbAuthCurrentUser().email.split("@")
+    //     currentUser["/users/" + authUser.uid] = {
+    //       name: authUser.displayName,
+    //       email: authUser.email,
+    //       lastLogin: Date()
+    //     }
+    //     updateFB(currentUser)
+    //   //  console.log("google tempuser=",tempUser);
+    //     this.loadData()
+    //   })
+    //
+    //
+
       var provider = new fbGoogleLogin()
       fbAuthStateChanged((authUser)=> {
         if (fbAuthCurrentUser() != null){
@@ -107,13 +127,13 @@ export default React.createClass({
             email: authUser.email,
             lastLogin: Date()
           }
-          //updateFB(currentUser)
+          updateFB(currentUser)
           var comp = this
           authUser = fbAuthCurrentUser()
           fbGetUserValue(authUser, comp)
         }
         var comp = this
-         authUser = fbAuthCurrentUser()
+        authUser = fbAuthCurrentUser()
         fbGetUserValue(authUser, comp)
         this.loadData()
     })
@@ -958,12 +978,9 @@ export default React.createClass({
             <button className="dailyTransButton" ref="goToDaily" onClick={this.onClickDailyTransButton}>Go to Daily Transactions</button>
             <button className="monthlySignOut" onClick={this.signUserOut}>Log Out</button>
             <button className="helpButtonMonthly" ref="helpButton"                                       onClick={this.onClickHelpButton}>HELP</button>
-
         </article>
-
-        </section>
-
-        <div className="monthlyDailyTransBox_hidden" ref="monthlyDailyTransBox">
+      </section>
+      <div className="monthlyDailyTransBox_hidden" ref="monthlyDailyTransBox">
           <section className="monthlyDailyTransBoxInner" >
               <article className="transactionTitleArea">
                 <h1 className="transactionsTitle">Daily Transactions</h1>
