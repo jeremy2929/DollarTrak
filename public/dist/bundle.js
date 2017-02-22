@@ -21544,9 +21544,7 @@
 	  //************************* Load data for user  *********************************************
 	  loadData: function loadData() {
 	    tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
-	
 	    userId = tempUser[0];
-	    userDomain = tempUser[1];
 	    if (userId != null) {
 	      var comp = this;
 	      (0, _external_firebase.fbGetTransactionData)(comp, userId);
@@ -21554,8 +21552,6 @@
 	      (0, _external_firebase.fbGetMonthlyIncome)(comp, userId);
 	    }
 	  },
-	
-	  // is this Props function needed?
 	  getDefaultProps: function getDefaultProps() {
 	    return {
 	      user: { authed: false }
@@ -21608,26 +21604,6 @@
 	  googleSignIn: function googleSignIn() {
 	    var _this2 = this;
 	
-	    //    var provider = new fbGoogleLogin()
-	    //
-	    // fbAuthStateChanged((authUser)=> {
-	    //     var comp = this
-	    //     currentUser = fbAuthCurrentUser()
-	    //     authUser = fbAuthCurrentUser()
-	    //     fbGetUserValue(authUser, comp)
-	    //     tempUser = fbAuthCurrentUser().email.split("@")
-	    //     currentUser["/users/" + authUser.uid] = {
-	    //       name: authUser.displayName,
-	    //       email: authUser.email,
-	    //       lastLogin: Date()
-	    //     }
-	    //     updateFB(currentUser)
-	    //   //  console.log("google tempuser=",tempUser);
-	    //     this.loadData()
-	    //   })
-	    //
-	    //
-	
 	    var provider = new _external_firebase.fbGoogleLogin();
 	    (0, _external_firebase.fbAuthStateChanged)(function (authUser) {
 	      if ((0, _external_firebase.fbAuthCurrentUser)() != null) {
@@ -21644,22 +21620,19 @@
 	        authUser = (0, _external_firebase.fbAuthCurrentUser)();
 	        (0, _external_firebase.fbGetUserValue)(authUser, comp);
 	      }
-	      var comp = _this2;
-	      authUser = (0, _external_firebase.fbAuthCurrentUser)();
-	      (0, _external_firebase.fbGetUserValue)(authUser, comp);
-	
-	      tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
-	
-	      userId = tempUser[0];
-	      userDomain = tempUser[1];
-	      if (userId != null) {
-	        var comp = _this2;
-	        (0, _external_firebase.fbGetTransactionData)(comp, userId);
-	        (0, _external_firebase.fbGetMonthlyData)(comp, userId);
-	        (0, _external_firebase.fbGetMonthlyIncome)(comp, userId);
-	      }
-	
-	      //  this.loadData()
+	      // var comp = this
+	      // authUser = fbAuthCurrentUser()
+	      // fbGetUserValue(authUser, comp)
+	      // tempUser = fbAuthCurrentUser().email.split("@")
+	      // userId = tempUser[0]
+	      // userDomain = tempUser[1]
+	      // if (userId != null){
+	      //     var comp = this
+	      //     fbGetTransactionData(comp, userId)
+	      //     fbGetMonthlyData(comp, userId)
+	      //     fbGetMonthlyIncome(comp, userId)
+	      // }
+	      _this2.loadData();
 	    });
 	  },
 	
@@ -21686,7 +21659,6 @@
 	      alert("Account created! Click OK to login...");
 	    }
 	    // imported firebase function
-	    // var currentUser = fbAuthCurrentUser()
 	    var authUser = (0, _external_firebase.fbAuthCurrentUser)();
 	    (0, _external_firebase.fbAuthStateChanged)(function (authUser) {
 	      var currentUser = {};
@@ -21776,8 +21748,6 @@
 	          data[j] = this.state.entireData[i];
 	          j++;
 	        }
-	        // this.refs.ShowAll.className="showLast5Trans"
-	        // this.refs.Show5.className="hiddenButton"
 	      } else {
 	        data = this.state.entireData;
 	      }
@@ -21946,7 +21916,6 @@
 	    var transSelected = e.target.getAttribute('value');
 	    if (transSelected != "0" && newDesc != "") {
 	      var newDesc = prompt("Enter new description");
-	      // may not need this in condition since blocked above:  && transSelected != 0
 	      if (newDesc != null && transSelected != 0) {
 	        this.state.entireMonthlyData[transSelected].text = newDesc;
 	      }
@@ -21965,6 +21934,7 @@
 	    var monthlyIncome = prompt("Enter Monthly Income");
 	    // callling a function for converting any non-numeric input to 0
 	    monthlyIncome = this.numericValidate(monthlyIncome);
+	    this.setState({ monthlyIncome: monthlyIncome });
 	    var tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
 	    var currentUser = tempUser[0];
 	    var updates = {};
@@ -21984,14 +21954,10 @@
 	
 	  //********************************** Navigation button to Monthly Budget page ********************
 	  onClickMonthlyBudgetButton: function onClickMonthlyBudgetButton() {
-	    // make these commented lines of code active on final
-	    // var pswd = prompt ("Please re-enter password")
-	    // if (pswd === this.state.password){
 	    var monthlyFlag = true;
 	    this.setState({ monthlyFlag: monthlyFlag });
 	    this.refs.amountInput.value = "";
 	    this.refs.descriptionInput.value = "";
-	    // }
 	  },
 	
 	  //****************************** Navigation button to Daily Transactions page ********************
@@ -22042,8 +22008,6 @@
 	
 	  //******************* Show Daily Transactions Page on Monthly Page ********************************
 	  onShowDailyTransPage: function onShowDailyTransPage() {
-	    // this.refs.Show5.className="showLast5Trans"
-	    // this.refs.ShowAll.className="hiddenButton"
 	    this.refs.goToDaily.className = "hiddenButton";
 	    this.state.data = this.state.entireData;
 	    this.setState(this.state.data);
@@ -22081,14 +22045,6 @@
 	    }
 	  },
 	
-	  // //********************** Alert for Monthly Plan exceeding income ********************************
-	  // monthlyTotalRed(){
-	  //   this.refs.monthlyPlannedTotal.className="monthlyPlannedTotal_red"
-	  // },
-	  // //************** Removing alert for Monthly Plan exceeding income ********************************
-	  // monthlyTotalGreen(){
-	  //   this.refs.monthlyPlannedTotal.className="monthlyPlannedTotal"
-	  // },
 	  //**************** Highlighting selected category of Monthly for Import ***************************
 	  onClickMonthlyTypeSelected: function onClickMonthlyTypeSelected(e) {
 	    e.preventDefault();
@@ -22169,7 +22125,6 @@
 	      // clearing variables once import is complete
 	      var totalAmountImported = 0;
 	      this.removeSelectionForImport();
-	      // is next line needed?
 	      this.setState({ monthlyBillSelectedIndex: monthlyBillSelectedIndex });
 	      // setting state to arrays so can be used elsewhere
 	      this.setState(this.state.data);
@@ -22235,7 +22190,7 @@
 	
 	  //***************************** Help Button Popup **********************************************
 	  onClickHelpButton: function onClickHelpButton() {
-	    alert("This application will allow user to enter Daily Transactions as money is spent by entering amount/description and clicking Add button. Any transaction amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount. The Monthly Budget Page will allow user to enter Monthly Income and then define the monthly items in their budget by entering description and planned amount to be spent and clicking Add. A default item in Monthly Budget page is Spending cash.  Any monthly category amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount (except for Spending cash).  The user can import the Daily Transactions by clicking the Select Transactions to Import, which will display the Daily Transactions list, then selecting one Monthly Budget category (click in the Select column) and as many Daily Transactions they wish (by clicking on transaction date), then clicking Import Transactions button.  This action will remove the Daily Transactions from the list and add the amounts to the Monthly Budget category selected in the Actual column. ");
+	    alert("This application will allow user to enter Daily Transactions as money is spent by entering amount/description and clicking Add button. Any transaction amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount. The Monthly Budget Page will allow user to enter Monthly Income and then define the monthly items in their budget by entering description and planned amount to be spent and clicking Add. A default item in Monthly Budget page is Spending cash.  Any monthly category amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount (except for Spending cash).  The user can import the Daily Transactions by clicking the Select Transactions to Import, which will display the Daily Transactions list, then selecting one Monthly Budget category (click in the Select column) and as many Daily Transactions they wish (by clicking on transaction date), then clicking Import Transactions button.  This action will remove the Daily Transactions from the list and add the amounts to the Monthly Budget category selected in the Actual column. Note: no decimals or negatives allowed.");
 	  },
 	
 	  //***************************** Progress Bar **********************************************

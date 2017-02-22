@@ -31,10 +31,8 @@ var elementTest = {}
 export default React.createClass({
   //************************* Load data for user  *********************************************
   loadData(){
-      tempUser = fbAuthCurrentUser().email.split("@")
-
+    tempUser = fbAuthCurrentUser().email.split("@")
     userId = tempUser[0]
-    userDomain = tempUser[1]
     if (userId != null){
         var comp = this
         fbGetTransactionData(comp, userId)
@@ -42,7 +40,6 @@ export default React.createClass({
         fbGetMonthlyIncome(comp, userId)
     }
   },
-  // is this Props function needed?
   getDefaultProps() {
     return {
             user: { authed: false }
@@ -98,26 +95,6 @@ export default React.createClass({
       })
   },
   googleSignIn(){
-    //    var provider = new fbGoogleLogin()
-    //
-    // fbAuthStateChanged((authUser)=> {
-    //     var comp = this
-    //     currentUser = fbAuthCurrentUser()
-    //     authUser = fbAuthCurrentUser()
-    //     fbGetUserValue(authUser, comp)
-    //     tempUser = fbAuthCurrentUser().email.split("@")
-    //     currentUser["/users/" + authUser.uid] = {
-    //       name: authUser.displayName,
-    //       email: authUser.email,
-    //       lastLogin: Date()
-    //     }
-    //     updateFB(currentUser)
-    //   //  console.log("google tempuser=",tempUser);
-    //     this.loadData()
-    //   })
-    //
-    //
-
       var provider = new fbGoogleLogin()
       fbAuthStateChanged((authUser)=> {
         if (fbAuthCurrentUser() != null){
@@ -134,25 +111,19 @@ export default React.createClass({
           authUser = fbAuthCurrentUser()
           fbGetUserValue(authUser, comp)
         }
-        var comp = this
-        authUser = fbAuthCurrentUser()
-        fbGetUserValue(authUser, comp)
-
-
-        tempUser = fbAuthCurrentUser().email.split("@")
-
-      userId = tempUser[0]
-      userDomain = tempUser[1]
-      if (userId != null){
-          var comp = this
-          fbGetTransactionData(comp, userId)
-          fbGetMonthlyData(comp, userId)
-          fbGetMonthlyIncome(comp, userId)
-      }
-
-
-
-      //  this.loadData()
+        // var comp = this
+        // authUser = fbAuthCurrentUser()
+        // fbGetUserValue(authUser, comp)
+        // tempUser = fbAuthCurrentUser().email.split("@")
+        // userId = tempUser[0]
+        // userDomain = tempUser[1]
+        // if (userId != null){
+        //     var comp = this
+        //     fbGetTransactionData(comp, userId)
+        //     fbGetMonthlyData(comp, userId)
+        //     fbGetMonthlyIncome(comp, userId)
+        // }
+        this.loadData()
     })
   },
   //********************************** New user sign in *************************************
@@ -177,7 +148,6 @@ export default React.createClass({
       alert("Account created! Click OK to login...")
     }
     // imported firebase function
-    // var currentUser = fbAuthCurrentUser()
     var authUser = fbAuthCurrentUser()
     fbAuthStateChanged((authUser)=> {
       var currentUser = {};
@@ -268,8 +238,6 @@ export default React.createClass({
               data[j]=this.state.entireData[i]
               j++
             }
-            // this.refs.ShowAll.className="showLast5Trans"
-            // this.refs.Show5.className="hiddenButton"
           } else {
             data = this.state.entireData
           }
@@ -429,7 +397,6 @@ export default React.createClass({
     var transSelected = e.target.getAttribute('value')
     if (transSelected != "0" && newDesc != ""){
         var newDesc = prompt("Enter new description")
-        // may not need this in condition since blocked above:  && transSelected != 0
         if (newDesc != null && transSelected != 0) {this.state.entireMonthlyData[transSelected].text = newDesc}
         var updates = {}
         var tempUser = fbAuthCurrentUser().email.split("@")
@@ -445,6 +412,7 @@ export default React.createClass({
     var monthlyIncome = prompt("Enter Monthly Income")
     // callling a function for converting any non-numeric input to 0
     monthlyIncome = this.numericValidate(monthlyIncome)
+    this.setState({monthlyIncome})
     var tempUser = fbAuthCurrentUser().email.split("@")
     var currentUser = tempUser[0]
     var updates= {}
@@ -460,14 +428,10 @@ export default React.createClass({
   },
   //********************************** Navigation button to Monthly Budget page ********************
   onClickMonthlyBudgetButton(){
-    // make these commented lines of code active on final
-    // var pswd = prompt ("Please re-enter password")
-    // if (pswd === this.state.password){
       var monthlyFlag = true
       this.setState({monthlyFlag})
       this.refs.amountInput.value = ""
       this.refs.descriptionInput.value  = ""
-    // }
   },
   //****************************** Navigation button to Daily Transactions page ********************
   onClickDailyTransButton(){
@@ -516,8 +480,6 @@ export default React.createClass({
   },
   //******************* Show Daily Transactions Page on Monthly Page ********************************
   onShowDailyTransPage(){
-    // this.refs.Show5.className="showLast5Trans"
-    // this.refs.ShowAll.className="hiddenButton"
     this.refs.goToDaily.className="hiddenButton"
     this.state.data = this.state.entireData
     this.setState(this.state.data)
@@ -552,14 +514,6 @@ export default React.createClass({
       monthBillHighlight.monthBox.className = "monthlyType"
     }
   },
-  // //********************** Alert for Monthly Plan exceeding income ********************************
-  // monthlyTotalRed(){
-  //   this.refs.monthlyPlannedTotal.className="monthlyPlannedTotal_red"
-  // },
-  // //************** Removing alert for Monthly Plan exceeding income ********************************
-  // monthlyTotalGreen(){
-  //   this.refs.monthlyPlannedTotal.className="monthlyPlannedTotal"
-  // },
   //**************** Highlighting selected category of Monthly for Import ***************************
   onClickMonthlyTypeSelected(e){
     e.preventDefault()
@@ -637,7 +591,6 @@ export default React.createClass({
         // clearing variables once import is complete
         var totalAmountImported = 0
         this.removeSelectionForImport()
-  // is next line needed?
         this.setState({monthlyBillSelectedIndex})
         // setting state to arrays so can be used elsewhere
         this.setState(this.state.data)
@@ -702,7 +655,7 @@ export default React.createClass({
   //***************************** Help Button Popup **********************************************
   onClickHelpButton()
   {
-    alert("This application will allow user to enter Daily Transactions as money is spent by entering amount/description and clicking Add button. Any transaction amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount. The Monthly Budget Page will allow user to enter Monthly Income and then define the monthly items in their budget by entering description and planned amount to be spent and clicking Add. A default item in Monthly Budget page is Spending cash.  Any monthly category amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount (except for Spending cash).  The user can import the Daily Transactions by clicking the Select Transactions to Import, which will display the Daily Transactions list, then selecting one Monthly Budget category (click in the Select column) and as many Daily Transactions they wish (by clicking on transaction date), then clicking Import Transactions button.  This action will remove the Daily Transactions from the list and add the amounts to the Monthly Budget category selected in the Actual column. ")
+    alert("This application will allow user to enter Daily Transactions as money is spent by entering amount/description and clicking Add button. Any transaction amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount. The Monthly Budget Page will allow user to enter Monthly Income and then define the monthly items in their budget by entering description and planned amount to be spent and clicking Add. A default item in Monthly Budget page is Spending cash.  Any monthly category amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount (except for Spending cash).  The user can import the Daily Transactions by clicking the Select Transactions to Import, which will display the Daily Transactions list, then selecting one Monthly Budget category (click in the Select column) and as many Daily Transactions they wish (by clicking on transaction date), then clicking Import Transactions button.  This action will remove the Daily Transactions from the list and add the amounts to the Monthly Budget category selected in the Actual column. Note: no decimals or negatives allowed.")
   },
   //***************************** Progress Bar **********************************************
   spendingGreenBar(){
