@@ -47,6 +47,7 @@ export function fbGetUserValue(authUser, comp) {
         email: snapshotReturn.email,
         lastLogin: snapshotReturn.lastLogin
       }
+
     })
   })
 }

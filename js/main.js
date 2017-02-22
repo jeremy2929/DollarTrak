@@ -89,7 +89,7 @@ export default React.createClass({
           email: authUser.email,
           lastLogin: Date()
         }
-  updateFB(currentUser)
+        updateFB(currentUser)
         var comp = this
         authUser = fbAuthCurrentUser()
         fbGetUserValue(authUser, comp)

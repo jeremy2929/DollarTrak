@@ -23345,6 +23345,7 @@
 	        email: snapshotReturn.email,
 	        lastLogin: snapshotReturn.lastLogin
 	      }
+	
 	    });
 	  });
 	}
