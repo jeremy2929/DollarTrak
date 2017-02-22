@@ -26,7 +26,7 @@ var buttonsUnlockCode = ["1","3","5"]
 var screenLocked = false
 var marketData
 
-firebase.auth().signOut()
+fbSignOut()
 var elementTest = {}
 export default React.createClass({
   //************************* Load data for user  *********************************************
@@ -596,7 +596,7 @@ export default React.createClass({
         this.setState(this.state.entireMonthlyData)
         // writing new Dailu Transaction data out to Firebase after Import
         updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData
-        firebase.database().ref().update(updates)
+        updateFB(updates)
         // clearing variables once import is complete
         var totalAmountImported = 0
         this.removeSelectionForImport()
