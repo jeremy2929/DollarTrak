@@ -85,7 +85,7 @@ export function fbGetMonthlyData(comp, currentUser) {
             amount: 0,
               plan: 0,
               type: "spe",
-              text: "spending cash"
+              text: "Spending cash"
           }
        var entireMonthlyData = entireMonthlyData.concat(newData)
        comp.setState({entireMonthlyData})

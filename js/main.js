@@ -26,14 +26,12 @@ var buttonsUnlockCode = ["1","3","5"]
 var screenLocked = false
 var marketData
 
-// activate next line when deploying- commented out for easier testing. it ensures previous user sign out
-// firebase.auth().signOut()
+firebase.auth().signOut()
 var elementTest = {}
 export default React.createClass({
-  //********************************** Load data for user  *********************************************
+  //************************* Load data for user  *********************************************
   loadData(){
     userId = tempUser[0]
-    console.log("userId=",userId);
     userDomain = tempUser[1]
     if (userId != null){
         var comp = this
@@ -48,7 +46,7 @@ export default React.createClass({
             user: { authed: false }
            }
   },
-  //************************ Defining objects with empty data ****************************************************
+  //**************************** Defining objects with empty data *****************************
   getInitialState() {
     return {
             provider: () => {},
@@ -73,184 +71,123 @@ export default React.createClass({
                   ]
     }
   },
-  //********************************* Exisiting user sign in ***********************************************
+  //******************** Existing user sign in *******************************************
   signUserIn() {
     var email = this.refs.userInput.value
     var password = this.refs.passwordInput.value
-    tempUser = email.split("@")
-    userId = tempUser[0]
-    userDomain = tempUser[1]
-    if (userDomain === "gmail.com") {
-      var provider = new fbGoogleLogin()
-    } else {
-      // imported firebase function
-      fbLogin(email, password)
-      // imported firebase function
-      authUser = fbAuthCurrentUser()
-    }
-  fbAuthStateChanged((authUser)=> {
-    if (fbAuthCurrentUser() != null){
-      var currentUser = {};
-      var today = new Date();
-      var tempUser = fbAuthCurrentUser().email.split("@")
-      currentUser["/users/" + authUser.uid] = {
-        name: authUser.displayName,
-        email: authUser.email,
-        lastLogin: Date()
-      }
-        //updateFB(currentUser)
-      var comp = this
-      authUser = fbAuthCurrentUser()
-      fbGetUserValue(authUser, comp)
-      }
-      this.loadData()
-    })
-    this.setState({password})
-  },
-
-
-
-  googleSignIn(){
-      var provider = new fbGoogleLogin()
-
-  fbAuthStateChanged((authUser)=> {
-    // if (fbAuthCurrentUser() != null){
-    //   var currentUser = {};
-    //   var today = new Date();
-    //   var tempUser = fbAuthCurrentUser().email.split("@")
-    //   currentUser["/users/" + authUser.uid] = {
-    //     name: authUser.displayName,
-    //     email: authUser.email,
-    //     lastLogin: Date()
-    //   }
-    //     //updateFB(currentUser)
-    //   var comp = this
-    //   authUser = fbAuthCurrentUser()
-    //   fbGetUserValue(authUser, comp)
-    //   }
-      var comp = this
-      authUser = fbAuthCurrentUser()
-      fbGetUserValue(authUser, comp)
-      tempUser = fbAuthCurrentUser().email.split("@")
-    //  console.log("google tempuser=",tempUser);
-      this.loadData()
-    })
-    this.setState({password})
-
-  },
-  //**************************************** New user sign in *************************************
-  newUserSignUp(){
-      var email = this.refs.userInput.value
-      var password = this.refs.passwordInput.value
-      if (email.length < 4) {
-        alert('Please enter an email address.');
-        return;
-      }
-      if (password.length < 4) {
-        alert('Please enter a password.');
-        return;
-      }
-      // Sign in with email and pass.
-      // [START createwithemail]
-      var comp = this
-      // imported firebase function
-      fbCreateUserEmailAndPswd(email, password)
-      if (this.state.errorCode === undefined)
-      {
-        alert("Account created! Click OK to login...")
-      }
-      // imported firebase function
-    // var currentUser = fbAuthCurrentUser()
-      var authUser = fbAuthCurrentUser()
-      fbAuthStateChanged((authUser)=> {
+    fbLogin(email, password)
+    authUser = fbAuthCurrentUser()
+    fbAuthStateChanged((authUser)=> {
+      if (fbAuthCurrentUser() != null){
         var currentUser = {};
         var today = new Date();
-        var tempUser = fbAuthCurrentUser().email.split("@")
-        var userId = tempUser[0]
+        tempUser = fbAuthCurrentUser().email.split("@")
         currentUser["/users/" + authUser.uid] = {
           name: authUser.displayName,
           email: authUser.email,
-          lastLogin: "today"
+          lastLogin: Date()
         }
-    //    updateFB(currentUser)
-      //  This sets up a callback once firebase reports that /users/{user.uid} has a value
-
-
-
-
-
-//         fbRef("/users/" + authUser.uid).once("value").then((snapshot) => {
-//           var snapshotReturn = snapshot.val()
-//           this.setState({
-//             user: {
-//               authed: true,
-//               name: authUser.email,
-//               email: snapshotReturn.email,
-//               lastLogin: snapshotReturn.lastLogin
-//             }
-//           })
-//         });
-//         var tempUser = fbAuthCurrentUser().email.split("@")
-//         var currentUser = tempUser[0]
-//         var userId = tempUser[0]
-// // is this needed below?  does it execute?**************************
-//         var data = []
-//         var entireData = []
-//   //  this.setState(this.state.user)
-//      this.setState(this.state.data)
-//      this.setState(this.state.entireData)
-//      this.setState(this.state.entireMonthlyData)
-//  // is this needed above?  does it execute?**************************
-// old end of function promise
-
-
-
-
-
-
-  var tempUser = fbAuthCurrentUser().email.split("@")
-  var currentUser = tempUser[0]
-  var userId = tempUser[0]
-  var newData = ""
-  var entireMonthlyData = []
-  newData=
-      {
-        amount: 0,
-          plan: 0,
-          type: "spe",
-          text: "spending cash"
-      }
-   entireMonthlyData = entireMonthlyData.concat(newData)
-   this.setState({entireMonthlyData})
-   this.setState(this.state.entireMonthlyData)
-   var updates = {}
-   updates["/users/" + currentUser + "/" + "monthly"] = this.state.entireMonthlyData
-   // imported firebase function
-   updateFB(updates)
-   var newData = ""
-   var data = []
-   var entireData = []
-   newData =
-       {
-         amount: 0,
-           date: null,
-           text: null
-       }
-   entireData = entireData.concat(newData)
-   data = data.concat(newData)
-   this.setState({data})
-   this.setState({entireData})
-   this.setState(this.state.data)
-   this.setState(this.state.entireData)
-   this.setState({password})
-   var updates = {}
-   updates["/users/" + currentUser + "/" + "transactions"] = entireData
-   // imported firebase function
-   updateFB(updates)
-   var monthlyIncome = 0
-   var updates = {}
-   updates["/users/" + currentUser + "/" + "monthlyIncome"] = monthlyIncome
-   updateFB(updates)
+          //updateFB(currentUser)
+        var comp = this
+        authUser = fbAuthCurrentUser()
+        fbGetUserValue(authUser, comp)
+        }
+        this.loadData()
+      })
+  },
+  googleSignIn(){
+      var provider = new fbGoogleLogin()
+      fbAuthStateChanged((authUser)=> {
+        if (fbAuthCurrentUser() != null){
+          var currentUser = {};
+          var today = new Date();
+          tempUser = fbAuthCurrentUser().email.split("@")
+          currentUser["/users/" + authUser.uid] = {
+            name: authUser.displayName,
+            email: authUser.email,
+            lastLogin: Date()
+          }
+          //updateFB(currentUser)
+          var comp = this
+          authUser = fbAuthCurrentUser()
+          fbGetUserValue(authUser, comp)
+        }
+        var comp = this
+        //  authUser = fbAuthCurrentUser()
+        fbGetUserValue(authUser, comp)
+        this.loadData()
+    })
+  },
+  //********************************** New user sign in *************************************
+  newUserSignUp(){
+    var email = this.refs.userInput.value
+    var password = this.refs.passwordInput.value
+    if (email.length < 4) {
+      alert('Please enter an email address.');
+      return;
+    }
+    if (password.length < 4) {
+      alert('Please enter a password.');
+      return;
+    }
+    // Sign in with email and pass.
+    // [START createwithemail]
+    var comp = this
+    // imported firebase function
+    fbCreateUserEmailAndPswd(email, password)
+    if (this.state.errorCode === undefined)
+    {
+      alert("Account created! Click OK to login...")
+    }
+    // imported firebase function
+    // var currentUser = fbAuthCurrentUser()
+    var authUser = fbAuthCurrentUser()
+    fbAuthStateChanged((authUser)=> {
+      var currentUser = {};
+      var today = new Date();
+      var tempUser = fbAuthCurrentUser().email.split("@")
+      var currentUser = tempUser[0]
+      var userId = tempUser[0]
+      var newData = ""
+      var entireMonthlyData = []
+      newData=
+          {
+            amount: 0,
+              plan: 0,
+              type: "spe",
+              text: "Spending cash"
+          }
+     entireMonthlyData = entireMonthlyData.concat(newData)
+     this.setState({entireMonthlyData})
+     this.setState(this.state.entireMonthlyData)
+     var updates = {}
+     updates["/users/" + currentUser + "/" + "monthly"] = this.state.entireMonthlyData
+     // imported firebase function
+     updateFB(updates)
+     var newData = ""
+     var data = []
+     var entireData = []
+     newData =
+         {
+           amount: 0,
+             date: null,
+             text: null
+         }
+     entireData = entireData.concat(newData)
+     data = data.concat(newData)
+     var updates = {}
+     updates["/users/" + currentUser + "/" + "transactions"] = entireData
+     // imported firebase function
+     updateFB(updates)
+     var monthlyIncome = 0
+     var updates = {}
+     updates["/users/" + currentUser + "/" + "monthlyIncome"] = monthlyIncome
+     updateFB(updates)
+     this.setState({data})
+     this.setState({entireData})
+     this.setState(this.state.data)
+     this.setState(this.state.entireData)
+     this.setState({password})
    })
   },
   //*************************** User sign out **********************************************
@@ -314,14 +251,14 @@ export default React.createClass({
     this.setState({data})
     this.setState(this.state.data)
   },
-  //***************************************** Show all Daily Transactions **********************************
+  //**************************** Show all Daily Transactions **********************************
   onClickShowAll(){
     this.refs.Show5.className="showLast5Trans"
     this.refs.ShowAll.className="hiddenButton"
     this.state.data = this.state.entireData
     this.setState(this.state.data)
   },
-  //***************************************** Show Only 5 Daily Transactions *********************************
+  //*************************** Show Only 5 Daily Transactions *********************************
   onClickShow5(){
         this.refs.ShowAll.className="showLast5Trans"
         this.refs.Show5.className="hiddenButton"
@@ -395,10 +332,10 @@ export default React.createClass({
     var transSelected = e.target.getAttribute('value')
     var newAmount = prompt("Enter new amount or 000 to delete")
         // validating amount entered for numeric only, under 5 digits, or 000 for delete record
-    if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text != "spending cash"){
+    if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text != "Spending cash"){
         this.state.entireMonthlyData.splice(transSelected,1)
-    } else if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text === "spending cash"){
-      alert("Category 'spending cash' can not be deleted")
+    } else if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text === "Spending cash"){
+      alert("Category 'Spending cash' can not be deleted")
       newAmount = null
     } else if (newAmount != null && newAmount > -.01) {
       var numericAmount = this.numericValidate(newAmount)
@@ -424,10 +361,10 @@ export default React.createClass({
     var transSelected = e.target.getAttribute('value')
     var newAmount = prompt("Enter new amount or 000 to delete")
     // validating amount entered for numeric only, under 5 digits, or 000 for delete record
-    if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text != "spending cash"){
+    if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text != "Spending cash"){
         this.state.entireMonthlyData.splice(transSelected,1)
-    } else if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text === "spending cash"){
-      alert("Category 'spending cash' can not be deleted")
+    } else if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text === "Spending cash"){
+      alert("Category 'Spending cash' can not be deleted")
       newAmount = null
     } else if (newAmount != null && newAmount > -.01) {
       var numericAmount = this.numericValidate(newAmount)
@@ -439,8 +376,8 @@ export default React.createClass({
             this.setState(this.state.entireMonthlyData)
         }
       }
-    } else if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text === "spending cash"){
-      alert("Category 'spending cash' can not be deleted")
+    } else if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text === "Spending cash"){
+      alert("Category 'Spending cash' can not be deleted")
     }
     var updates = {}
     var tempUser = fbAuthCurrentUser().email.split("@")
@@ -450,7 +387,7 @@ export default React.createClass({
     updateFB(updates)
     this.setState(this.state.entireMonthlyData)
   },
-  //********************************** Modifying a Monthly Bill description *************************
+  //***************************** Modifying a Monthly Bill description *************************
   onClickMonthlyDescription(e){
     var transSelected = e.target.getAttribute('value')
     if (transSelected != "0" && newDesc != ""){
@@ -466,7 +403,7 @@ export default React.createClass({
         this.setState(this.state.entireMonthlyData)
      }
   },
-  //********************************* Entering the Monthly Income Amount **************************
+  //***************************** Entering the Monthly Income Amount **************************
   onMonthlyIncomeInput(){
     var monthlyIncome = prompt("Enter Monthly Income")
     // callling a function for converting any non-numeric input to 0
@@ -477,7 +414,6 @@ export default React.createClass({
     updates["/users/" + currentUser + "/" + "monthlyIncome"] = monthlyIncome
     // imported firebase function
     updateFB(updates)
-    this.setState({monthlyIncome})
   },
   //********************************* Validating numeric input, set to 0 if NaN ********************
   numericValidate(num){
@@ -562,11 +498,10 @@ export default React.createClass({
     this.refs.monthlyBox.className = "monthlyBoxCenter"
     this.removeSelectionForImport()
   },
-  //******************* Remove yellow highlight from selected items for Import ********************************
+  //**************** Remove yellow highlight from selected items for Import**************************
   removeSelectionForImport(){
     monthlyBillSelectedIndex = -1
     selectedTrans = []
-    // maybe put following highlight removal in function
     // reverting yellow highlight of selected Daily Transactions to import back to normal class
     var transSelect = document.getElementsByClassName("transDateSelected")
     var selectedLEN = transSelect.length
@@ -580,14 +515,14 @@ export default React.createClass({
       monthBillHighlight.monthBox.className = "monthlyType"
     }
   },
-  //********************** Alert for Monthly Plan exceeding income ********************************
-  monthlyTotalRed(){
-    this.refs.monthlyPlannedTotal.className="monthlyPlannedTotal_red"
-  },
-  //************** Removing alert for Monthly Plan exceeding income ********************************
-  monthlyTotalGreen(){
-    this.refs.monthlyPlannedTotal.className="monthlyPlannedTotal"
-  },
+  // //********************** Alert for Monthly Plan exceeding income ********************************
+  // monthlyTotalRed(){
+  //   this.refs.monthlyPlannedTotal.className="monthlyPlannedTotal_red"
+  // },
+  // //************** Removing alert for Monthly Plan exceeding income ********************************
+  // monthlyTotalGreen(){
+  //   this.refs.monthlyPlannedTotal.className="monthlyPlannedTotal"
+  // },
   //**************** Highlighting selected category of Monthly for Import ***************************
   onClickMonthlyTypeSelected(e){
     e.preventDefault()
@@ -675,6 +610,7 @@ export default React.createClass({
       this.removeSelectionForImport()
     }
   },
+  //********************************** Unlock Screen ***************************
   onClickLockButton(e){
     e.preventDefault()
     var test = e.target.getAttribute('value')
@@ -707,6 +643,7 @@ export default React.createClass({
     if (buttonsLocked === buttonsUnlockCode){
     }
   },
+  //********************************** Lock Screen ***************************
   onClickLockScreen(e){
     screenLocked = true
     this.setState(this.state.data)
@@ -728,8 +665,9 @@ export default React.createClass({
   //***************************** Help Button Popup **********************************************
   onClickHelpButton()
   {
-    alert("This application will allow user to enter Daily Transactions as money is spent by entering amount/description and clicking Add button. Any transaction amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount. The Monthly Budget Page will allow user to enter Monthly Income and then define the monthly items in their budget by entering description and planned amount to be spent and clicking Add. A default item in Monthly Budget page is Spending Cash.  Any monthly category amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount (except for Spending Cash).  The user can import the Daily Transactions by clicking the Select Transactions to Import, which will display the Daily Transactions list, then selecting one Monthly Budget category and as many Daily Transactions they wish, then clicking Import Transactions button.  This action will remove the Daily Transactions from the list and add the amounts to the Monthly Budget category selected in the Actual column. ")
+    alert("This application will allow user to enter Daily Transactions as money is spent by entering amount/description and clicking Add button. Any transaction amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount. The Monthly Budget Page will allow user to enter Monthly Income and then define the monthly items in their budget by entering description and planned amount to be spent and clicking Add. A default item in Monthly Budget page is Spending cash.  Any monthly category amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount (except for Spending cash).  The user can import the Daily Transactions by clicking the Select Transactions to Import, which will display the Daily Transactions list, then selecting one Monthly Budget category and as many Daily Transactions they wish, then clicking Import Transactions button.  This action will remove the Daily Transactions from the list and add the amounts to the Monthly Budget category selected in the Actual column. ")
   },
+  //***************************** Progress Bar **********************************************
   spendingGreenBar(){
     if (this.state.entireMonthlyData[0].plan > 0){
         // determining percentage of month based on current day and 30 day month
@@ -746,7 +684,7 @@ export default React.createClass({
         var spendingCashActual = 0
         var spendingCashPlan = 0
         for (var i = 0; i < dataLength; i++){
-          if (this.state.entireMonthlyData[i].text === "spending cash"){
+          if (this.state.entireMonthlyData[i].text === "Spending cash"){
             spendingCashActual = this.state.entireMonthlyData[i].amount
             spendingCashPlan = this.state.entireMonthlyData[i].plan
           }
@@ -779,6 +717,7 @@ export default React.createClass({
         }
     }
   },
+  //****************************** Is user logged in ***************************************
   userIsLoggedIn() {
     return fbAuthCurrentUser() != null
   },
@@ -786,16 +725,6 @@ export default React.createClass({
   render()
   {
     this.spendingGreenBar()
-    // console.log("monthly=",this.state.monthlyFlag);
-    // console.log("auth=",firebase.auth().currentUser);
-    // console.log("entireMonthlyData at render=",this.state.entireMonthlyData);
-    // have to set this.state.monthlyFlag when logging out
-
-    // <aside className="marketAsideArea">
-    //   <p>{marketData}</p>
-    //   <button className="marketButton" onClick={this.onClickMarketUpdate}>Market Update</button>
-    // </aside>
-
     // set Planned and Actual spent values to zero to calculate if need warning
     var monthlyPlannedTotalValue = 0
     var monthlyActualTotalValue = 0

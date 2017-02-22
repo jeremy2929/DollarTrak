@@ -21536,16 +21536,14 @@
 	var screenLocked = false;
 	var marketData;
 	
-	// activate next line when deploying- commented out for easier testing. it ensures previous user sign out
-	// firebase.auth().signOut()
+	firebase.auth().signOut();
 	var elementTest = {};
 	exports.default = _react2.default.createClass({
 	  displayName: 'main',
 	
-	  //********************************** Load data for user  *********************************************
+	  //************************* Load data for user  *********************************************
 	  loadData: function loadData() {
 	    userId = tempUser[0];
-	    console.log("userId=", userId);
 	    userDomain = tempUser[1];
 	    if (userId != null) {
 	      var comp = this;
@@ -21562,7 +21560,7 @@
 	    };
 	  },
 	
-	  //************************ Defining objects with empty data ****************************************************
+	  //**************************** Defining objects with empty data *****************************
 	  getInitialState: function getInitialState() {
 	    return {
 	      provider: function provider() {},
@@ -21579,28 +21577,19 @@
 	    };
 	  },
 	
-	  //********************************* Exisiting user sign in ***********************************************
+	  //******************** Existing user sign in *******************************************
 	  signUserIn: function signUserIn() {
 	    var _this = this;
 	
 	    var email = this.refs.userInput.value;
 	    var password = this.refs.passwordInput.value;
-	    tempUser = email.split("@");
-	    userId = tempUser[0];
-	    userDomain = tempUser[1];
-	    if (userDomain === "gmail.com") {
-	      var provider = new _external_firebase.fbGoogleLogin();
-	    } else {
-	      // imported firebase function
-	      (0, _external_firebase.fbLogin)(email, password);
-	      // imported firebase function
-	      authUser = (0, _external_firebase.fbAuthCurrentUser)();
-	    }
+	    (0, _external_firebase.fbLogin)(email, password);
+	    authUser = (0, _external_firebase.fbAuthCurrentUser)();
 	    (0, _external_firebase.fbAuthStateChanged)(function (authUser) {
 	      if ((0, _external_firebase.fbAuthCurrentUser)() != null) {
 	        var currentUser = {};
 	        var today = new Date();
-	        var tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
+	        tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
 	        currentUser["/users/" + authUser.uid] = {
 	          name: authUser.displayName,
 	          email: authUser.email,
@@ -21613,39 +21602,34 @@
 	      }
 	      _this.loadData();
 	    });
-	    this.setState({ password: password });
 	  },
 	  googleSignIn: function googleSignIn() {
 	    var _this2 = this;
 	
 	    var provider = new _external_firebase.fbGoogleLogin();
-	
 	    (0, _external_firebase.fbAuthStateChanged)(function (authUser) {
-	      // if (fbAuthCurrentUser() != null){
-	      //   var currentUser = {};
-	      //   var today = new Date();
-	      //   var tempUser = fbAuthCurrentUser().email.split("@")
-	      //   currentUser["/users/" + authUser.uid] = {
-	      //     name: authUser.displayName,
-	      //     email: authUser.email,
-	      //     lastLogin: Date()
-	      //   }
-	      //     //updateFB(currentUser)
-	      //   var comp = this
-	      //   authUser = fbAuthCurrentUser()
-	      //   fbGetUserValue(authUser, comp)
-	      //   }
+	      if ((0, _external_firebase.fbAuthCurrentUser)() != null) {
+	        var currentUser = {};
+	        var today = new Date();
+	        tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
+	        currentUser["/users/" + authUser.uid] = {
+	          name: authUser.displayName,
+	          email: authUser.email,
+	          lastLogin: Date()
+	        };
+	        //updateFB(currentUser)
+	        var comp = _this2;
+	        authUser = (0, _external_firebase.fbAuthCurrentUser)();
+	        (0, _external_firebase.fbGetUserValue)(authUser, comp);
+	      }
 	      var comp = _this2;
-	      authUser = (0, _external_firebase.fbAuthCurrentUser)();
+	      //  authUser = fbAuthCurrentUser()
 	      (0, _external_firebase.fbGetUserValue)(authUser, comp);
-	      tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
-	      //  console.log("google tempuser=",tempUser);
 	      _this2.loadData();
 	    });
-	    this.setState({ password: password });
 	  },
 	
-	  //**************************************** New user sign in *************************************
+	  //********************************** New user sign in *************************************
 	  newUserSignUp: function newUserSignUp() {
 	    var _this3 = this;
 	
@@ -21674,42 +21658,6 @@
 	      var currentUser = {};
 	      var today = new Date();
 	      var tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
-	      var userId = tempUser[0];
-	      currentUser["/users/" + authUser.uid] = {
-	        name: authUser.displayName,
-	        email: authUser.email,
-	        lastLogin: "today"
-	      };
-	      //    updateFB(currentUser)
-	      //  This sets up a callback once firebase reports that /users/{user.uid} has a value
-	
-	
-	      //         fbRef("/users/" + authUser.uid).once("value").then((snapshot) => {
-	      //           var snapshotReturn = snapshot.val()
-	      //           this.setState({
-	      //             user: {
-	      //               authed: true,
-	      //               name: authUser.email,
-	      //               email: snapshotReturn.email,
-	      //               lastLogin: snapshotReturn.lastLogin
-	      //             }
-	      //           })
-	      //         });
-	      //         var tempUser = fbAuthCurrentUser().email.split("@")
-	      //         var currentUser = tempUser[0]
-	      //         var userId = tempUser[0]
-	      // // is this needed below?  does it execute?**************************
-	      //         var data = []
-	      //         var entireData = []
-	      //   //  this.setState(this.state.user)
-	      //      this.setState(this.state.data)
-	      //      this.setState(this.state.entireData)
-	      //      this.setState(this.state.entireMonthlyData)
-	      //  // is this needed above?  does it execute?**************************
-	      // old end of function promise
-	
-	
-	      var tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
 	      var currentUser = tempUser[0];
 	      var userId = tempUser[0];
 	      var newData = "";
@@ -21718,7 +21666,7 @@
 	        amount: 0,
 	        plan: 0,
 	        type: "spe",
-	        text: "spending cash"
+	        text: "Spending cash"
 	      };
 	      entireMonthlyData = entireMonthlyData.concat(newData);
 	      _this3.setState({ entireMonthlyData: entireMonthlyData });
@@ -21737,11 +21685,6 @@
 	      };
 	      entireData = entireData.concat(newData);
 	      data = data.concat(newData);
-	      _this3.setState({ data: data });
-	      _this3.setState({ entireData: entireData });
-	      _this3.setState(_this3.state.data);
-	      _this3.setState(_this3.state.entireData);
-	      _this3.setState({ password: password });
 	      var updates = {};
 	      updates["/users/" + currentUser + "/" + "transactions"] = entireData;
 	      // imported firebase function
@@ -21750,6 +21693,11 @@
 	      var updates = {};
 	      updates["/users/" + currentUser + "/" + "monthlyIncome"] = monthlyIncome;
 	      (0, _external_firebase.updateFB)(updates);
+	      _this3.setState({ data: data });
+	      _this3.setState({ entireData: entireData });
+	      _this3.setState(_this3.state.data);
+	      _this3.setState(_this3.state.entireData);
+	      _this3.setState({ password: password });
 	    });
 	  },
 	
@@ -21815,7 +21763,7 @@
 	    this.setState(this.state.data);
 	  },
 	
-	  //***************************************** Show all Daily Transactions **********************************
+	  //**************************** Show all Daily Transactions **********************************
 	  onClickShowAll: function onClickShowAll() {
 	    this.refs.Show5.className = "showLast5Trans";
 	    this.refs.ShowAll.className = "hiddenButton";
@@ -21823,7 +21771,7 @@
 	    this.setState(this.state.data);
 	  },
 	
-	  //***************************************** Show Only 5 Daily Transactions *********************************
+	  //*************************** Show Only 5 Daily Transactions *********************************
 	  onClickShow5: function onClickShow5() {
 	    this.refs.ShowAll.className = "showLast5Trans";
 	    this.refs.Show5.className = "hiddenButton";
@@ -21902,10 +21850,10 @@
 	    var transSelected = e.target.getAttribute('value');
 	    var newAmount = prompt("Enter new amount or 000 to delete");
 	    // validating amount entered for numeric only, under 5 digits, or 000 for delete record
-	    if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text != "spending cash") {
+	    if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text != "Spending cash") {
 	      this.state.entireMonthlyData.splice(transSelected, 1);
-	    } else if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text === "spending cash") {
-	      alert("Category 'spending cash' can not be deleted");
+	    } else if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text === "Spending cash") {
+	      alert("Category 'Spending cash' can not be deleted");
 	      newAmount = null;
 	    } else if (newAmount != null && newAmount > -.01) {
 	      var numericAmount = this.numericValidate(newAmount);
@@ -21932,10 +21880,10 @@
 	    var transSelected = e.target.getAttribute('value');
 	    var newAmount = prompt("Enter new amount or 000 to delete");
 	    // validating amount entered for numeric only, under 5 digits, or 000 for delete record
-	    if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text != "spending cash") {
+	    if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text != "Spending cash") {
 	      this.state.entireMonthlyData.splice(transSelected, 1);
-	    } else if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text === "spending cash") {
-	      alert("Category 'spending cash' can not be deleted");
+	    } else if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text === "Spending cash") {
+	      alert("Category 'Spending cash' can not be deleted");
 	      newAmount = null;
 	    } else if (newAmount != null && newAmount > -.01) {
 	      var numericAmount = this.numericValidate(newAmount);
@@ -21947,8 +21895,8 @@
 	          this.setState(this.state.entireMonthlyData);
 	        }
 	      }
-	    } else if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text === "spending cash") {
-	      alert("Category 'spending cash' can not be deleted");
+	    } else if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text === "Spending cash") {
+	      alert("Category 'Spending cash' can not be deleted");
 	    }
 	    var updates = {};
 	    var tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
@@ -21959,7 +21907,7 @@
 	    this.setState(this.state.entireMonthlyData);
 	  },
 	
-	  //********************************** Modifying a Monthly Bill description *************************
+	  //***************************** Modifying a Monthly Bill description *************************
 	  onClickMonthlyDescription: function onClickMonthlyDescription(e) {
 	    var transSelected = e.target.getAttribute('value');
 	    if (transSelected != "0" && newDesc != "") {
@@ -21978,7 +21926,7 @@
 	    }
 	  },
 	
-	  //********************************* Entering the Monthly Income Amount **************************
+	  //***************************** Entering the Monthly Income Amount **************************
 	  onMonthlyIncomeInput: function onMonthlyIncomeInput() {
 	    var monthlyIncome = prompt("Enter Monthly Income");
 	    // callling a function for converting any non-numeric input to 0
@@ -21989,7 +21937,6 @@
 	    updates["/users/" + currentUser + "/" + "monthlyIncome"] = monthlyIncome;
 	    // imported firebase function
 	    (0, _external_firebase.updateFB)(updates);
-	    this.setState({ monthlyIncome: monthlyIncome });
 	  },
 	
 	  //********************************* Validating numeric input, set to 0 if NaN ********************
@@ -22082,11 +22029,10 @@
 	    this.removeSelectionForImport();
 	  },
 	
-	  //******************* Remove yellow highlight from selected items for Import ********************************
+	  //**************** Remove yellow highlight from selected items for Import**************************
 	  removeSelectionForImport: function removeSelectionForImport() {
 	    monthlyBillSelectedIndex = -1;
 	    selectedTrans = [];
-	    // maybe put following highlight removal in function
 	    // reverting yellow highlight of selected Daily Transactions to import back to normal class
 	    var transSelect = document.getElementsByClassName("transDateSelected");
 	    var selectedLEN = transSelect.length;
@@ -22101,16 +22047,14 @@
 	    }
 	  },
 	
-	  //********************** Alert for Monthly Plan exceeding income ********************************
-	  monthlyTotalRed: function monthlyTotalRed() {
-	    this.refs.monthlyPlannedTotal.className = "monthlyPlannedTotal_red";
-	  },
-	
-	  //************** Removing alert for Monthly Plan exceeding income ********************************
-	  monthlyTotalGreen: function monthlyTotalGreen() {
-	    this.refs.monthlyPlannedTotal.className = "monthlyPlannedTotal";
-	  },
-	
+	  // //********************** Alert for Monthly Plan exceeding income ********************************
+	  // monthlyTotalRed(){
+	  //   this.refs.monthlyPlannedTotal.className="monthlyPlannedTotal_red"
+	  // },
+	  // //************** Removing alert for Monthly Plan exceeding income ********************************
+	  // monthlyTotalGreen(){
+	  //   this.refs.monthlyPlannedTotal.className="monthlyPlannedTotal"
+	  // },
 	  //**************** Highlighting selected category of Monthly for Import ***************************
 	  onClickMonthlyTypeSelected: function onClickMonthlyTypeSelected(e) {
 	    e.preventDefault();
@@ -22201,6 +22145,8 @@
 	      this.removeSelectionForImport();
 	    }
 	  },
+	
+	  //********************************** Unlock Screen ***************************
 	  onClickLockButton: function onClickLockButton(e) {
 	    e.preventDefault();
 	    var test = e.target.getAttribute('value');
@@ -22232,6 +22178,8 @@
 	    }
 	    if (buttonsLocked === buttonsUnlockCode) {}
 	  },
+	
+	  //********************************** Lock Screen ***************************
 	  onClickLockScreen: function onClickLockScreen(e) {
 	    screenLocked = true;
 	    this.setState(this.state.data);
@@ -22253,8 +22201,10 @@
 	
 	  //***************************** Help Button Popup **********************************************
 	  onClickHelpButton: function onClickHelpButton() {
-	    alert("This application will allow user to enter Daily Transactions as money is spent by entering amount/description and clicking Add button. Any transaction amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount. The Monthly Budget Page will allow user to enter Monthly Income and then define the monthly items in their budget by entering description and planned amount to be spent and clicking Add. A default item in Monthly Budget page is Spending Cash.  Any monthly category amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount (except for Spending Cash).  The user can import the Daily Transactions by clicking the Select Transactions to Import, which will display the Daily Transactions list, then selecting one Monthly Budget category and as many Daily Transactions they wish, then clicking Import Transactions button.  This action will remove the Daily Transactions from the list and add the amounts to the Monthly Budget category selected in the Actual column. ");
+	    alert("This application will allow user to enter Daily Transactions as money is spent by entering amount/description and clicking Add button. Any transaction amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount. The Monthly Budget Page will allow user to enter Monthly Income and then define the monthly items in their budget by entering description and planned amount to be spent and clicking Add. A default item in Monthly Budget page is Spending cash.  Any monthly category amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount (except for Spending cash).  The user can import the Daily Transactions by clicking the Select Transactions to Import, which will display the Daily Transactions list, then selecting one Monthly Budget category and as many Daily Transactions they wish, then clicking Import Transactions button.  This action will remove the Daily Transactions from the list and add the amounts to the Monthly Budget category selected in the Actual column. ");
 	  },
+	
+	  //***************************** Progress Bar **********************************************
 	  spendingGreenBar: function spendingGreenBar() {
 	    if (this.state.entireMonthlyData[0].plan > 0) {
 	      // determining percentage of month based on current day and 30 day month
@@ -22271,7 +22221,7 @@
 	      var spendingCashActual = 0;
 	      var spendingCashPlan = 0;
 	      for (var i = 0; i < dataLength; i++) {
-	        if (this.state.entireMonthlyData[i].text === "spending cash") {
+	        if (this.state.entireMonthlyData[i].text === "Spending cash") {
 	          spendingCashActual = this.state.entireMonthlyData[i].amount;
 	          spendingCashPlan = this.state.entireMonthlyData[i].plan;
 	        }
@@ -22304,6 +22254,8 @@
 	      }
 	    }
 	  },
+	
+	  //****************************** Is user logged in ***************************************
 	  userIsLoggedIn: function userIsLoggedIn() {
 	    return (0, _external_firebase.fbAuthCurrentUser)() != null;
 	  },
@@ -22313,16 +22265,6 @@
 	    var _this4 = this;
 	
 	    this.spendingGreenBar();
-	    // console.log("monthly=",this.state.monthlyFlag);
-	    // console.log("auth=",firebase.auth().currentUser);
-	    // console.log("entireMonthlyData at render=",this.state.entireMonthlyData);
-	    // have to set this.state.monthlyFlag when logging out
-	
-	    // <aside className="marketAsideArea">
-	    //   <p>{marketData}</p>
-	    //   <button className="marketButton" onClick={this.onClickMarketUpdate}>Market Update</button>
-	    // </aside>
-	
 	    // set Planned and Actual spent values to zero to calculate if need warning
 	    var monthlyPlannedTotalValue = 0;
 	    var monthlyActualTotalValue = 0;
@@ -23406,7 +23348,7 @@
 	        amount: 0,
 	        plan: 0,
 	        type: "spe",
-	        text: "spending cash"
+	        text: "Spending cash"
 	      };
 	      var entireMonthlyData = entireMonthlyData.concat(newData);
 	      comp.setState({ entireMonthlyData: entireMonthlyData });
