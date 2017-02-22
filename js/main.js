@@ -171,7 +171,7 @@ export default React.createClass({
     // [START createwithemail]
     var comp = this
     // imported firebase function
-    fbCreateUserEmailAndPswd(email, password)
+    fbCreateUserEmailAndPswd(email, password, comp)
     if (this.state.errorCode === undefined)
     {
       alert("Account created! Click OK to login...")
@@ -474,7 +474,7 @@ export default React.createClass({
     var monthlyFlag = undefined
     this.setState({monthlyFlag})
     this.refs.enterMonthlyBill.value  = ""
-    this.state.date = this.state.entireData
+    this.state.data = this.state.entireData
   },
   //*********************** Adding Monthly Budget items and planned amounts *************************
   onClickAddMonthlyBill(e){
@@ -702,7 +702,7 @@ export default React.createClass({
   //***************************** Help Button Popup **********************************************
   onClickHelpButton()
   {
-    alert("This application will allow user to enter Daily Transactions as money is spent by entering amount/description and clicking Add button. Any transaction amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount. The Monthly Budget Page will allow user to enter Monthly Income and then define the monthly items in their budget by entering description and planned amount to be spent and clicking Add. A default item in Monthly Budget page is Spending cash.  Any monthly category amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount (except for Spending cash).  The user can import the Daily Transactions by clicking the Select Transactions to Import, which will display the Daily Transactions list, then selecting one Monthly Budget category and as many Daily Transactions they wish, then clicking Import Transactions button.  This action will remove the Daily Transactions from the list and add the amounts to the Monthly Budget category selected in the Actual column. ")
+    alert("This application will allow user to enter Daily Transactions as money is spent by entering amount/description and clicking Add button. Any transaction amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount. The Monthly Budget Page will allow user to enter Monthly Income and then define the monthly items in their budget by entering description and planned amount to be spent and clicking Add. A default item in Monthly Budget page is Spending cash.  Any monthly category amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount (except for Spending cash).  The user can import the Daily Transactions by clicking the Select Transactions to Import, which will display the Daily Transactions list, then selecting one Monthly Budget category (click in the Select column) and as many Daily Transactions they wish (by clicking on transaction date), then clicking Import Transactions button.  This action will remove the Daily Transactions from the list and add the amounts to the Monthly Budget category selected in the Actual column. ")
   },
   //***************************** Progress Bar **********************************************
   spendingGreenBar(){
@@ -861,7 +861,7 @@ export default React.createClass({
             <img className="loginImage" src="styles/titleLogin.jpg"></img>
           </article>
           <article className="loginButtonsSection">
-            <h2 className="loginLabel">You may click Google Login to sign in with Google Account or enter an email address to sign into existing account or create a new account:</h2>
+            <h2 className="loginLabel">Enter an email address to sign into existing account or create a new account. Or click Google Login to use your Google account.</h2>
             <input className="userNameInput"
                    placeholder="             email address"
                    ref="userInput"></input>

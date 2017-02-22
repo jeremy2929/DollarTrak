@@ -12,7 +12,7 @@ export function fbLogin(email,password){
 export function fbAuthCurrentUser(){
   return firebase.auth().currentUser
 }
-export function fbCreateUserEmailAndPswd(email, password){
+export function fbCreateUserEmailAndPswd(email, password,comp){
   return firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
     // Handle Errors here.
     var errorCode = error.code;
@@ -103,8 +103,10 @@ export function fbGetMonthlyIncome(comp, currentUser) {
           comp.setState({monthlyIncome})
         }
 // is this line redundant below?
-        // comp.setState({monthlyIncome})
+    //     comp.setState({monthlyIncome})
      })
+
+    //  comp.setState({monthlyIncome})
 }
 export function fbGoogleLogin(){
     var provider = new firebase.auth.GoogleAuthProvider()
