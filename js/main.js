@@ -113,7 +113,7 @@ export default React.createClass({
           fbGetUserValue(authUser, comp)
         }
         var comp = this
-        //  authUser = fbAuthCurrentUser()
+         authUser = fbAuthCurrentUser()
         fbGetUserValue(authUser, comp)
         this.loadData()
     })
