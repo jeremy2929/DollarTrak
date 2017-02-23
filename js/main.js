@@ -111,18 +111,6 @@ export default React.createClass({
           authUser = fbAuthCurrentUser()
           fbGetUserValue(authUser, comp)
         }
-        // var comp = this
-        // authUser = fbAuthCurrentUser()
-        // fbGetUserValue(authUser, comp)
-        // tempUser = fbAuthCurrentUser().email.split("@")
-        // userId = tempUser[0]
-        // userDomain = tempUser[1]
-        // if (userId != null){
-        //     var comp = this
-        //     fbGetTransactionData(comp, userId)
-        //     fbGetMonthlyData(comp, userId)
-        //     fbGetMonthlyIncome(comp, userId)
-        // }
         this.loadData()
     })
   },
@@ -216,7 +204,6 @@ export default React.createClass({
         var userId = this.state.user
         var passwordId = this.state.pswd
         var updates = {};
-
         var tempUser = fbAuthCurrentUser().email.split("@")
         var currentUser = tempUser[0]
         var newData = ""
@@ -338,7 +325,7 @@ export default React.createClass({
   onClickMonthlyBillPlan(e){
     var transSelected = e.target.getAttribute('value')
     var newAmount = prompt("Enter new amount or 000 to delete")
-        // validating amount entered for numeric only, under 5 digits, or 000 for delete record
+    // validating amount entered for numeric only, under 5 digits, or 000 for delete record
     if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text != "Spending cash"){
         this.state.entireMonthlyData.splice(transSelected,1)
     } else if (newAmount === "000" && this.state.entireMonthlyData[transSelected].text === "Spending cash"){
@@ -451,7 +438,6 @@ export default React.createClass({
         monthlyPlanInputValue = this.numericValidate(monthlyPlanInputValue)
         var monthlyBillInputValue = this.refs.enterMonthlyBill.value
         var monthlyType = monthlyBillInputValue.substring(0,3)
-        // FIXME what can use instead of eval? need numeric testing here
         this.refs.enterMonthlyBill.value = ""
         this.refs.enterMonthlyPlan.value = ""
         var userId = this.state.user

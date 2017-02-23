@@ -21620,18 +21620,6 @@
 	        authUser = (0, _external_firebase.fbAuthCurrentUser)();
 	        (0, _external_firebase.fbGetUserValue)(authUser, comp);
 	      }
-	      // var comp = this
-	      // authUser = fbAuthCurrentUser()
-	      // fbGetUserValue(authUser, comp)
-	      // tempUser = fbAuthCurrentUser().email.split("@")
-	      // userId = tempUser[0]
-	      // userDomain = tempUser[1]
-	      // if (userId != null){
-	      //     var comp = this
-	      //     fbGetTransactionData(comp, userId)
-	      //     fbGetMonthlyData(comp, userId)
-	      //     fbGetMonthlyIncome(comp, userId)
-	      // }
 	      _this2.loadData();
 	    });
 	  },
@@ -21727,7 +21715,6 @@
 	      var userId = this.state.user;
 	      var passwordId = this.state.pswd;
 	      var updates = {};
-	
 	      var tempUser = (0, _external_firebase.fbAuthCurrentUser)().email.split("@");
 	      var currentUser = tempUser[0];
 	      var newData = "";
@@ -21979,7 +21966,6 @@
 	      monthlyPlanInputValue = this.numericValidate(monthlyPlanInputValue);
 	      var monthlyBillInputValue = this.refs.enterMonthlyBill.value;
 	      var monthlyType = monthlyBillInputValue.substring(0, 3);
-	      // FIXME what can use instead of eval? need numeric testing here
 	      this.refs.enterMonthlyBill.value = "";
 	      this.refs.enterMonthlyPlan.value = "";
 	      var userId = this.state.user;
@@ -23356,11 +23342,7 @@
 	      var monthlyIncome = 0;
 	      comp.setState({ monthlyIncome: monthlyIncome });
 	    }
-	    // is this line redundant below?
-	    //     comp.setState({monthlyIncome})
 	  });
-	
-	  //  comp.setState({monthlyIncome})
 	}
 	function fbGoogleLogin() {
 	  var provider = new firebase.auth.GoogleAuthProvider();

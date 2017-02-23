@@ -17,7 +17,6 @@ body{
 }
 
 .buttonLockArea{
-  /*border: solid 2px;*/
   display: inline-block;
   height: 40px;
   margin-right: 1%;
@@ -29,7 +28,6 @@ body{
 }
 
 .buttonLockArea_locked{
-  /*border: solid 2px;*/
   display: inline-block;
   height: 40px;
   margin-left: 11%;
@@ -58,7 +56,6 @@ body{
 }
 
 .dailyTransPageBox{
-  /*border: solid 2px;*/
   display: inline-block;
   height: auto;
   margin-left: 30%;
@@ -116,7 +113,6 @@ body{
 
 .progressBarLabel{
   background-color: black;
-  /*border: solid 2px;*/
   color: lightgreen;
   display: inline-flex;
   font-size: 12px;
@@ -124,7 +120,6 @@ body{
   margin: 0;
   padding-left: 10%;
   text-align: center;
-  /*vertical-align: middle;*/
   width: 100%;
 }
 
@@ -286,7 +281,6 @@ margin-top: 50%;
   color: green;
   font-size: 45px;
   font-weight: bolder;
-  /*opacity: 0.8;*/
   margin: 0;
   margin-bottom: 0px;
   margin-top: 20px;
@@ -306,7 +300,6 @@ margin-top: 50%;
   padding-left: 10px;
   padding-right: 10px;
   text-align: center;
-  /*vertical-align: middle;*/
   width: 397px;
   white-space: pre;
 }
@@ -324,8 +317,6 @@ margin-top: 50%;
   padding-left: inherit;
   padding-right: 0;
   margin: 0;
-  /*margin-left: 0;*/
-  /*margin-right: 0;*/
   width: 395px;
 }
 
@@ -390,7 +381,6 @@ margin-top: 50%;
 }
 
 .addTransBox{
-  /*border: solid 2px;*/
   display: inline-flex;
   height: 40px;
   width: 430px;
@@ -430,12 +420,10 @@ margin-top: 50%;
   line-height: 40px;
   margin: 0;
   padding-top: 0px;
-  /*text-align: center;*/
   width: 58px;
 }
 
 .transOptionsArea{
-  /*border: solid 2px;*/
   height: 150px;
   margin-top: 20px;
   width: 420px;
@@ -474,7 +462,6 @@ margin-top: 50%;
 }
 
 .showLast5Trans{
-  /*background-color: yellow;*/
   background-color: lightcyan;
   border: blue solid 2px;
   border-radius: 6px;
@@ -528,7 +515,6 @@ margin-top: 50%;
   display: inline-block;
   height: auto;
   margin-left: 30%;
-  /*padding-bottom: 10px;*/
   width: 402px;
 }
 
@@ -538,7 +524,6 @@ margin-top: 50%;
   display: inline-block;
   height: auto;
   margin-left: 5%;
-  /*padding-bottom: 10px;*/
   width: 402px;
 }
 
@@ -665,7 +650,6 @@ margin-top: 50%;
 }
 
 .monthlyInputsArea{
-  /*border: solid 2px;*/
   display: inline-flex;
   height: 41px;
   margin-top: 10px;
@@ -784,7 +768,6 @@ margin-top: 50%;
 
 .monthlyTotalBox{
   background-color: lightgrey;
-  /*border: solid 2px;*/
   display: inline-flex;
   height: 23px;
   width: 394px;
@@ -944,8 +927,6 @@ margin-top: 50%;
 }
 
 .monthlyDailyTransBox{
-  /*background-color: silver;*/
-  /*border: solid 2px;*/
   display: inline-block;
   height: auto;
   margin: 0;
@@ -1002,7 +983,6 @@ margin-top: 50%;
   padding-top: 0px;
   padding-bottom: 3px;
   text-align: center;
-  /*margin: 0;*/
   width: 50px;
 }
 
@@ -1017,8 +997,6 @@ margin-top: 50%;
   padding-top: 0px;
   padding-bottom: 3px;
   vertical-align: middle;
-  /*text-align: center;*/
-  /*margin: 0;*/
   width: 50px;
 }
 
@@ -1081,7 +1059,6 @@ margin-top: 50%;
     color: green;
     font-size: 30px;
     font-weight: bolder;
-    /*opacity: 0.8;*/
     margin: 0;
     margin-bottom: 0px;
     margin-top: 20px;
@@ -1123,9 +1100,6 @@ margin-top: 50%;
     font-weight: bolder;
     height: 15px;
     padding-top: 2px;
-    /*text-align: center;*/
-    /*margin: 0;*/
     width: 50px;
   }
-
 }

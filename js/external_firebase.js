@@ -102,11 +102,7 @@ export function fbGetMonthlyIncome(comp, currentUser) {
           var monthlyIncome = 0
           comp.setState({monthlyIncome})
         }
-// is this line redundant below?
-    //     comp.setState({monthlyIncome})
      })
-
-    //  comp.setState({monthlyIncome})
 }
 export function fbGoogleLogin(){
     var provider = new firebase.auth.GoogleAuthProvider()
