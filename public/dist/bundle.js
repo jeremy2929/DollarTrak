@@ -21717,7 +21717,7 @@
 	  //*************************** Adding Daily Transactions **********************************
 	  onClickSubmit: function onClickSubmit(e) {
 	    e.preventDefault();
-	    if (this.refs.amountInput.value != "" || parseInt(this.refs.amountInput.value > -.01)) {
+	    if (this.refs.amountInput.value != "" && this.refs.descriptionInput.value != "" || parseInt(this.refs.amountInput.value > -.01)) {
 	      var currentDate = Date().substring(4, 15);
 	      var textInputValue = this.refs.descriptionInput.value;
 	      var amountInputValue = this.refs.amountInput.value;
@@ -21748,6 +21748,8 @@
 	          data[j] = this.state.entireData[i];
 	          j++;
 	        }
+	        this.refs.ShowAll.className = "showLast5Trans";
+	        this.refs.Show5.className = "hiddenButton";
 	      } else {
 	        data = this.state.entireData;
 	      }
@@ -21758,13 +21760,13 @@
 	      updates["/users/" + currentUser + "/" + "transactions"] = this.state.entireData;
 	      // imported firebase function
 	      (0, _external_firebase.updateFB)(updates);
+	      this.setState({ data: data });
+	      this.setState(this.state.data);
 	    } else {
-	      alert("Negatives values not allowed");
+	      alert("Negatives or empty values not allowed");
 	      this.refs.descriptionInput.value = "";
 	      this.refs.amountInput.value = "";
 	    }
-	    this.setState({ data: data });
-	    this.setState(this.state.data);
 	  },
 	
 	  //**************************** Show all Daily Transactions **********************************
@@ -22190,7 +22192,7 @@
 	
 	  //***************************** Help Button Popup **********************************************
 	  onClickHelpButton: function onClickHelpButton() {
-	    alert("This application will allow user to enter Daily Transactions as money is spent by entering amount/description and clicking Add button. Any transaction amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount. The Monthly Budget Page will allow user to enter Monthly Income and then define the monthly items in their budget by entering description and planned amount to be spent and clicking Add. A default item in Monthly Budget page is Spending cash.  Any monthly category amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount (except for Spending cash).  The user can import the Daily Transactions by clicking the Select Transactions to Import, which will display the Daily Transactions list, then selecting one Monthly Budget category (click in the Select column) and as many Daily Transactions they wish (by clicking on transaction date), then clicking Import Transactions button.  This action will remove the Daily Transactions from the list and add the amounts to the Monthly Budget category selected in the Actual column. Note: no decimals or negatives allowed.");
+	    alert("This application will allow user to enter Daily Transactions as money is spent by entering amount/description and clicking Add button. Any transaction amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount. The Monthly Budget Page will allow user to enter Monthly Income and then define the monthly items in their budget by entering description and planned amount to be spent and clicking Add. A default item in Monthly Budget page is Spending cash.  Any monthly category amount or description can be modified by clicking on the field in the list, or removed by entering 000 for the amount (except for Spending cash).  The user can import the Daily Transactions by clicking the Select Transactions to Import, which will display the Daily Transactions list, then selecting one Monthly Budget category (click in the Select column) and as many Daily Transactions they wish (by clicking on transaction date), then clicking Import Transactions button.  This action will remove the Daily Transactions from the list and add the amounts to the Monthly Budget category selected in the Actual column. Code to unlock screen is Button 1, 3, and 5. Note: no decimals or negatives allowed.");
 	  },
 	
 	  //***************************** Progress Bar **********************************************
@@ -22543,7 +22545,7 @@
 	              _react2.default.createElement(
 	                'th',
 	                { className: 'monthlyColumnTitlePlanned' },
-	                '  Planned'
+	                ' Planned'
 	              ),
 	              _react2.default.createElement(
 	                'th',
@@ -22658,12 +22660,12 @@
 	          _react2.default.createElement(
 	            'p',
 	            { className: mptAlertClass },
-	            '    !!! Planned Total Expenses Exceeds Monthly Income !!!'
+	            '    !!! Total Planned Expenses Exceeds Monthly Income !!!'
 	          ),
 	          _react2.default.createElement(
 	            'p',
 	            { className: matAlertClass },
-	            '     !!! Actual Total Expenses Exceeds Monthly Income !!!'
+	            '     !!! Total Actual Expenses Exceeds Monthly Income !!!'
 	          )
 	        ),
 	        _react2.default.createElement(
