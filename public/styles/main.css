@@ -1011,18 +1011,100 @@ margin-top: 50%;
 
 @media only screen and (max-width: 1000px){
 
+  .loginTitleSection{
+    /*background-color: lightgrey;*/
+    /*border: black solid 2px;*/
+    display: inline-block;
+    height: 6.5em;
+    margin-left: 8%;
+    margin-top: 10%;
+    width: 50em;
+  }
+
+.loginPage{
+  /*background-image: url("wallpaper.jpg");*/
+  height: 1170px;
+  width: 100%;
+}
+
+.loginImage{
+  display: inline-block;
+  height: 6.2em;
+  margin: 0;
+  width: 6em;
+}
+
   .titleLogin{
     color: green;
     display: inline-block;
-    font-size: 45px;
-    height: 60px;
+    font-size: 5em;
+    /*height: 60px;
     margin-left: 30px;
     margin-right: 30px;
     margin-top: 5px;
     margin-bottom: 0px;
     text-align: center;
-    vertical-align: top;
-    width: 50%;
+    vertical-align: top;*/
+    width: 6.78em;
+  }
+
+  .loginButtonsSection{
+    background-color: lightgrey;
+    border: black solid 2px;
+    display: inline-block;
+    height: auto;
+    padding-bottom: 5px;
+    margin-left: 8%;
+    width: 50em;
+  }
+
+  .loginLabel{
+    font-size: 3em;
+    margin-left: 2%;
+    margin-right: 2%;
+  }
+
+  .userNameInput{
+    font-size: 3em;
+    height: auto;
+    margin: 0;
+    margin-left: 1.5em;
+    width: 7em;
+  }
+
+  .passwordInput{
+    font-size: 3em;
+    height: auto;
+    margin: 0;
+    margin-left: 1em;
+    width: 6em;
+  }
+
+  .newUser{
+    /*background-color: lightblue;*/
+    display: inline-block;
+    font-size: 2em;
+    /*font-weight: bolder;*/
+    height: auto;
+    margin-left: 3em;
+    margin-top: 1em;
+    width: 5em;
+  }
+
+  .loginUser{
+    display: inline-block;
+    font-size: 2em;
+    height: auto;
+    margin-top: 1em;
+    width: 5em;
+  }
+
+  .googleUser{
+    display: inline-block;
+    font-size: 2em;
+    height: auto;
+    margin-top: 1em;
+    width: 7em;
   }
 
   .monthlyTitle{

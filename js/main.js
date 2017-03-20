@@ -804,10 +804,10 @@ export default React.createClass({
           <article className="loginButtonsSection">
             <h2 className="loginLabel">Enter an email address to sign into existing account or create a new account. Or click Google Login to use your Google account.</h2>
             <input className="userNameInput"
-                   placeholder="             email address"
+                   placeholder="email address"
                    ref="userInput"></input>
             <input className="passwordInput"
-                   placeholder="               password"
+                   placeholder="password"
                    ref="passwordInput"
                    type="password"></input>
             <button className="newUser" ref="newUser" onClick={this.newUserSignUp}>NEW USER</button>

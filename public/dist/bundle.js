@@ -22431,10 +22431,10 @@
 	              'Enter an email address to sign into existing account or create a new account. Or click Google Login to use your Google account.'
 	            ),
 	            _react2.default.createElement('input', { className: 'userNameInput',
-	              placeholder: '             email address',
+	              placeholder: 'email address',
 	              ref: 'userInput' }),
 	            _react2.default.createElement('input', { className: 'passwordInput',
-	              placeholder: '               password',
+	              placeholder: 'password',
 	              ref: 'passwordInput',
 	              type: 'password' }),
 	            _react2.default.createElement(
