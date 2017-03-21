@@ -1008,9 +1008,7 @@ margin-top: 50%;
   padding: 0;
   width: 300px;
 }
-
-@media only screen and (max-width: 980px){
-
+@media screen and (max-width: 980px) {
   .loginTitleSection{
     /*background-color: lightgrey;*/
     /*border: black solid 2px;*/
